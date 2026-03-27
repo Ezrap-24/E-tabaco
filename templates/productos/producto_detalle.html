@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}{{ producto.nombre }} — e-Tabaco{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'paginas:home' %}">Inicio</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'productos:catalogo' %}">Catálogo</a></li>
+      <li class="breadcrumb-item active">{{ producto.nombre }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+    <!-- IMAGEN -->
+    <div class="col-lg-5">
+      {% if producto.imagen %}
+      <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-fluid rounded producto-detalle-img">
+      {% else %}
+      <div class="producto-img-placeholder-lg d-flex align-items-center justify-content-center rounded">
+        <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- INFO Y CARRITO -->
+    <div class="col-lg-7">
+      {% if producto.categoria %}
+      <span class="badge-categoria mb-2 d-inline-block">{{ producto.categoria }}</span>
+      {% endif %}
+      <h1 class="producto-nombre">{{ producto.nombre }}</h1>
+      <p class="text-muted mb-4">{{ producto.descripcion }}</p>
+
+      <!-- PRECIO DINÁMICO -->
+      <div class="precio-box mb-4" id="precio-display">
+        <span class="precio-label">Precio:</span>
+        <span class="precio-grande" id="precio-actual">${{ producto.precio_unidad }}</span>
+      </div>
+
+      <!-- FORMULARIO CARRITO -->
+      <div id="carrito-mensaje"></div>
+
+      <form hx-post="{% url 'carrito:agregar' producto.id %}"
+            hx-target="#carrito-mensaje"
+            hx-swap="innerHTML"
+            method="post">
+        {% csrf_token %}
+
+        <!-- SELECTOR TIPO DE VENTA -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Presentación</label>
+          <div class="d-flex gap-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="tipo_venta" id="tipo_unidad"
+                     value="unidad" checked
+                     data-precio="{{ producto.precio_unidad }}"
+                     onchange="actualizarPrecio(this)">
+              <label class="form-check-label" for="tipo_unidad">
+                Unidad — ${{ producto.precio_unidad }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="tipo_venta" id="tipo_caja"
+                     value="caja"
+                     data-precio="{{ producto.precio_caja }}"
+                     onchange="actualizarPrecio(this)">
+              <label class="form-check-label" for="tipo_caja">
+                Caja ({{ producto.unidades_por_caja }} u.) — ${{ producto.precio_caja }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- CANTIDAD -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Cantidad</label>
+          <div class="input-group" style="max-width: 140px;">
+            <button type="button" class="btn btn-outline-secondary" onclick="cambiarCantidad(-1)">−</button>
+            <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="99"
+                   class="form-control text-center">
+            <button type="button" class="btn btn-outline-secondary" onclick="cambiarCantidad(1)">+</button>
+          </div>
+        </div>
+
+        {% if producto.tiene_stock %}
+        <button type="submit" class="btn btn-gold btn-lg w-100">
+          <i class="bi bi-bag-plus me-2"></i>Agregar al carrito
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-secondary btn-lg w-100" disabled>Sin stock</button>
+        {% endif %}
+      </form>
+
+      <p class="advertencia-sanitaria mt-4">
+        ⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function actualizarPrecio(radio) {
+    document.getElementById('precio-actual').textContent = '$' + parseFloat(radio.dataset.precio).toFixed(2);
+  }
+
+  function cambiarCantidad(delta) {
+    const input = document.getElementById('cantidad');
+    const nueva = Math.max(1, parseInt(input.value) + delta);
+    input.value = nueva;
+  }
+</script>
+{% endblock %}

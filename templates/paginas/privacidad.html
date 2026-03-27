@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Política de Privacidad — e-Tabaco{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="section-title mb-4">Política de Privacidad</h1>
+      <p class="text-muted">Tu privacidad es importante para nosotros. Esta política explica cómo tratamos tus datos personales.</p>
+      <h5 class="mt-4">Datos que recopilamos</h5>
+      <p class="text-muted">Recopilamos nombre, email, teléfono y dirección de envío únicamente para procesar tus pedidos. No compartimos tu información con terceros salvo los necesarios para el procesamiento del pago y envío.</p>
+      <h5 class="mt-4">Uso de los datos</h5>
+      <p class="text-muted">Tus datos se usan exclusivamente para: procesar y enviar tu pedido, enviarte la confirmación por email, y contactarte ante cualquier inconveniente con tu compra.</p>
+      <h5 class="mt-4">Cookies</h5>
+      <p class="text-muted">Usamos cookies de sesión para mantener tu carrito de compras activo durante tu visita. No usamos cookies de rastreo ni publicidad.</p>
+      <h5 class="mt-4">Contacto</h5>
+      <p class="text-muted">Para cualquier consulta sobre tus datos personales, escribinos a través de nuestra página de <a href="{% url 'paginas:contacto' %}">contacto</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

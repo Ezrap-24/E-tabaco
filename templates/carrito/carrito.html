@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Mi Carrito — e-Tabaco{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="section-title mb-4">Mi Carrito</h1>
+  {% include 'carrito/carrito_fragment.html' %}
+</div>
+{% endblock %}

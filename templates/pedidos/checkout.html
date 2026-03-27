@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — e-Tabaco{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row g-5">
+
+    <!-- FORMULARIO -->
+    <div class="col-lg-7">
+      <h2 class="section-title mb-4">Datos de envío</h2>
+      <form method="post" action="{% url 'pedidos:checkout' %}">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nombre completo *</label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+            <div class="text-danger small">{{ form.nombre.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email *</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="text-danger small">{{ form.email.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            {{ form.telefono }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Dirección de envío *</label>
+            {{ form.direccion }}
+            {% if form.direccion.errors %}
+            <div class="text-danger small">{{ form.direccion.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              {{ form.acepta_terminos }}
+              <label class="form-check-label small" for="{{ form.acepta_terminos.id_for_label }}">
+                {{ form.acepta_terminos.label }}
+              </label>
+            </div>
+            {% if form.acepta_terminos.errors %}
+            <div class="text-danger small">{{ form.acepta_terminos.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg w-100 mt-4">
+          Continuar al pago <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- RESUMEN DEL PEDIDO -->
+    <div class="col-lg-5">
+      <div class="card border-0 bg-light p-4 rounded-3">
+        <h5 class="fw-semibold mb-3">Resumen del pedido</h5>
+        {% for item in carrito.items %}
+        <div class="d-flex justify-content-between small mb-2">
+          <span>{{ item.producto.nombre }} <span class="text-muted">({{ item.tipo_venta }}) ×{{ item.cantidad }}</span></span>
+          <span>${{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between fw-bold">
+          <span>Total</span>
+          <span class="fs-5">${{ carrito.total }}</span>
+        </div>
+      </div>
+      <p class="advertencia-sanitaria mt-3">
+        ⚠️ Solo para mayores de 18 años. El tabaco es perjudicial para la salud.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

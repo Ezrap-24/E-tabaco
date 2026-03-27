@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}e-Tabaco — Tabaco para liar de calidad{% endblock %}
+
+{% block content %}
+<!-- HERO BANNER -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-60">
+      <div class="col-lg-6">
+        <h1 class="hero-title">Tabaco para liar,<br>directo a tu puerta.</h1>
+        <p class="hero-subtitle">Selección cuidada de tabacos premium. Calidad artesanal, entrega rápida.</p>
+        <a href="{% url 'productos:catalogo' %}" class="btn btn-gold btn-lg">
+          Ver Catálogo
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTOS DESTACADOS -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="section-title mb-4">Productos Destacados</h2>
+    <div class="row g-4">
+      {% for producto in destacados %}
+      <div class="col-sm-6 col-lg-3">
+        <div class="card producto-card h-100">
+          {% if producto.imagen %}
+          <img src="{{ producto.imagen.url }}" class="card-img-top producto-img" alt="{{ producto.nombre }}">
+          {% else %}
+          <div class="producto-img-placeholder d-flex align-items-center justify-content-center">
+            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+          </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title">{{ producto.nombre }}</h6>
+            <p class="card-text text-muted small flex-grow-1">{{ producto.descripcion|truncatewords:12 }}</p>
+            <div class="mt-2">
+              <span class="precio-label">Unidad:</span>
+              <span class="precio">${{ producto.precio_unidad }}</span>
+            </div>
+            <div class="mb-3">
+              <span class="precio-label">Caja:</span>
+              <span class="precio">${{ producto.precio_caja }}</span>
+            </div>
+            <a href="{{ producto.get_absolute_url }}" class="btn btn-dark btn-sm w-100">Ver producto</a>
+          </div>
+          <div class="card-footer bg-transparent border-0">
+            <small class="text-muted fst-italic advertencia-sanitaria">
+              ⚠️ El tabaco es perjudicial para la salud.
+            </small>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-5">
+        <p>Pronto habrá productos disponibles. ¡Volvé en breve!</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% if destacados %}
+    <div class="text-center mt-4">
+      <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-dark">Ver todos los productos</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- SOBRE NOSOTROS (preview) -->
+<section class="sobre-preview py-5">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h2 class="section-title">Nuestra historia</h2>
+        <p class="lead-text">
+          Somos una empresa dedicada a ofrecer tabaco para liar de calidad, seleccionado con criterio y pasión por el buen tabaco.
+        </p>
+        <p class="text-muted">
+          Cada producto que ofrecemos pasa por un riguroso proceso de selección. Trabajamos directamente con proveedores de confianza para garantizar la mejor experiencia.
+        </p>
+        <a href="{% url 'paginas:sobre_nosotros' %}" class="btn btn-outline-dark mt-2">Conocé más</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

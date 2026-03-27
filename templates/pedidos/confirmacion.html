@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Pedido Confirmado — e-Tabaco{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 text-center">
+      <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+      </div>
+      <h1 class="section-title">¡Pedido confirmado!</h1>
+      <p class="lead text-muted mb-2">Gracias por tu compra, {{ orden.cliente_nombre }}.</p>
+      <p class="text-muted">Enviamos la confirmación a <strong>{{ orden.cliente_email }}</strong></p>
+
+      <div class="card border-0 bg-light p-4 rounded-3 mt-4 text-start">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-semibold mb-0">Número de pedido</h6>
+          <span class="badge bg-dark fs-6">{{ orden.numero_orden }}</span>
+        </div>
+        <hr>
+        {% for detalle in orden.detalles.all %}
+        <div class="d-flex justify-content-between small mb-2">
+          <span>{{ detalle.producto.nombre }} <span class="text-muted">({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span></span>
+          <span>${{ detalle.subtotal }}</span>
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between fw-bold">
+          <span>Total pagado</span>
+          <span>${{ orden.total }}</span>
+        </div>
+        <hr>
+        <div class="small text-muted">
+          <strong>Envío a:</strong> {{ orden.direccion_envio }}
+        </div>
+      </div>
+
+      <a href="{% url 'productos:catalogo' %}" class="btn btn-dark mt-4">
+        <i class="bi bi-arrow-left me-2"></i>Seguir comprando
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

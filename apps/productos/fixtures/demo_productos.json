@@ -1,0 +1,122 @@
+[
+  {
+    "model": "productos.categoria",
+    "pk": 1,
+    "fields": {
+      "nombre": "Tabaco Rubio",
+      "descripcion": "Tabacos rubios suaves, ideales para liar."
+    }
+  },
+  {
+    "model": "productos.categoria",
+    "pk": 2,
+    "fields": {
+      "nombre": "Tabaco Negro",
+      "descripcion": "Tabacos negros de sabor intenso y cuerpo pleno."
+    }
+  },
+  {
+    "model": "productos.categoria",
+    "pk": 3,
+    "fields": {
+      "nombre": "Tabaco Natural",
+      "descripcion": "Tabacos sin aditivos, curado de forma artesanal."
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 1,
+    "fields": {
+      "nombre": "Virginia Gold",
+      "descripcion": "Tabaco rubio de hoja fina, origen Virginia. Sabor suave con notas dulces y aroma delicado. Ideal para fumadores que prefieren un perfil ligero.",
+      "imagen": "",
+      "precio_unidad": "3500.00",
+      "precio_caja": "28000.00",
+      "unidades_por_caja": 10,
+      "stock": 150,
+      "activo": true,
+      "categoria": 1,
+      "creado": "2026-03-27T10:00:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 2,
+    "fields": {
+      "nombre": "Burley Clásico",
+      "descripcion": "Tabaco rubio tipo Burley, curado al aire. Sabor equilibrado con notas de nuez y un toque de caramelo. Muy popular entre los liadores expertos.",
+      "imagen": "",
+      "precio_unidad": "3800.00",
+      "precio_caja": "30000.00",
+      "unidades_por_caja": 10,
+      "stock": 80,
+      "activo": true,
+      "categoria": 1,
+      "creado": "2026-03-27T10:01:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 3,
+    "fields": {
+      "nombre": "Negro Intenso",
+      "descripcion": "Tabaco negro de cuerpo pleno y sabor pronunciado. Curado en barrica, con notas terrosas y un retrogusto persistente. Para los amantes del tabaco con carácter.",
+      "imagen": "",
+      "precio_unidad": "4200.00",
+      "precio_caja": "35000.00",
+      "unidades_por_caja": 10,
+      "stock": 60,
+      "activo": true,
+      "categoria": 2,
+      "creado": "2026-03-27T10:02:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 4,
+    "fields": {
+      "nombre": "Latakia Premium",
+      "descripcion": "Tabaco negro oriental, curado al humo de leña de roble. Aroma intenso y complejo, con notas ahumadas características. Una experiencia única para el paladar.",
+      "imagen": "",
+      "precio_unidad": "5500.00",
+      "precio_caja": "45000.00",
+      "unidades_por_caja": 10,
+      "stock": 40,
+      "activo": true,
+      "categoria": 2,
+      "creado": "2026-03-27T10:03:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 5,
+    "fields": {
+      "nombre": "Natural Sin Aditivos",
+      "descripcion": "Tabaco 100% natural, sin conservantes ni aditivos. Curado de forma artesanal respetando el proceso tradicional. Sabor puro y limpio, tal como la hoja.",
+      "imagen": "",
+      "precio_unidad": "4800.00",
+      "precio_caja": "40000.00",
+      "unidades_por_caja": 10,
+      "stock": 90,
+      "activo": true,
+      "categoria": 3,
+      "creado": "2026-03-27T10:04:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 6,
+    "fields": {
+      "nombre": "Orgánico Reserve",
+      "descripcion": "Tabaco orgánico certificado, cultivado sin pesticidas. Hoja seleccionada a mano, curado lentamente. El máximo estándar en pureza y sabor natural.",
+      "imagen": "",
+      "precio_unidad": "6200.00",
+      "precio_caja": "52000.00",
+      "unidades_por_caja": 10,
+      "stock": 30,
+      "activo": true,
+      "categoria": 3,
+      "creado": "2026-03-27T10:05:00Z"
+    }
+  }
+]

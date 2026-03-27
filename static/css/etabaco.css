@@ -1,0 +1,216 @@
+/* ============================================
+   e-Tabaco — Estilos principales
+   Paleta: Negro #1A1A1A | Dorado #8B6914 | Crema #F5F0E8
+   ============================================ */
+
+:root {
+  --color-negro:   #1A1A1A;
+  --color-dorado:  #8B6914;
+  --color-crema:   #F5F0E8;
+  --color-texto:   #2C2C2C;
+  --color-acento:  #C0392B;
+}
+
+/* BASE */
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-texto);
+  background-color: #fff;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* NAVBAR */
+.navbar-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  letter-spacing: .5px;
+  color: var(--color-dorado) !important;
+}
+
+/* HERO */
+.hero-section {
+  background-color: var(--color-negro);
+  color: var(--color-crema);
+  padding: 5rem 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  color: var(--color-crema);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: #aaa;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+/* BOTONES */
+.btn-gold {
+  background-color: var(--color-dorado);
+  color: white;
+  border: none;
+  padding: .65rem 1.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background .2s;
+}
+
+.btn-gold:hover {
+  background-color: #a07a1a;
+  color: white;
+}
+
+/* SECCIONES */
+.section-title {
+  font-size: 1.8rem;
+  color: var(--color-negro);
+  font-family: 'Playfair Display', serif;
+}
+
+/* TARJETAS DE PRODUCTO */
+.producto-card {
+  border: 1px solid #e8e3d8;
+  border-radius: 10px;
+  transition: box-shadow .2s, transform .2s;
+  overflow: hidden;
+}
+
+.producto-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,.1);
+  transform: translateY(-3px);
+}
+
+.producto-img {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+  background-color: #f0ebe1;
+}
+
+.producto-img-placeholder {
+  height: 200px;
+  width: 100%;
+  background-color: #f0ebe1;
+}
+
+.producto-img-placeholder-lg {
+  height: 380px;
+  width: 100%;
+  background-color: #f0ebe1;
+}
+
+.producto-detalle-img {
+  width: 100%;
+  border-radius: 10px;
+  max-height: 420px;
+  object-fit: cover;
+}
+
+.producto-nombre {
+  font-size: 1.8rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.badge-categoria {
+  font-size: .75rem;
+  color: var(--color-dorado);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* PRECIOS */
+.precio-label {
+  font-size: .85rem;
+  color: #888;
+}
+
+.precio {
+  font-weight: 600;
+  color: var(--color-negro);
+}
+
+.precio-grande {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-negro);
+  font-family: 'Playfair Display', serif;
+}
+
+.precio-box {
+  padding: 1rem 1.25rem;
+  background: var(--color-crema);
+  border-radius: 8px;
+  border-left: 4px solid var(--color-dorado);
+}
+
+/* ADVERTENCIA SANITARIA */
+.advertencia-sanitaria {
+  font-size: .78rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* SOBRE NOSOTROS (preview) */
+.sobre-preview {
+  background-color: var(--color-crema);
+}
+
+.lead-text {
+  font-size: 1.2rem;
+  color: var(--color-negro);
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 1rem;
+}
+
+/* FOOTER */
+.footer-dark {
+  background-color: var(--color-negro);
+  color: #ccc;
+}
+
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  color: var(--color-dorado);
+  font-size: 1.3rem;
+}
+
+.footer-link {
+  color: #999;
+  text-decoration: none;
+  font-size: .9rem;
+  display: block;
+  margin-bottom: .4rem;
+  transition: color .15s;
+}
+
+.footer-link:hover {
+  color: var(--color-dorado);
+}
+
+/* LIST GROUP ACTIVO */
+.list-group-item.active {
+  background-color: var(--color-negro);
+  border-color: var(--color-negro);
+}
+
+/* BADGES */
+.badge.bg-dark {
+  background-color: var(--color-negro) !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2rem; }
+  .hero-section { padding: 3rem 0; }
+}

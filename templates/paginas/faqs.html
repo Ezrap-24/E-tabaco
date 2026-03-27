@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Preguntas Frecuentes — e-Tabaco{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="section-title mb-4">Preguntas Frecuentes</h1>
+      <div class="accordion" id="faqs">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+              ¿Cuánto tarda el envío?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqs">
+            <div class="accordion-body text-muted">Los envíos se procesan en 24-48 horas hábiles. El tiempo de entrega depende de tu ubicación, generalmente entre 3 y 7 días hábiles.</div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+              ¿Puedo comprar sin registrarme?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqs">
+            <div class="accordion-body text-muted">Sí, podés comprar como invitado sin necesidad de crear una cuenta. Solo necesitás tu email para recibir la confirmación del pedido.</div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+              ¿Cuál es la diferencia entre comprar por unidad o por caja?
+            </button>
+          </h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqs">
+            <div class="accordion-body text-muted">Comprando por caja obtenés un precio más conveniente por unidad. Cada caja contiene 10 unidades del producto seleccionado.</div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+              ¿Cómo verifican mi edad?
+            </button>
+          </h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqs">
+            <div class="accordion-body text-muted">Al ingresar al sitio confirmás ser mayor de 18 años. En el checkout también firmás una declaración de mayoría de edad. Nos reservamos el derecho de cancelar pedidos donde no se pueda verificar la edad.</div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+              ¿Hacen envíos a todo el país?
+            </button>
+          </h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqs">
+            <div class="accordion-body text-muted">Sí, realizamos envíos a todo el país. Algunas zonas remotas pueden tener tiempos de entrega extendidos. Consultanos por tu zona específica si tenés dudas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
