@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Cuenta — Puro Tabaco{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    min-height: 100vh;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .auth-box {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    padding: 48px 40px;
+  }
+  .auth-logo { text-align: center; margin-bottom: 32px; }
+  .auth-logo-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: var(--green); }
+  .auth-logo-sub { font-family: 'Lora', serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); margin-top: 2px; }
+  .auth-divider { width: 40px; height: 1px; background: var(--tan); margin: 16px auto 28px; }
+  .auth-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--green); text-align: center; margin-bottom: 4px; }
+  .auth-subtitle { font-family: 'Lora', serif; font-size: 13px; color: #aaa; text-align: center; margin-bottom: 32px; }
+  .ct-form-group { margin-bottom: 18px; }
+  .ct-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ct-label { display: block; font-family: 'Lora', serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+  .ct-input { width: 100%; border: 1.5px solid var(--cream-d); padding: 13px 14px; font-family: 'Lora', serif; font-size: 14px; color: var(--slate); background: var(--off); outline: none; transition: border-color .2s; box-sizing: border-box; }
+  .ct-input:focus { border-color: var(--green); background: #fff; }
+  .ct-input.is-invalid { border-color: #c0392b; }
+  .ct-error { font-family: 'Lora', serif; font-size: 11px; color: #c0392b; margin-top: 4px; }
+  .ct-help { font-family: 'Lora', serif; font-size: 10px; color: #bbb; margin-top: 4px; }
+  .auth-btn { width: 100%; background: var(--green); color: var(--cream); border: none; padding: 15px; font-family: 'Lora', serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background .2s; margin-top: 8px; }
+  .auth-btn:hover { background: #253c2e; }
+  .auth-footer { text-align: center; margin-top: 24px; font-family: 'Lora', serif; font-size: 12px; color: #aaa; }
+  .auth-footer a { color: var(--green); text-decoration: none; font-weight: 600; }
+  .auth-footer a:hover { text-decoration: underline; }
+  @media (max-width: 480px) { .ct-form-row { grid-template-columns: 1fr; } .auth-box { padding: 32px 20px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-name">PURO TABACO</div>
+      <div class="auth-logo-sub">Mayorista de Tabaco Premium</div>
+      <div class="auth-divider"></div>
+    </div>
+
+    <div class="auth-title">Crear Cuenta</div>
+    <div class="auth-subtitle">Registrate para hacer seguimiento de tus pedidos</div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="ct-form-row">
+        <div class="ct-form-group">
+          <label class="ct-label">Nombre</label>
+          <input class="ct-input{% if form.first_name.errors %} is-invalid{% endif %}"
+                 type="text" name="first_name"
+                 value="{{ form.first_name.value|default:'' }}"
+                 placeholder="Tu nombre">
+          {% for e in form.first_name.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="ct-form-group">
+          <label class="ct-label">Apellido</label>
+          <input class="ct-input{% if form.last_name.errors %} is-invalid{% endif %}"
+                 type="text" name="last_name"
+                 value="{{ form.last_name.value|default:'' }}"
+                 placeholder="Tu apellido">
+          {% for e in form.last_name.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="ct-form-group">
+        <label class="ct-label">Correo electrónico</label>
+        <input class="ct-input{% if form.email.errors %} is-invalid{% endif %}"
+               type="email" name="email"
+               value="{{ form.email.value|default:'' }}"
+               placeholder="tu@email.com">
+        {% for e in form.email.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+
+      <div class="ct-form-row">
+        <div class="ct-form-group">
+          <label class="ct-label">Contraseña</label>
+          <input class="ct-input{% if form.password1.errors %} is-invalid{% endif %}"
+                 type="password" name="password1" placeholder="••••••••">
+          {% for e in form.password1.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="ct-form-group">
+          <label class="ct-label">Confirmar contraseña</label>
+          <input class="ct-input{% if form.password2.errors %} is-invalid{% endif %}"
+                 type="password" name="password2" placeholder="••••••••">
+          {% for e in form.password2.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+      <div style="font-family:'Lora',serif;font-size:12px;color:#c0392b;margin-bottom:12px;">
+        {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
+      </div>
+      {% endif %}
+
+      <button type="submit" class="auth-btn">Crear Cuenta →</button>
+    </form>
+
+    <div class="auth-footer">
+      ¿Ya tenés cuenta?
+      <a href="{% url 'cuenta:login' %}">Iniciar sesión</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

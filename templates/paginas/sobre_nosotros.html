@@ -1,15 +1,70 @@
 {% extends 'base.html' %}
-{% block title %}Sobre Nosotros — e-Tabaco{% endblock %}
+{% block title %}Sobre Nosotros — Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <h1 class="section-title mb-4">Sobre Nosotros</h1>
-      <p class="lead-text">Somos una empresa dedicada a ofrecer tabaco para liar de calidad, seleccionado con criterio y pasión.</p>
-      <p class="text-muted">Cada producto que ofrecemos pasa por un riguroso proceso de selección. Trabajamos directamente con proveedores de confianza para garantizar la mejor experiencia a nuestros clientes.</p>
-      <p class="text-muted">Nuestra misión es simple: llevar el mejor tabaco directamente a quienes lo aprecian, con transparencia, calidad y respeto por la tradición artesanal.</p>
-      <p class="advertencia-sanitaria mt-4">⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>
+
+<!-- PAGE HEADER -->
+<div style="background:var(--green); padding:120px 80px 64px;">
+  <div style="max-width:800px; margin:0 auto;">
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
+      La Empresa
     </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(36px,5vw,64px); font-weight:700; color:var(--cream); line-height:1.05; margin-bottom:16px;">
+      Sobre Puro Tabaco
+    </h1>
+    <p style="font-family:'Lora',serif; font-size:15px; color:rgba(239,230,214,0.65); max-width:520px; line-height:1.7;">
+      Más de 120 años conectando empresas con el mejor tabaco del mundo.
+    </p>
   </div>
 </div>
+
+<!-- CONTENIDO -->
+<div style="background:var(--white); padding:80px 80px;">
+  <div style="max-width:800px; margin:0 auto;">
+
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--bronze); margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-block; width:32px; height:1px; background:var(--tan);"></span>
+      Nuestra Historia
+    </div>
+
+    <h2 style="font-family:'Playfair Display',serif; font-size:clamp(24px,3vw,36px); font-weight:700; color:var(--green); line-height:1.1; margin-bottom:24px;">
+      Herencia que inspira.<br><em style="font-style:italic; color:var(--bronze);">Eficiencia que construye.</em>
+    </h2>
+
+    <p style="font-family:'Lora',serif; font-size:15px; line-height:1.85; color:var(--slate); opacity:.85; margin-bottom:20px;">
+      Somos una empresa dedicada a ofrecer tabaco de calidad, seleccionado con criterio y pasión. Cada producto que ofrecemos pasa por un riguroso proceso de selección, trabajando directamente con proveedores de confianza para garantizar la mejor experiencia a nuestros clientes.
+    </p>
+    <p style="font-family:'Lora',serif; font-size:15px; line-height:1.85; color:var(--slate); opacity:.85; margin-bottom:48px;">
+      Nuestra misión es simple: conectar negocios confiables con las mejores marcas del mundo, garantizando stock permanente, precios competitivos y un servicio a la altura de tu empresa.
+    </p>
+
+    <!-- Valores -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:48px;">
+      <div class="value-card">
+        <div class="value-name">Herencia</div>
+        <div class="value-desc">120 años de tradición en la industria tabacalera chilena</div>
+      </div>
+      <div class="value-card">
+        <div class="value-name">Confianza</div>
+        <div class="value-desc">Distribuidores certificados de las marcas líderes del mercado</div>
+      </div>
+      <div class="value-card">
+        <div class="value-name">Calidad</div>
+        <div class="value-desc">Productos 100% originales con sellos fiscales válidos</div>
+      </div>
+      <div class="value-card">
+        <div class="value-name">Eficiencia</div>
+        <div class="value-desc">Despachos a todo Chile en 2–3 días hábiles</div>
+      </div>
+    </div>
+
+    <p style="font-family:'Lora',serif; font-size:13px; color:#aaa; font-style:italic; border-top:1px solid var(--cream-d); padding-top:24px;">
+      ⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.
+    </p>
+  </div>
+</div>
+
 {% endblock %}

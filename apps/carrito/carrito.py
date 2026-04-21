@@ -72,17 +72,29 @@ class Carrito:
         return sum(item['cantidad'] for item in self.carrito.values())
 
     def items(self):
-        """Retorna los items del carrito con objetos Producto."""
-        producto_ids = self.carrito.keys()
+        """Retorna los items del carrito con objetos Producto.
+        Crea dicts nuevos para NO contaminar la sesión con objetos no serializables.
+        """
+        producto_ids = list(self.carrito.keys())
         productos = Producto.objects.filter(id__in=producto_ids)
-        carrito = self.carrito.copy()
-        for producto in productos:
-            carrito[str(producto.id)]['producto'] = producto
-            carrito[str(producto.id)]['subtotal'] = (
-                Decimal(str(carrito[str(producto.id)]['precio'])) *
-                carrito[str(producto.id)]['cantidad']
-            )
-        return carrito.values()
+        productos_dict = {str(p.id): p for p in productos}
+
+        items_lista = []
+        for pid, datos in self.carrito.items():
+            producto = productos_dict.get(pid)
+            if not producto:
+                continue
+            # Dict nuevo — nunca modifica self.carrito
+            item = {
+                'producto':   producto,
+                'nombre':     datos['nombre'],
+                'tipo_venta': datos['tipo_venta'],
+                'cantidad':   datos['cantidad'],
+                'precio':     datos['precio'],
+                'subtotal':   Decimal(str(datos['precio'])) * datos['cantidad'],
+            }
+            items_lista.append(item)
+        return items_lista
 
     def __len__(self):
         return self.cantidad_total()

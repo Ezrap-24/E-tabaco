@@ -1,0 +1,89 @@
+{% extends 'cuenta/base_cuenta.html' %}
+{% block page_title %}Escritorio{% endblock %}
+
+{% block nav_dashboard %}active{% endblock %}
+
+{% block cuenta_content %}
+
+<!-- Saludo -->
+<div class="cuenta-card" style="background: var(--green); border-color: var(--green);">
+  <div style="display:flex; align-items:center; gap:16px;">
+    <div style="font-size:32px; opacity:.7;">👋</div>
+    <div>
+      <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--cream);">
+        Hola, {{ request.user.first_name|default:"cliente" }}
+      </div>
+      <div style="font-family:'Lora',serif; font-size:12px; color:var(--tan); margin-top:4px;">
+        Bienvenido a tu cuenta en Puro Tabaco
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Accesos rápidos -->
+<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+
+  <a href="{% url 'cuenta:mis_pedidos' %}" style="text-decoration:none;">
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px 20px; text-align:center; transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(48,72,58,.1)'" onmouseout="this.style.boxShadow='none'">
+      <div style="font-size:28px; margin-bottom:8px;">📦</div>
+      <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--green);">Mis Pedidos</div>
+      <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; color:#aaa; margin-top:4px; text-transform:uppercase;">{{ ordenes_recientes|length }} reciente{{ ordenes_recientes|length|pluralize:"s" }}</div>
+    </div>
+  </a>
+
+  <a href="{% url 'cuenta:direccion' %}" style="text-decoration:none;">
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px 20px; text-align:center; transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(48,72,58,.1)'" onmouseout="this.style.boxShadow='none'">
+      <div style="font-size:28px; margin-bottom:8px;">📍</div>
+      <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--green);">Dirección</div>
+      <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; color:#aaa; margin-top:4px; text-transform:uppercase;">
+        {% if perfil.tiene_direccion %}Guardada{% else %}Sin guardar{% endif %}
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url 'cuenta:detalles' %}" style="text-decoration:none;">
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px 20px; text-align:center; transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(48,72,58,.1)'" onmouseout="this.style.boxShadow='none'">
+      <div style="font-size:28px; margin-bottom:8px;">⚙</div>
+      <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--green);">Mi Cuenta</div>
+      <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; color:#aaa; margin-top:4px; text-transform:uppercase;">Detalles</div>
+    </div>
+  </a>
+
+</div>
+
+<!-- Últimos pedidos -->
+<div class="cuenta-card">
+  <div class="cuenta-card-title">Pedidos Recientes</div>
+
+  {% if ordenes_recientes %}
+    {% for orden in ordenes_recientes %}
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--cream-d);">
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:600; color:var(--green);">{{ orden.numero_orden }}</div>
+        <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:2px;">{{ orden.fecha_creacion|date:"d M Y" }}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--bronze);">${{ orden.total|floatformat:0 }}</div>
+        <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:3px 8px; background:{% if orden.estado == 'entregado' %}rgba(42,122,59,.12){% elif orden.estado == 'enviado' %}rgba(41,128,185,.12){% elif orden.estado == 'pagado' %}rgba(200,176,138,.2){% else %}rgba(189,195,199,.25){% endif %}; color:{% if orden.estado == 'entregado' %}#2a7a3b{% elif orden.estado == 'enviado' %}#2980b9{% elif orden.estado == 'pagado' %}var(--bronze){% else %}#7f8c8d{% endif %};">
+          {{ orden.get_estado_display }}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+    <div style="margin-top:16px;">
+      <a href="{% url 'cuenta:mis_pedidos' %}" style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--green); text-decoration:none;">
+        Ver todos los pedidos →
+      </a>
+    </div>
+  {% else %}
+    <div style="text-align:center; padding:32px 0;">
+      <div style="font-size:32px; margin-bottom:12px; opacity:.3;">📦</div>
+      <div style="font-family:'Lora',serif; font-size:13px; color:#bbb;">Todavía no tenés pedidos.</div>
+      <a href="{% url 'productos:catalogo' %}" style="display:inline-block; margin-top:16px; font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--green); text-decoration:none; border-bottom:1px solid var(--tan); padding-bottom:2px;">
+        Explorar catálogo →
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

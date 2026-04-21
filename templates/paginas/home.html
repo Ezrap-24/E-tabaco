@@ -1,86 +1,371 @@
 {% extends 'base.html' %}
-{% block title %}e-Tabaco — Tabaco para liar de calidad{% endblock %}
+{% load static %}
+{% block title %}Puro Tabaco — Mayorista de Tabaco Premium{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block content %}
-<!-- HERO BANNER -->
-<section class="hero-section">
-  <div class="container">
-    <div class="row align-items-center min-vh-60">
-      <div class="col-lg-6">
-        <h1 class="hero-title">Tabaco para liar,<br>directo a tu puerta.</h1>
-        <p class="hero-subtitle">Selección cuidada de tabacos premium. Calidad artesanal, entrega rápida.</p>
-        <a href="{% url 'productos:catalogo' %}" class="btn btn-gold btn-lg">
-          Ver Catálogo
-        </a>
-      </div>
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg">
+    {% if hero_imagen %}
+    <img src="{{ hero_imagen }}" alt="Puro Tabaco" class="hero-img-main">
+    {% else %}
+    <!-- Placeholder hasta tener foto -->
+    <svg class="hero-img-placeholder" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="heroHatch" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(200,176,138,0.12)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#heroHatch)"/>
+      <text x="50%" y="47%" text-anchor="middle" font-family="Lora, serif" font-size="13" fill="rgba(200,176,138,0.25)" letter-spacing="3">fotografía del local</text>
+      <text x="50%" y="53%" text-anchor="middle" font-family="Lora, serif" font-size="11" fill="rgba(200,176,138,0.18)" letter-spacing="2">bodega · productos · ambiente</text>
+    </svg>
+    {% endif %}
+    <div class="hero-gradient"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Mayorista de Tabaco Premium · Est. 1902</div>
+    <h1 class="hero-title">Tradición que<br><em>mueve negocios</em></h1>
+    <p class="hero-sub">Desde 1902, conectamos empresas confiables con tabaco premium de calidad mundial. Stock permanente, precios mayoristas y despachos rápidos a todo Chile.</p>
+    <div class="hero-actions">
+      <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
+      <a href="#brands" class="btn-ghost-pt">Ver Marcas Líderes</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ── STATS BAND ────────────────────────────────────────── -->
+<section id="stats">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">120+</div>
+      <div class="stat-label">Años de Herencia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8+</div>
+      <div class="stat-label">Marcas Líderes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">48 h</div>
+      <div class="stat-label">Despacho Promedio</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Productos Originales</div>
     </div>
   </div>
 </section>
 
-<!-- PRODUCTOS DESTACADOS -->
-<section class="py-5">
-  <div class="container">
-    <h2 class="section-title mb-4">Productos Destacados</h2>
-    <div class="row g-4">
+<!-- ── PRODUCTOS DESTACADOS ──────────────────────────────── -->
+{% if destacados %}
+<section style="background:var(--off); padding:100px 80px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="section-header">
+      <div class="section-tag fade-up">Catálogo Mayorista</div>
+      <h2 class="section-title fade-up d1">Productos Destacados</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-top:56px;">
       {% for producto in destacados %}
-      <div class="col-sm-6 col-lg-3">
-        <div class="card producto-card h-100">
-          {% if producto.imagen %}
-          <img src="{{ producto.imagen.url }}" class="card-img-top producto-img" alt="{{ producto.nombre }}">
-          {% else %}
-          <div class="producto-img-placeholder d-flex align-items-center justify-content-center">
-            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-          </div>
-          {% endif %}
-          <div class="card-body d-flex flex-column">
-            <h6 class="card-title">{{ producto.nombre }}</h6>
-            <p class="card-text text-muted small flex-grow-1">{{ producto.descripcion|truncatewords:12 }}</p>
-            <div class="mt-2">
-              <span class="precio-label">Unidad:</span>
-              <span class="precio">${{ producto.precio_unidad }}</span>
-            </div>
-            <div class="mb-3">
-              <span class="precio-label">Caja:</span>
-              <span class="precio">${{ producto.precio_caja }}</span>
-            </div>
-            <a href="{{ producto.get_absolute_url }}" class="btn btn-dark btn-sm w-100">Ver producto</a>
-          </div>
-          <div class="card-footer bg-transparent border-0">
-            <small class="text-muted fst-italic advertencia-sanitaria">
-              ⚠️ El tabaco es perjudicial para la salud.
-            </small>
-          </div>
+      <div class="producto-card fade-up">
+        {% if producto.imagen %}
+        <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
+        {% else %}
+        <div class="producto-img-placeholder">
+          <span style="font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:rgba(200,176,138,0.3); letter-spacing:2px;">PT</span>
         </div>
-      </div>
-      {% empty %}
-      <div class="col-12 text-center text-muted py-5">
-        <p>Pronto habrá productos disponibles. ¡Volvé en breve!</p>
+        {% endif %}
+        <div style="padding:16px; flex:1; display:flex; flex-direction:column;">
+          <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green); margin-bottom:2px;">{{ producto.nombre }}</div>
+          <div style="font-family:'Lora',serif; font-size:10px; color:#aaa; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;">{{ producto.categoria }}</div>
+          <p style="font-family:'Lora',serif; font-size:13px; color:#777; line-height:1.6; flex-grow:1;">{{ producto.descripcion|truncatewords:12 }}</p>
+          <div style="margin-top:12px;">
+            <span class="precio-label">Unidad: </span><span class="precio">${{ producto.precio_unidad }}</span>
+          </div>
+          <div style="margin-bottom:12px;">
+            <span class="precio-label">Caja: </span><span class="precio">${{ producto.precio_caja }}</span>
+          </div>
+          <a href="{{ producto.get_absolute_url }}" class="btn-add-cart">Ver Producto</a>
+        </div>
+        <div style="padding:8px 16px; border-top:1px solid var(--cream-d);">
+          <small class="advertencia-sanitaria">⚠️ El tabaco es perjudicial para la salud.</small>
+        </div>
       </div>
       {% endfor %}
     </div>
-    {% if destacados %}
-    <div class="text-center mt-4">
-      <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-dark">Ver todos los productos</a>
+    <div style="text-align:center; margin-top:48px;">
+      <a href="{% url 'productos:catalogo' %}" class="btn-outline-verde">Ver todos los productos</a>
     </div>
-    {% endif %}
   </div>
 </section>
+{% endif %}
 
-<!-- SOBRE NOSOTROS (preview) -->
-<section class="sobre-preview py-5">
-  <div class="container">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-6">
-        <h2 class="section-title">Nuestra historia</h2>
-        <p class="lead-text">
-          Somos una empresa dedicada a ofrecer tabaco para liar de calidad, seleccionado con criterio y pasión por el buen tabaco.
-        </p>
-        <p class="text-muted">
-          Cada producto que ofrecemos pasa por un riguroso proceso de selección. Trabajamos directamente con proveedores de confianza para garantizar la mejor experiencia.
-        </p>
-        <a href="{% url 'paginas:sobre_nosotros' %}" class="btn btn-outline-dark mt-2">Conocé más</a>
+<!-- ── ABOUT ──────────────────────────────────────────────── -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-img-wrap fade-up">
+      <div class="about-img-placeholder">
+        <!-- Reemplazar con foto real del local cuando esté disponible -->
+        <svg width="100%" height="100%">
+          <defs>
+            <pattern id="aboutHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(139,115,85,0.18)" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#aboutHatch)"/>
+          <text x="50%" y="46%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">foto del local</text>
+          <text x="50%" y="53%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">o bodega</text>
+        </svg>
+      </div>
+      <div class="about-img-deco"></div>
+    </div>
+    <div>
+      <div class="about-tag fade-up">Sobre Nosotros</div>
+      <h2 class="about-title fade-up d1">Herencia que inspira.<br><em>Eficiencia que</em> construye.</h2>
+      <p class="about-body fade-up d2">Somos mayoristas de tabaco premium con más de 120 años de historia. Nuestra misión es simple: conectar negocios confiables con las mejores marcas del mundo, garantizando stock permanente, precios competitivos y un servicio a la altura de tu empresa.</p>
+      <div class="about-values">
+        <div class="value-card fade-up d1">
+          <div class="value-name">Herencia</div>
+          <div class="value-desc">120 años de tradición en la industria tabacalera</div>
+        </div>
+        <div class="value-card fade-up d2">
+          <div class="value-name">Confianza</div>
+          <div class="value-desc">Distribuidores certificados de marcas líderes</div>
+        </div>
+        <div class="value-card fade-up d3">
+          <div class="value-name">Calidad</div>
+          <div class="value-desc">Productos 100% originales con sellos fiscales válidos</div>
+        </div>
+        <div class="value-card fade-up d4">
+          <div class="value-name">Eficiencia</div>
+          <div class="value-desc">Despachos rápidos a todo Chile en 2–3 días hábiles</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- ── BRANDS ─────────────────────────────────────────────── -->
+<section id="brands">
+  <div class="brands-inner">
+    <div class="brands-left">
+      <div class="brands-tag fade-up">Marcas Certificadas</div>
+      <h2 class="brands-title fade-up d1">Distribuidores<br>oficiales de las<br><em>mejores marcas</em></h2>
+      <p class="brands-desc fade-up d2">Garantía de autenticidad y frescura en cada producto. Trabajamos directamente con los fabricantes para asegurar la mejor calidad para tu negocio.</p>
+      <a href="#cta-final" class="btn-ghost-pt fade-up d3">Solicitar Acceso</a>
+    </div>
+    <div class="brands-list">
+      <div class="brand-row fade-up">
+        <div>
+          <div class="brand-name">Kuroko</div>
+          <div class="brand-meta">Tabaco · Distribución mayorista</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d1">
+        <div>
+          <div class="brand-name">Bristol</div>
+          <div class="brand-meta">Cigarrillo · Stock permanente</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d2">
+        <div>
+          <div class="brand-name">Madison</div>
+          <div class="brand-meta">Cigarrillo · Distribución nacional</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d3">
+        <div>
+          <div class="brand-name">Verso</div>
+          <div class="brand-meta">Cigarrillo · Precios mayoristas</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d4">
+        <div>
+          <div class="brand-name">Tennesie</div>
+          <div class="brand-meta">Tabaco · Calidad certificada</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up">
+        <div>
+          <div class="brand-name">Stanley</div>
+          <div class="brand-meta">Tabaco · Distribución mayorista</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d1">
+        <div>
+          <div class="brand-name">Red Field</div>
+          <div class="brand-meta">Tabaco · Stock permanente</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d2">
+        <div>
+          <div class="brand-name">Roadhouse</div>
+          <div class="brand-meta">Tabaco · Precios mayoristas</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VENTAJAS ───────────────────────────────────────────── -->
+<section id="ventajas">
+  <div class="ventajas-inner">
+    <div class="section-header">
+      <div class="section-tag fade-up">Ventajas Mayorista</div>
+      <h2 class="section-title fade-up d1">Por qué elegir<br>Puro Tabaco</h2>
+    </div>
+    <div class="ventajas-grid">
+      <div class="ventaja-card fade-up">
+        <div class="ventaja-num">01</div>
+        <div class="ventaja-name">Stock Permanente</div>
+        <div class="ventaja-desc">Inventario actualizado de todas nuestras marcas. Sin quiebres de stock para tu negocio.</div>
+      </div>
+      <div class="ventaja-card fade-up d1">
+        <div class="ventaja-num">02</div>
+        <div class="ventaja-name">Precios Mayoristas</div>
+        <div class="ventaja-desc">Márgenes competitivos diseñados para distribuidores y negocios de volumen.</div>
+      </div>
+      <div class="ventaja-card fade-up d2">
+        <div class="ventaja-num">03</div>
+        <div class="ventaja-name">Despachos Rápidos</div>
+        <div class="ventaja-desc">Entregas a todo Chile en 2–3 días hábiles. Logística eficiente y confiable.</div>
+      </div>
+      <div class="ventaja-card fade-up d3">
+        <div class="ventaja-num">04</div>
+        <div class="ventaja-name">Atención Personalizada</div>
+        <div class="ventaja-desc">Equipo especializado dedicado a tu negocio. Ejecutivo comercial asignado.</div>
+      </div>
+      <div class="ventaja-card fade-up d4">
+        <div class="ventaja-num">05</div>
+        <div class="ventaja-name">Garantía de Autenticidad</div>
+        <div class="ventaja-desc">Productos 100% originales con sellos fiscales válidos. Trazabilidad completa.</div>
+      </div>
+      <div class="ventaja-card fade-up" style="background:var(--green);">
+        <div class="ventaja-num" style="color:rgba(200,176,138,0.4);">+</div>
+        <div class="ventaja-name" style="color:var(--cream);">¿Listo para comenzar?</div>
+        <div class="ventaja-desc" style="color:rgba(239,230,214,0.6); margin-bottom:20px;">Solicita acceso mayorista y descubre nuestros programas especiales.</div>
+        <a href="#cta-final" class="btn-primary-pt" style="font-size:10px; padding:12px 20px;">Solicitar Acceso</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CÓMO FUNCIONA ──────────────────────────────────────── -->
+<section id="como">
+  <div class="como-inner">
+    <div class="section-header">
+      <div class="section-tag fade-up">Proceso</div>
+      <h2 class="section-title fade-up d1">Cómo trabajamos<br>contigo</h2>
+    </div>
+    <div class="pasos-grid">
+      <div class="paso fade-up">
+        <div class="paso-num">01</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Solicitar</div>
+        <div class="paso-desc">Pide acceso mayorista o explora nuestro catálogo completo de marcas y precios.</div>
+      </div>
+      <div class="paso fade-up d1">
+        <div class="paso-num">02</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Revisar</div>
+        <div class="paso-desc">Explora marcas, referencias y condiciones especiales para tu volumen.</div>
+      </div>
+      <div class="paso fade-up d2">
+        <div class="paso-num">03</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Encargar</div>
+        <div class="paso-desc">Realiza tu pedido directamente desde el carrito con condiciones mayoristas.</div>
+      </div>
+      <div class="paso fade-up d3">
+        <div class="paso-num">04</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Recibir</div>
+        <div class="paso-desc">Despacho rápido a tu negocio en 2–3 días hábiles a todo Chile.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLIENTES ───────────────────────────────────────────── -->
+<section id="clientes">
+  <div class="clientes-deco">
+    <svg width="500" height="560" viewBox="0 0 100 112">
+      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)" stroke="none"/>
+    </svg>
+  </div>
+  <div class="clientes-inner">
+    <div>
+      <div class="about-tag fade-up">¿Quiénes nos eligen?</div>
+      <h2 class="clientes-title fade-up d1">Empresas de todos<br>los tamaños<br><em>confían en nosotros</em></h2>
+      <p class="clientes-body fade-up d2">Trabajamos con negocios serios que valoran la confiabilidad, los precios competitivos y el servicio profesional. Si tu empresa mueve tabaco, somos tu mayorista.</p>
+    </div>
+    <div class="clientes-list">
+      <div class="cliente-item fade-up">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Distribuidoras</div>
+          <div class="cliente-sub">Distribuidoras de bebidas, cigarrería y abarrotes</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d1">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Locales de Detalle</div>
+          <div class="cliente-sub">Botillerías, minimarkets y locales especializados</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d2">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Gastronomía y Esparcimiento</div>
+          <div class="cliente-sub">Restaurantes, bares y clubes nocturnos</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d3">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Mayoristas y Revendedores</div>
+          <div class="cliente-sub">Operadores que redistribuyen a la cadena</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA FINAL ──────────────────────────────────────────── -->
+<section id="cta-final">
+  <div class="cta-deco-shield">
+    <svg width="700" height="800" viewBox="0 0 100 112">
+      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)"/>
+    </svg>
+  </div>
+  <div class="cta-tag fade-up">Acceso Mayorista</div>
+  <h2 class="cta-title fade-up d1">¿Listo para llevar tu<br>negocio al <em>siguiente nivel?</em></h2>
+  <p class="cta-body fade-up d2">Somos mayoristas con más de 120 años de experiencia. Pregúntanos sobre volúmenes, condiciones especiales y programas de distribución para tu empresa.</p>
+  <div class="cta-actions fade-up d3">
+    <a href="{% url 'paginas:contacto' %}" class="btn-primary-pt" style="font-size:12px; padding:18px 44px; letter-spacing:3px;">Solicitar Acceso Mayorista</a>
+    <a href="https://wa.me/56912345678" class="cta-wp" target="_blank" rel="noopener">
+      <div class="cta-wp-icon">💬</div>
+      <span>+56 9 1234 5678</span>
+    </a>
+    <div style="font-family:'Lora',serif; font-size:12px; color:rgba(200,176,138,0.5);">contacto@purotabaco.cl</div>
+  </div>
+</section>
+
 {% endblock %}

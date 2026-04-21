@@ -1,0 +1,67 @@
+{% extends 'cuenta/base_cuenta.html' %}
+{% block page_title %}Mi Dirección{% endblock %}
+
+{% block nav_direccion %}active{% endblock %}
+
+{% block cuenta_content %}
+
+<div class="cuenta-card">
+  <div class="cuenta-card-title">Dirección de Envío por Defecto</div>
+  <p style="font-family:'Lora',serif; font-size:13px; color:#888; margin-bottom:24px;">
+    Esta dirección se usará automáticamente en el checkout para agilizar tus pedidos.
+  </p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="ct-form-group">
+      <label class="ct-label">Teléfono de contacto</label>
+      <input class="ct-input{% if form.telefono.errors %} is-invalid{% endif %}"
+             type="text" name="telefono"
+             value="{{ form.telefono.value|default:'' }}"
+             placeholder="+56 9 1234 5678">
+      {% for e in form.telefono.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="ct-form-group">
+      <label class="ct-label">Dirección</label>
+      <input class="ct-input{% if form.direccion.errors %} is-invalid{% endif %}"
+             type="text" name="direccion"
+             value="{{ form.direccion.value|default:'' }}"
+             placeholder="Calle, número, departamento">
+      {% for e in form.direccion.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="ct-form-row">
+      <div class="ct-form-group">
+        <label class="ct-label">Ciudad</label>
+        <input class="ct-input{% if form.ciudad.errors %} is-invalid{% endif %}"
+               type="text" name="ciudad"
+               value="{{ form.ciudad.value|default:'' }}"
+               placeholder="Santiago">
+        {% for e in form.ciudad.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="ct-form-group">
+        <label class="ct-label">Región</label>
+        <input class="ct-input{% if form.region.errors %} is-invalid{% endif %}"
+               type="text" name="region"
+               value="{{ form.region.value|default:'' }}"
+               placeholder="Región Metropolitana">
+        {% for e in form.region.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+    </div>
+
+    <div class="ct-form-group" style="max-width:200px;">
+      <label class="ct-label">Código Postal</label>
+      <input class="ct-input{% if form.codigo_postal.errors %} is-invalid{% endif %}"
+             type="text" name="codigo_postal"
+             value="{{ form.codigo_postal.value|default:'' }}"
+             placeholder="7500000">
+      {% for e in form.codigo_postal.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    <button type="submit" class="ct-btn ct-btn-primary">Guardar Dirección</button>
+  </form>
+</div>
+
+{% endblock %}

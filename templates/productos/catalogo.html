@@ -1,94 +1,141 @@
 {% extends 'base.html' %}
-{% block title %}Catálogo — e-Tabaco{% endblock %}
+{% load static %}
+{% block title %}Catálogo — Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row">
 
-    <!-- FILTROS SIDEBAR -->
-    <div class="col-lg-3 mb-4">
-      <h5 class="fw-semibold mb-3">Categorías</h5>
-      <div class="list-group list-group-flush">
+<!-- PAGE HEADER -->
+<div style="background:var(--green); padding:120px 80px 48px; margin-top:0;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
+      Catálogo Mayorista
+    </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,56px); font-weight:700; color:var(--cream); line-height:1.05; margin-bottom:12px;">
+      Nuestros Productos
+    </h1>
+    <p style="font-family:'Lora',serif; font-size:14px; color:rgba(239,230,214,0.65); max-width:480px;">
+      Stock permanente de las mejores marcas. Precios mayoristas para tu negocio.
+    </p>
+  </div>
+</div>
+
+<!-- CONTENIDO -->
+<div style="background:var(--off); min-height:60vh; padding:48px 80px 80px;">
+  <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns:220px 1fr; gap:48px; align-items:start;">
+
+    <!-- SIDEBAR FILTROS -->
+    <aside>
+      <div style="font-family:'Lora',serif; font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:rgba(48,72,58,0.5); margin-bottom:16px;">Categorías</div>
+      <nav>
         <a href="{% url 'productos:catalogo' %}"
-           class="list-group-item list-group-item-action {% if not categoria_actual %}active{% endif %}">
+           style="display:block; font-family:'Lora',serif; font-size:13px; color:{% if not categoria_actual %}var(--green){% else %}#888{% endif %}; padding:10px 16px; border-left:2px solid {% if not categoria_actual %}var(--green){% else %}transparent{% endif %}; background:{% if not categoria_actual %}var(--cream){% else %}transparent{% endif %}; text-decoration:none; transition:all .2s; margin-bottom:2px;">
           Todos
         </a>
         {% for cat in categorias %}
         <a href="?categoria={{ cat.id }}"
-           class="list-group-item list-group-item-action {% if categoria_actual == cat.id|stringformat:'s' %}active{% endif %}">
+           style="display:block; font-family:'Lora',serif; font-size:13px; color:{% if categoria_actual == cat.id|stringformat:'s' %}var(--green){% else %}#888{% endif %}; padding:10px 16px; border-left:2px solid {% if categoria_actual == cat.id|stringformat:'s' %}var(--green){% else %}transparent{% endif %}; background:{% if categoria_actual == cat.id|stringformat:'s' %}var(--cream){% else %}transparent{% endif %}; text-decoration:none; transition:all .2s; margin-bottom:2px;">
           {{ cat.nombre }}
         </a>
         {% endfor %}
-      </div>
-    </div>
+      </nav>
+    </aside>
 
-    <!-- GRID DE PRODUCTOS -->
-    <div class="col-lg-9">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="section-title mb-0">Catálogo</h2>
-        <span class="text-muted small">{{ page_obj.paginator.count }} producto{{ page_obj.paginator.count|pluralize }}</span>
+    <!-- GRID PRODUCTOS -->
+    <div>
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+        <h2 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green); margin:0;">
+          {% if categoria_actual %}{{ categorias|dictsort:"id"|first }}{% else %}Todos los productos{% endif %}
+        </h2>
+        <span style="font-family:'Lora',serif; font-size:12px; color:#aaa; letter-spacing:1px;">
+          {{ page_obj.paginator.count }} producto{{ page_obj.paginator.count|pluralize }}
+        </span>
       </div>
 
-      <div class="row g-4">
+      <!-- Cards -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px;">
         {% for producto in productos %}
-        <div class="col-sm-6 col-xl-4">
-          <div class="card producto-card h-100">
-            {% if producto.imagen %}
-            <img src="{{ producto.imagen.url }}" class="card-img-top producto-img" alt="{{ producto.nombre }}">
-            {% else %}
-            <div class="producto-img-placeholder d-flex align-items-center justify-content-center">
-              <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-            </div>
-            {% endif %}
-            <div class="card-body d-flex flex-column">
-              <span class="badge-categoria mb-1">{{ producto.categoria }}</span>
-              <h6 class="card-title">{{ producto.nombre }}</h6>
-              <p class="card-text text-muted small flex-grow-1">{{ producto.descripcion|truncatewords:10 }}</p>
-              <div class="d-flex justify-content-between align-items-end mt-2 mb-3">
-                <div>
-                  <div><span class="precio-label">Unidad:</span> <span class="precio">${{ producto.precio_unidad }}</span></div>
-                  <div><span class="precio-label">Caja:</span> <span class="precio">${{ producto.precio_caja }}</span></div>
-                </div>
-                {% if not producto.tiene_stock %}
-                <span class="badge bg-secondary">Sin stock</span>
-                {% endif %}
+        <div class="producto-card" style="display:flex; flex-direction:column;">
+          <!-- Imagen -->
+          {% if producto.imagen %}
+          <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
+          {% else %}
+          <div class="producto-img-placeholder">
+            <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:rgba(200,176,138,0.3); letter-spacing:2px;">PT</span>
+          </div>
+          {% endif %}
+
+          <!-- Body -->
+          <div style="padding:16px; flex:1; display:flex; flex-direction:column; background:var(--white);">
+            <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--bronze); margin-bottom:4px; display:block;">{{ producto.categoria }}</span>
+            <h3 style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green); margin-bottom:8px; line-height:1.2;">{{ producto.nombre }}</h3>
+            <p style="font-family:'Lora',serif; font-size:13px; color:#888; line-height:1.6; flex-grow:1; margin-bottom:12px;">{{ producto.descripcion|truncatewords:10 }}</p>
+
+            <!-- Precios -->
+            <div style="margin-bottom:12px; padding:10px 12px; background:var(--cream); border-left:2px solid var(--tan);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Unidad</span>
+                <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--bronze);">${{ producto.precio_unidad }}</span>
               </div>
-              <a href="{{ producto.get_absolute_url }}" class="btn btn-dark btn-sm w-100">Ver producto</a>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Caja</span>
+                <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green);">${{ producto.precio_caja }}</span>
+              </div>
             </div>
-            <div class="card-footer bg-transparent border-0">
-              <small class="advertencia-sanitaria">⚠️ El tabaco es perjudicial para la salud.</small>
-            </div>
+
+            {% if not producto.tiene_stock %}
+            <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-align:center; padding:4px; margin-bottom:8px; border:1px solid var(--cream-d);">Sin stock</div>
+            {% endif %}
+
+            <a href="{{ producto.get_absolute_url }}" class="btn-add-cart">Ver Producto</a>
+          </div>
+
+          <!-- Footer advertencia -->
+          <div style="padding:6px 16px; background:var(--white); border-top:1px solid var(--cream-d);">
+            <small class="advertencia-sanitaria">⚠️ El tabaco es perjudicial para la salud.</small>
           </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5 text-muted">
-          <i class="bi bi-search" style="font-size: 3rem;"></i>
-          <p class="mt-3">No hay productos disponibles en esta categoría.</p>
+        <div style="grid-column:1/-1; text-align:center; padding:80px 0; color:#aaa;">
+          <div style="font-size:48px; margin-bottom:16px;">🔍</div>
+          <p style="font-family:'Lora',serif; font-size:14px;">No hay productos disponibles en esta categoría.</p>
         </div>
         {% endfor %}
       </div>
 
       <!-- PAGINACIÓN -->
       {% if is_paginated %}
-      <nav class="mt-5">
-        <ul class="pagination justify-content-center">
-          {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}">Anterior</a>
-          </li>
-          {% endif %}
-          <li class="page-item active">
-            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-          </li>
-          {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}">Siguiente</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:48px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}"
+           style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; border:1.5px solid var(--tan); color:var(--green); text-decoration:none; transition:all .2s; background:transparent;">
+          ← Anterior
+        </a>
+        {% endif %}
+        <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; background:var(--green); color:var(--cream);">
+          {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}"
+           style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; border:1.5px solid var(--tan); color:var(--green); text-decoration:none; transition:all .2s; background:transparent;">
+          Siguiente →
+        </a>
+        {% endif %}
+      </div>
       {% endif %}
     </div>
+
   </div>
 </div>
+
+<!-- Responsive -->
+<style>
+@media (max-width:768px) {
+  .catalogo-layout { grid-template-columns:1fr !important; padding:32px 20px 60px !important; }
+}
+</style>
+
 {% endblock %}

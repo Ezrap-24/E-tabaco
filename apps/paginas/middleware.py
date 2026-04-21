@@ -6,6 +6,8 @@ RUTAS_EXCLUIDAS = [
     '/pedidos/webhook/',
     '/static/',
     '/media/',
+    '/cuenta/login/',
+    '/cuenta/registro/',
 ]
 
 

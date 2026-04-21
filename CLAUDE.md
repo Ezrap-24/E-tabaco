@@ -1,10 +1,46 @@
-# e-Tabaco
+# Memoria de trabajo — e-Tabaco
 
-Proyecto en fase de inicio. Aún no tiene código fuente.
+## El proyecto
+
+**e-Tabaco** es una tienda e-commerce para una empresa tabaquera que vende tabaco en paquetes. El objetivo es armar un sitio profesional con catálogo, carrito de compras y checkout, orientado tanto a venta minorista como mayorista.
+
+Stack: **Django + PostgreSQL + Bootstrap + JavaScript**
+
+## Estado actual (2026-03-31)
+
+- Estructura base de Django lista (apps, config, requirements)
+- Propuesta de dominio documentada (`docs/propuesta-nombres-dominio.md`)
+- Deck de presentación para el cliente listo (`propuesta-dominio-tabaqueria.pptx`)
+- **Próximo hito: sesión fotográfica en el local (2026-03-31)**
+
+## Páginas planificadas
+
+| Sección | Estado |
+|---------|--------|
+| Inicio (landing) | Pendiente |
+| Catálogo | Pendiente |
+| Ficha de producto | Pendiente |
+| Carrito | Pendiente |
+| Checkout | Pendiente |
+| Sobre la empresa | Pendiente |
+| Contacto | Pendiente |
+| FAQ | Pendiente |
+| Gate de mayoría de edad | Pendiente |
+
+## Decisiones técnicas acordadas
+
+- Validación de mayoría de edad: modal en entrada al sitio
+- Imágenes de productos: convención `marca-tipo-peso.jpg`, guardadas en `/media/products/`
+- Carrito: implementado con sesiones de Django
+
+## Flujo de trabajo recomendado
+
+1. `/brainstorming` — antes de diseñar cualquier feature nueva
+2. `/writing-plans` — para planificar implementación antes de codificar
+3. `/executing-plans` — para ejecutar paso a paso
+4. `/verification-before-completion` — antes de marcar algo como hecho
 
 ## Skills disponibles
-
-Usa estos comandos slash para guiar el desarrollo:
 
 | Comando | Cuándo usarlo |
 |---------|---------------|
@@ -27,9 +63,13 @@ Usa estos comandos slash para guiar el desarrollo:
 
 - **code-reviewer** — revisor de código especializado, definido en `.agents/agents/code-reviewer.md`
 
-## Flujo de trabajo recomendado
+# Token Efficient Rules
 
-1. Empieza con `/brainstorming` para explorar y diseñar
-2. Usa `/writing-plans` para planificar la implementación
-3. Desarrolla con `/test-driven-development` o `/subagent-driven-development`
-4. Cierra con `/verification-before-completion` y `/finishing-a-development-branch`
+1. Think before acting. Read existing files before writing code.
+2. Be concise in output but thorough in reasoning.
+3. Prefer editing over rewriting whole files.
+4. Do not re-read files you have already read unless the file may have changed.
+5. Test your code before declaring done.
+6. No sycophantic openers or closing fluff.
+7. Keep solutions simple and direct.
+8. User instructions always override this file.

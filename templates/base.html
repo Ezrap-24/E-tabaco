@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}e-Tabaco{% endblock %}</title>
+  <title>{% block title %}Puro Tabaco — Mayorista de Tabaco Premium{% endblock %}</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,98 +19,345 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/etabaco.css' %}">
 
+  <style>
+    /* ── CART DRAWER ─────────────────────────────────────── */
+    #cart-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 400;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #cart-overlay.open { opacity: 1; pointer-events: all; }
+
+    #cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 420px; max-width: 95vw;
+      background: var(--white);
+      z-index: 401;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      box-shadow: -4px 0 32px rgba(0,0,0,0.15);
+    }
+    #cart-drawer.open { transform: translateX(0); }
+
+    .cart-drawer-head {
+      background: var(--green);
+      padding: 20px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cart-drawer-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--cream); letter-spacing: 1px;
+    }
+    .cart-drawer-count {
+      font-family: 'Lora', serif;
+      font-size: 11px; color: var(--tan);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .cart-drawer-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--tan); font-size: 24px; line-height: 1;
+      transition: color .2s; padding: 0 4px;
+    }
+    .cart-drawer-close:hover { color: var(--cream); }
+
+    .cart-drawer-body {
+      flex: 1; overflow-y: auto;
+      padding: 0 24px;
+    }
+    .cart-drawer-body::-webkit-scrollbar { width: 4px; }
+    .cart-drawer-body::-webkit-scrollbar-thumb { background: var(--cream-d); }
+
+    .cart-drawer-foot {
+      padding: 16px 24px 24px;
+      border-top: 1.5px solid var(--cream-d);
+      flex-shrink: 0;
+      background: var(--off);
+    }
+  </style>
+
   {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="{% url 'paginas:home' %}">
-        e-Tabaco
+<!-- ── ANNOUNCEMENT BAR ────────────────────────────────── -->
+{% block announce_bar %}
+<div id="announce-bar">
+  <span>🚚</span>
+  <span>Compras por sobre <strong>$50.000</strong> — Envío gratis a todo Chile</span>
+  <button class="ann-close" onclick="document.getElementById('announce-bar').classList.add('hidden');document.body.classList.remove('has-bar');" aria-label="Cerrar">×</button>
+</div>
+{% endblock %}
+
+<!-- ── NAVEGACIÓN ───────────────────────────────────────── -->
+<nav id="pt-nav">
+  <div class="nav-inner">
+
+    <!-- Logo -->
+    <a href="{% url 'paginas:home' %}" class="nav-logo">
+      <svg class="nav-logo-shield" viewBox="0 0 36 44" fill="none">
+        <path d="M18 2 L34 8 L34 24 C34 34 27 40 18 42 C9 40 2 34 2 24 L2 8 Z" stroke="#C8B08A" stroke-width="1.5" fill="none"/>
+        <text x="18" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">PURO</text>
+        <text x="18" y="30" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">TABACO</text>
+        <text x="18" y="37" text-anchor="middle" font-family="Lora, serif" font-size="3.5" fill="#8B7355">EST. 1902</text>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">PURO TABACO</span>
+        <span class="nav-logo-sub">Mayorista de Tabaco Premium</span>
+      </div>
+    </a>
+
+    <!-- Links desktop -->
+    <ul class="nav-links">
+      <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
+      <li><a href="{% url 'productos:catalogo' %}">Catálogo</a></li>
+      <li><a href="{% url 'paginas:faqs' %}">FAQ</a></li>
+      <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
+    </ul>
+
+    <!-- CTA desktop -->
+    <a href="{% url 'productos:catalogo' %}" class="nav-cta">Ver Catálogo</a>
+
+    <!-- Íconos: cuenta + carrito agrupados -->
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+
+      {% if user.is_authenticated %}
+      <a href="{% url 'cuenta:dashboard' %}" aria-label="Mi cuenta" title="{{ user.first_name|default:user.email }}" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
+        <span style="width:32px;height:32px;border-radius:50%;background:#8B7355;border:1.5px solid #C8B08A;color:#EFE6D6;font-family:'Playfair Display',serif;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarMain">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'paginas:home' %}">Inicio</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'productos:catalogo' %}">Catálogo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'paginas:contacto' %}">Contacto</a>
-          </li>
+      {% else %}
+      <a href="{% url 'cuenta:login' %}" aria-label="Iniciar sesión" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(200,176,138,0.5);color:#C8B08A;text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+      {% endif %}
+
+      <!-- Ícono carrito → abre el drawer -->
+      <button class="nav-cart-btn" onclick="openCartDrawer()" aria-label="Carrito" id="nav-cart-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <span class="nav-cart-badge {% if not carrito|length %}d-none{% endif %}" id="carrito-contador">{{ carrito|length }}</span>
+    </button>
+
+    </div><!-- /íconos grupo -->
+
+    <!-- Hamburger -->
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+</nav>
+
+<!-- Menú mobile -->
+<div class="nav-mobile" id="nav-mobile">
+  <a href="{% url 'paginas:home' %}" onclick="closeNavMenu()">Inicio</a>
+  <a href="{% url 'paginas:sobre_nosotros' %}" onclick="closeNavMenu()">Sobre Nosotros</a>
+  <a href="{% url 'productos:catalogo' %}" onclick="closeNavMenu()">Catálogo</a>
+  <a href="{% url 'paginas:faqs' %}" onclick="closeNavMenu()">FAQ</a>
+  <a href="{% url 'paginas:contacto' %}" onclick="closeNavMenu()">Contacto</a>
+  {% if user.is_authenticated %}
+  <a href="{% url 'cuenta:dashboard' %}" onclick="closeNavMenu()">Mi Cuenta</a>
+  {% else %}
+  <a href="{% url 'cuenta:login' %}" onclick="closeNavMenu()">Iniciar Sesión</a>
+  {% endif %}
+  <button onclick="closeNavMenu(); openCartDrawer();" style="font-family:'Lora',serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--tan);background:none;border:none;cursor:pointer;padding:8px 0;border-bottom:1px solid rgba(200,176,138,0.15);text-align:left;">
+    🛒 Mi Carrito {% if carrito|length > 0 %}({{ carrito|length }}){% endif %}
+  </button>
+</div>
+
+<!-- ── CART OVERLAY ──────────────────────────────────────── -->
+<div id="cart-overlay" onclick="closeCartDrawer()"></div>
+
+<!-- ── CART DRAWER ──────────────────────────────────────── -->
+<div id="cart-drawer">
+  <!-- Cabecera -->
+  <div class="cart-drawer-head">
+    <div>
+      <div class="cart-drawer-title">Tu Pedido</div>
+      <div class="cart-drawer-count" id="drawer-count">
+        {% if carrito|length > 0 %}{{ carrito|length }} producto{{ carrito|length|pluralize }}{% else %}vacío{% endif %}
+      </div>
+    </div>
+    <button class="cart-drawer-close" onclick="closeCartDrawer()">×</button>
+  </div>
+
+  <!-- Cuerpo scrolleable con ítems -->
+  <div class="cart-drawer-body">
+    {% include 'carrito/drawer_items.html' %}
+  </div>
+
+  <!-- Footer con botones de acción -->
+  <div class="cart-drawer-foot">
+    {% if carrito|length > 0 %}
+    <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">
+      Ir al Checkout →
+    </a>
+    <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">
+      Ver carrito completo
+    </a>
+    {% else %}
+    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;" onclick="closeCartDrawer()">
+      Ver Catálogo
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── CONTENIDO PRINCIPAL ──────────────────────────────── -->
+<main style="{% block main_padding %}padding-top: 110px;{% endblock %}">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── FOOTER ───────────────────────────────────────────── -->
+{% block footer %}
+<footer class="pt-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo-name">PURO TABACO</div>
+        <div class="footer-logo-sub">Mayorista de Tabaco Premium</div>
+        <p class="footer-about">Contamos con las mejores marcas de tabaco. Stock permanente, precios mayoristas y despacho rápido a todo Chile.</p>
+        <div class="footer-social">
+          <span class="footer-soc">IG</span>
+          <span class="footer-soc">FB</span>
+          <span class="footer-soc">LI</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Empresa</div>
+        <ul class="footer-links">
+          <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
+          <li><a href="{% url 'paginas:faqs' %}">Preguntas Frecuentes</a></li>
+          <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
         </ul>
-        <!-- Carrito -->
-        <a href="{% url 'carrito:ver' %}" class="btn btn-outline-light position-relative">
-          <i class="bi bi-bag"></i>
-          {% if carrito|length > 0 %}
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                id="carrito-contador">
-            {{ carrito|length }}
-          </span>
-          {% endif %}
-        </a>
+      </div>
+      <div>
+        <div class="footer-col-title">Tienda</div>
+        <ul class="footer-links">
+          <li><a href="{% url 'productos:catalogo' %}">Ver Catálogo</a></li>
+          <li><a href="{% url 'carrito:ver' %}">Mi Carrito</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="{% url 'paginas:terminos' %}">Términos y Condiciones</a></li>
+          <li><a href="{% url 'paginas:privacidad' %}">Política de Privacidad</a></li>
+        </ul>
       </div>
     </div>
-  </nav>
-
-  <!-- CONTENIDO PRINCIPAL -->
-  <main>
-    {% block content %}{% endblock %}
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer-dark py-5 mt-5">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <h5 class="footer-brand">e-Tabaco</h5>
-          <p class="text-muted small">Tabaco para liar de calidad, directo a tu puerta.</p>
-          <p class="text-muted small fst-italic">⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>
-        </div>
-        <div class="col-md-4">
-          <h6 class="text-uppercase text-muted small fw-semibold mb-3">Tienda</h6>
-          <ul class="list-unstyled">
-            <li><a href="{% url 'productos:catalogo' %}" class="footer-link">Catálogo</a></li>
-            <li><a href="{% url 'carrito:ver' %}" class="footer-link">Mi Carrito</a></li>
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h6 class="text-uppercase text-muted small fw-semibold mb-3">Información</h6>
-          <ul class="list-unstyled">
-            <li><a href="{% url 'paginas:sobre_nosotros' %}" class="footer-link">Sobre Nosotros</a></li>
-            <li><a href="{% url 'paginas:faqs' %}" class="footer-link">Preguntas Frecuentes</a></li>
-            <li><a href="{% url 'paginas:contacto' %}" class="footer-link">Contacto</a></li>
-            <li><a href="{% url 'paginas:terminos' %}" class="footer-link">Términos y Condiciones</a></li>
-            <li><a href="{% url 'paginas:privacidad' %}" class="footer-link">Política de Privacidad</a></li>
-          </ul>
-        </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Puro Tabaco — Mayorista de Tabaco. Solo para mayores de 18 años.</div>
+      <div class="footer-warning">⚠️ El tabaco es perjudicial para la salud.</div>
+      <div class="footer-legal">
+        <a href="{% url 'paginas:terminos' %}">Términos</a>
+        <a href="{% url 'paginas:privacidad' %}">Privacidad</a>
       </div>
-      <hr class="border-secondary mt-4">
-      <p class="text-center text-muted small mb-0">© 2026 e-Tabaco. Todos los derechos reservados. Solo mayores de 18 años.</p>
     </div>
-  </footer>
+  </div>
+</footer>
+{% endblock %}
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- HTMX -->
-  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-  <!-- CSRF token para HTMX (necesario para peticiones POST en Django) -->
-  <script>
-    document.body.addEventListener('htmx:configRequest', function(event) {
-      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+<!-- CSRF para HTMX -->
+<script>
+  document.body.addEventListener('htmx:configRequest', function(e) {
+    e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+  });
+</script>
+
+<script>
+  // ── Announcement bar ─────────────────────────────────────
+  (function() {
+    const bar = document.getElementById('announce-bar');
+    if (bar && !bar.classList.contains('hidden')) {
+      document.body.classList.add('has-bar');
+    }
+  })();
+
+  // ── Mobile menu ──────────────────────────────────────────
+  function toggleNavMenu() {
+    document.getElementById('nav-mobile').classList.toggle('open');
+  }
+  function closeNavMenu() {
+    document.getElementById('nav-mobile').classList.remove('open');
+  }
+
+  // ── Cart Drawer ──────────────────────────────────────────
+  function openCartDrawer() {
+    document.getElementById('cart-overlay').classList.add('open');
+    document.getElementById('cart-drawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Refrescar ítems del drawer vía HTMX al abrir
+    htmx.ajax('GET', '{% url "carrito:drawer" %}', {
+      target: '#cart-drawer-body',
+      swap: 'outerHTML'
     });
-  </script>
+  }
 
-  {% block extra_js %}{% endblock %}
+  function closeCartDrawer() {
+    document.getElementById('cart-overlay').classList.remove('open');
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Cerrar drawer con Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeCartDrawer();
+  });
+
+  // ── Actualizar badge del carrito tras HTMX ───────────────
+  document.body.addEventListener('htmx:afterRequest', function(e) {
+    const url = e.detail.requestConfig?.path || '';
+    // Si fue una operación del carrito, refrescar el badge
+    if (url.includes('/carrito/')) {
+      fetch('{% url "carrito:drawer" %}')
+        .then(r => r.text())
+        .then(html => {
+          // Extraer cantidad del texto para el badge
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const items = doc.querySelectorAll('[style*="border-bottom"]');
+          const count = items.length;
+          const badge = document.getElementById('carrito-contador');
+          if (badge) {
+            badge.textContent = count;
+            badge.classList.toggle('d-none', count === 0);
+          }
+          // Actualizar el contador del drawer header
+          const countEl = document.getElementById('drawer-count');
+          if (countEl) {
+            countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
+          }
+        });
+    }
+  });
+
+  // ── Scroll fade-in ───────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

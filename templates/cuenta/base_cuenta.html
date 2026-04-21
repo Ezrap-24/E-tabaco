@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title|default:"Mi Cuenta" }} — Puro Tabaco{% endblock %}
+
+{% block main_padding %}padding-top: 0;{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── CUENTA: Cabecera de sección ───────────────────────── */
+  .cuenta-header {
+    background: var(--green);
+    padding: 64px 0 40px;
+  }
+  .cuenta-header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .cuenta-header-label {
+    font-family: 'Lora', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--tan);
+    margin-bottom: 8px;
+  }
+  .cuenta-header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--cream);
+    margin: 0;
+  }
+
+  /* ── CUENTA: Layout principal ──────────────────────────── */
+  .cuenta-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* ── CUENTA: Sidebar ────────────────────────────────────── */
+  .cuenta-sidebar {
+    position: sticky;
+    top: 120px;
+  }
+  .cuenta-user-card {
+    background: var(--cream);
+    border: 1px solid var(--cream-d);
+    padding: 20px;
+    margin-bottom: 8px;
+  }
+  .cuenta-user-initials {
+    width: 48px;
+    height: 48px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .cuenta-user-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 2px;
+  }
+  .cuenta-user-email {
+    font-family: 'Lora', serif;
+    font-size: 11px;
+    color: #aaa;
+    word-break: break-all;
+  }
+
+  .cuenta-nav {
+    background: var(--cream);
+    border: 1px solid var(--cream-d);
+    overflow: hidden;
+  }
+  .cuenta-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 18px;
+    font-family: 'Lora', serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(200,176,138,0.2);
+    transition: background .2s, color .2s;
+  }
+  .cuenta-nav a:last-child { border-bottom: none; }
+  .cuenta-nav a:hover { background: rgba(48,72,58,0.05); color: var(--green); }
+  .cuenta-nav a.active {
+    background: var(--green);
+    color: var(--cream);
+    border-color: var(--green);
+  }
+  .cuenta-nav a.active .nav-icon { color: var(--tan); }
+  .nav-icon { font-size: 15px; flex-shrink: 0; }
+  .cuenta-nav .logout-link { color: #c0392b; }
+  .cuenta-nav .logout-link:hover { background: rgba(192,57,43,.06); color: #c0392b; }
+
+  /* ── CUENTA: Contenido ──────────────────────────────────── */
+  .cuenta-content {
+    min-width: 0;
+  }
+  .cuenta-card {
+    background: #fff;
+    border: 1px solid var(--cream-d);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .cuenta-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--cream-d);
+  }
+
+  /* ── CUENTA: Formularios ────────────────────────────────── */
+  .ct-form-group {
+    margin-bottom: 20px;
+  }
+  .ct-label {
+    display: block;
+    font-family: 'Lora', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .ct-input {
+    width: 100%;
+    border: 1.5px solid var(--cream-d);
+    padding: 12px 14px;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--slate);
+    background: var(--off);
+    outline: none;
+    transition: border-color .2s;
+    box-sizing: border-box;
+  }
+  .ct-input:focus { border-color: var(--green); background: #fff; }
+  .ct-input.is-invalid { border-color: #c0392b; }
+  .ct-error {
+    font-family: 'Lora', serif;
+    font-size: 11px;
+    color: #c0392b;
+    margin-top: 4px;
+  }
+  .ct-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .ct-btn {
+    font-family: 'Lora', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border: none;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .ct-btn-primary {
+    background: var(--green);
+    color: var(--cream);
+  }
+  .ct-btn-primary:hover { background: #253c2e; }
+
+  /* ── Mensajes Django ────────────────────────────────────── */
+  .ct-messages { margin-bottom: 24px; }
+  .ct-msg {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    padding: 12px 16px;
+    border-left: 3px solid;
+    margin-bottom: 8px;
+  }
+  .ct-msg.success { border-color: #2a7a3b; background: rgba(42,122,59,0.07); color: #1d5428; }
+  .ct-msg.error { border-color: #c0392b; background: rgba(192,57,43,.07); color: #922b21; }
+  .ct-msg.warning { border-color: var(--tan); background: rgba(200,176,138,0.1); color: var(--bronze); }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .cuenta-layout {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 24px 16px 60px;
+    }
+    .cuenta-sidebar { position: static; }
+    .cuenta-nav { display: flex; flex-wrap: wrap; }
+    .cuenta-nav a {
+      flex: 1 1 auto;
+      min-width: 120px;
+      border-bottom: none;
+      border-right: 1px solid rgba(200,176,138,0.2);
+      justify-content: center;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 10px;
+    }
+    .ct-form-row { grid-template-columns: 1fr; }
+    .cuenta-card { padding: 20px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Cabecera -->
+<div class="cuenta-header">
+  <div class="cuenta-header-inner">
+    <div class="cuenta-header-label">Mi Cuenta</div>
+    <h1 class="cuenta-header-title">{{ page_title|default:"Escritorio" }}</h1>
+  </div>
+</div>
+
+<!-- Layout sidebar + contenido -->
+<div class="cuenta-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="cuenta-sidebar">
+    <!-- Tarjeta usuario -->
+    <div class="cuenta-user-card">
+      <div class="cuenta-user-initials">
+        {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+      </div>
+      <div class="cuenta-user-name">
+        {{ request.user.get_full_name|default:request.user.email }}
+      </div>
+      <div class="cuenta-user-email">{{ request.user.email }}</div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="cuenta-nav">
+      <a href="{% url 'cuenta:dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">
+        <span class="nav-icon">⊞</span> Escritorio
+      </a>
+      <a href="{% url 'cuenta:mis_pedidos' %}" class="{% block nav_pedidos %}{% endblock %}">
+        <span class="nav-icon">📦</span> Mis Pedidos
+      </a>
+      <a href="{% url 'cuenta:direccion' %}" class="{% block nav_direccion %}{% endblock %}">
+        <span class="nav-icon">📍</span> Dirección
+      </a>
+      <a href="{% url 'cuenta:detalles' %}" class="{% block nav_detalles %}{% endblock %}">
+        <span class="nav-icon">⚙</span> Detalles
+      </a>
+      <a href="{% url 'cuenta:logout' %}" class="logout-link">
+        <span class="nav-icon">↩</span> Salir
+      </a>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="cuenta-content">
+    {% if messages %}
+    <div class="ct-messages">
+      {% for msg in messages %}
+      <div class="ct-msg {{ msg.tags }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block cuenta_content %}{% endblock %}
+  </main>
+
+</div>
+{% endblock %}
