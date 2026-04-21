@@ -1,11 +1,11 @@
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,6 +52,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Carrito disponible en todos los templates
                 'apps.carrito.context_processors.carrito_context',
+                # Datos de empresa (teléfono, email, envío gratis…)
+                'apps.paginas.context_processors.empresa_context',
             ],
         },
     },
@@ -77,8 +79,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'es-ar'
-TIME_ZONE = 'America/Argentina/Buenos_Aires'
+# ── Localización Chile ──────────────────────────────────────
+LANGUAGE_CODE = 'es-cl'
+TIME_ZONE = 'America/Santiago'
 USE_I18N = True
 USE_TZ = True
 
@@ -91,16 +94,45 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Stripe
+# ── Autenticación ───────────────────────────────────────────
+LOGIN_URL = 'cuenta:login'
+LOGIN_REDIRECT_URL = 'cuenta:dashboard'
+LOGOUT_REDIRECT_URL = 'paginas:home'
+
+# ── Stripe (moneda Chile: CLP) ──────────────────────────────
 STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_CURRENCY = config('STRIPE_CURRENCY', default='clp')
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# ── Email ───────────────────────────────────────────────────
+# En desarrollo se imprime en consola; en producción usa SMTP.
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='e-Tabaco <noreply@etabaco.com>')
+DEFAULT_FROM_EMAIL = config(
+    'DEFAULT_FROM_EMAIL',
+    default='Puro Tabaco <noreply@purotabaco.cl>',
+)
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@purotabaco.cl')
+
+# ── Empresa (datos visibles en el sitio) ────────────────────
+EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
+EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
+EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='contacto@purotabaco.cl')
+ENVIO_GRATIS_DESDE = config('ENVIO_GRATIS_DESDE', default=50000, cast=int)
+
+# ── Seguridad (solo prod) ───────────────────────────────────
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'

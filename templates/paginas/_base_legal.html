@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block main_padding %}padding-top: 0;{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-header {
+    background: var(--green);
+    padding: 120px 24px 56px;
+  }
+  .legal-header-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .legal-eyebrow {
+    font-family: 'Lora', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(200, 176, 138, 0.6);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .legal-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: rgba(200, 176, 138, 0.4);
+  }
+  .legal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.05;
+    margin: 0;
+  }
+  .legal-subtitle {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: rgba(239, 230, 214, 0.65);
+    margin-top: 12px;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .legal-body {
+    background: #fff;
+    padding: 56px 24px 80px;
+  }
+  .legal-body-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .legal-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+  .legal-text {
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--slate);
+    opacity: .9;
+    margin-bottom: 16px;
+  }
+  .legal-warn {
+    font-family: 'Lora', serif;
+    font-size: 12px;
+    color: var(--bronze);
+    background: rgba(200, 176, 138, 0.08);
+    border-left: 2px solid var(--tan);
+    padding: 10px 14px;
+    margin-top: 32px;
+  }
+</style>
+{% block legal_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="legal-header">
+  <div class="legal-header-inner">
+    <div class="legal-eyebrow">{% block legal_eyebrow %}{% endblock %}</div>
+    <h1 class="legal-title">{% block legal_title %}{% endblock %}</h1>
+    {% block legal_subtitle %}{% endblock %}
+  </div>
+</div>
+
+<div class="legal-body">
+  <div class="legal-body-inner">
+    {% block legal_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
