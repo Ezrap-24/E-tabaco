@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'apps.carrito',
     'apps.pedidos',
     'apps.paginas',
+    'apps.cuenta',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,110 @@
+{% extends 'cuenta/base_cuenta.html' %}
+{% block page_title %}Detalles de la Cuenta{% endblock %}
+
+{% block nav_detalles %}active{% endblock %}
+
+{% block cuenta_content %}
+
+<!-- Datos personales -->
+<div class="cuenta-card">
+  <div class="cuenta-card-title">Datos Personales</div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="ct-form-row">
+      <div class="ct-form-group">
+        <label class="ct-label">Nombre</label>
+        <input class="ct-input{% if detalles_form.first_name.errors %} is-invalid{% endif %}"
+               type="text" name="first_name"
+               value="{{ detalles_form.first_name.value|default:'' }}"
+               placeholder="Tu nombre">
+        {% for e in detalles_form.first_name.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="ct-form-group">
+        <label class="ct-label">Apellido</label>
+        <input class="ct-input{% if detalles_form.last_name.errors %} is-invalid{% endif %}"
+               type="text" name="last_name"
+               value="{{ detalles_form.last_name.value|default:'' }}"
+               placeholder="Tu apellido">
+        {% for e in detalles_form.last_name.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+    </div>
+
+    <div class="ct-form-group">
+      <label class="ct-label">Correo electrónico</label>
+      <input class="ct-input{% if detalles_form.email.errors %} is-invalid{% endif %}"
+             type="email" name="email"
+             value="{{ detalles_form.email.value|default:'' }}"
+             placeholder="tu@email.com">
+      {% for e in detalles_form.email.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    {% if detalles_form.non_field_errors %}
+    <div style="font-family:'Lora',serif;font-size:12px;color:#c0392b;margin-bottom:12px;">
+      {% for e in detalles_form.non_field_errors %}{{ e }}<br>{% endfor %}
+    </div>
+    {% endif %}
+
+    <button type="submit" name="guardar_detalles" class="ct-btn ct-btn-primary">
+      Guardar Datos
+    </button>
+  </form>
+</div>
+
+<!-- Cambiar contraseña -->
+<div class="cuenta-card">
+  <div class="cuenta-card-title">Cambiar Contraseña</div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="ct-form-group">
+      <label class="ct-label">Contraseña actual</label>
+      <input class="ct-input{% if password_form.old_password.errors %} is-invalid{% endif %}"
+             type="password" name="old_password" placeholder="••••••••"
+             autocomplete="current-password">
+      {% for e in password_form.old_password.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="ct-form-row">
+      <div class="ct-form-group">
+        <label class="ct-label">Nueva contraseña</label>
+        <input class="ct-input{% if password_form.new_password1.errors %} is-invalid{% endif %}"
+               type="password" name="new_password1" placeholder="••••••••"
+               autocomplete="new-password">
+        {% for e in password_form.new_password1.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="ct-form-group">
+        <label class="ct-label">Confirmar nueva contraseña</label>
+        <input class="ct-input{% if password_form.new_password2.errors %} is-invalid{% endif %}"
+               type="password" name="new_password2" placeholder="••••••••"
+               autocomplete="new-password">
+        {% for e in password_form.new_password2.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+      </div>
+    </div>
+
+    {% if password_form.non_field_errors %}
+    <div style="font-family:'Lora',serif;font-size:12px;color:#c0392b;margin-bottom:12px;">
+      {% for e in password_form.non_field_errors %}{{ e }}<br>{% endfor %}
+    </div>
+    {% endif %}
+
+    <button type="submit" name="cambiar_password" class="ct-btn ct-btn-primary">
+      Cambiar Contraseña
+    </button>
+  </form>
+</div>
+
+<!-- Zona de peligro -->
+<div style="border:1px solid rgba(192,57,43,.2); padding:24px;">
+  <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#c0392b; margin-bottom:8px;">Zona de Peligro</div>
+  <p style="font-family:'Lora',serif; font-size:13px; color:#888; margin-bottom:16px;">
+    Si querés eliminar tu cuenta, contactate con nosotros directamente.
+  </p>
+  <a href="{% url 'paginas:contacto' %}" style="font-family:'Lora',serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#c0392b; text-decoration:none; border-bottom:1px solid rgba(192,57,43,.3); padding-bottom:2px;">
+    Contactar soporte →
+  </a>
+</div>
+
+{% endblock %}

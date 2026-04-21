@@ -1,75 +1,111 @@
 <div id="carrito-fragment">
   {% if carrito|length > 0 %}
-  <table class="table align-middle">
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Tipo</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
-        <th>Subtotal</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in carrito.items %}
-      <tr>
-        <td>
-          <strong>{{ item.producto.nombre }}</strong>
-        </td>
-        <td><span class="badge bg-secondary">{{ item.tipo_venta }}</span></td>
-        <td>${{ item.precio }}</td>
-        <td>
-          <form hx-post="{% url 'carrito:actualizar' item.producto.id %}"
-                hx-target="#carrito-fragment"
-                hx-swap="outerHTML"
-                method="post"
-                class="d-inline">
-            {% csrf_token %}
-            <div class="input-group input-group-sm" style="width: 110px;">
-              <button type="submit" name="cantidad" value="{{ item.cantidad|add:'-1' }}"
-                      class="btn btn-outline-secondary btn-sm">−</button>
-              <span class="form-control text-center">{{ item.cantidad }}</span>
-              <button type="submit" name="cantidad" value="{{ item.cantidad|add:'1' }}"
-                      class="btn btn-outline-secondary btn-sm">+</button>
-            </div>
-          </form>
-        </td>
-        <td><strong>${{ item.subtotal }}</strong></td>
-        <td>
-          <form hx-post="{% url 'carrito:eliminar' item.producto.id %}"
-                hx-target="#carrito-fragment"
-                hx-swap="outerHTML"
-                method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-outline-danger">
-              <i class="bi bi-trash"></i>
-            </button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="4" class="text-end fw-bold">Total:</td>
-        <td colspan="2" class="fw-bold fs-5">${{ carrito.total }}</td>
-      </tr>
-    </tfoot>
-  </table>
-  <div class="d-flex justify-content-between">
-    <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-dark">
-      <i class="bi bi-arrow-left me-1"></i>Seguir comprando
+
+  <!-- TABLA DE ITEMS -->
+  <div style="background:var(--white); border:1px solid var(--cream-d); margin-bottom:24px;">
+
+    <!-- Cabecera -->
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr 120px 1fr 40px; gap:0; padding:12px 24px; background:var(--green); border-bottom:1px solid var(--cream-d);">
+      <span style="font-family:'Lora',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(239,230,214,0.6);">Producto</span>
+      <span style="font-family:'Lora',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(239,230,214,0.6);">Tipo</span>
+      <span style="font-family:'Lora',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(239,230,214,0.6);">Precio unit.</span>
+      <span style="font-family:'Lora',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(239,230,214,0.6); text-align:center;">Cantidad</span>
+      <span style="font-family:'Lora',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(239,230,214,0.6);">Subtotal</span>
+      <span></span>
+    </div>
+
+    <!-- Filas -->
+    {% for item in carrito.items %}
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr 120px 1fr 40px; gap:0; padding:20px 24px; border-bottom:1px solid var(--cream-d); align-items:center;">
+
+      <!-- Nombre producto -->
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green);">{{ item.producto.nombre }}</div>
+        <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-top:2px;">{{ item.producto.categoria }}</div>
+      </div>
+
+      <!-- Tipo venta -->
+      <div style="font-family:'Lora',serif; font-size:12px; color:var(--bronze); letter-spacing:1px; text-transform:uppercase;">
+        {{ item.tipo_venta }}
+      </div>
+
+      <!-- Precio unitario -->
+      <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--slate);">
+        ${{ item.precio }}
+      </div>
+
+      <!-- Cantidad con botones -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
+              hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+              hx-target="#carrito-fragment" hx-swap="outerHTML">
+          {% csrf_token %}
+          <input type="hidden" name="cantidad" value="{{ item.cantidad|add:'-1' }}">
+          <button type="submit" style="width:28px; height:28px; border:1.5px solid var(--tan); background:none; cursor:pointer; font-size:16px; line-height:1; color:var(--bronze); display:flex; align-items:center; justify-content:center; transition:background .15s;">−</button>
+        </form>
+
+        <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:600; color:var(--slate); min-width:24px; text-align:center;">{{ item.cantidad }}</span>
+
+        <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
+              hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+              hx-target="#carrito-fragment" hx-swap="outerHTML">
+          {% csrf_token %}
+          <input type="hidden" name="cantidad" value="{{ item.cantidad|add:'1' }}">
+          <button type="submit" style="width:28px; height:28px; border:1.5px solid var(--tan); background:none; cursor:pointer; font-size:16px; line-height:1; color:var(--bronze); display:flex; align-items:center; justify-content:center; transition:background .15s;">+</button>
+        </form>
+      </div>
+
+      <!-- Subtotal -->
+      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">
+        ${{ item.subtotal }}
+      </div>
+
+      <!-- Eliminar -->
+      <div>
+        <form action="{% url 'carrito:eliminar' item.producto.id %}" method="post"
+              hx-post="{% url 'carrito:eliminar' item.producto.id %}"
+              hx-target="#carrito-fragment" hx-swap="outerHTML">
+          {% csrf_token %}
+          <button type="submit" style="background:none; border:none; cursor:pointer; color:#ccc; font-size:18px; line-height:1; transition:color .2s; padding:4px;" title="Eliminar">×</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Total -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; padding:20px 24px; background:var(--cream); border-top:2px solid var(--tan);">
+      <div></div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total del pedido</span>
+        <span style="font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--green);">${{ carrito.total }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nota envío -->
+  <div style="font-family:'Lora',serif; font-size:12px; color:var(--bronze); padding:10px 16px; background:rgba(139,115,85,0.07); border-left:2px solid var(--tan); margin-bottom:24px;">
+    🚚 Compras por sobre $50.000 — Envío gratis a todo Chile
+  </div>
+
+  <!-- Acciones -->
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+    <a href="{% url 'productos:catalogo' %}" class="btn-ghost-pt">
+      ← Seguir comprando
     </a>
-    <a href="{% url 'pedidos:checkout' %}" class="btn btn-gold">
-      Ir al Checkout <i class="bi bi-arrow-right ms-1"></i>
+    <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt" style="font-size:12px; padding:18px 40px; letter-spacing:3px;">
+      Ir al Checkout →
     </a>
   </div>
+
   {% else %}
-  <div class="text-center py-5">
-    <i class="bi bi-bag text-muted" style="font-size: 3rem;"></i>
-    <p class="mt-3 text-muted">Tu carrito está vacío.</p>
-    <a href="{% url 'productos:catalogo' %}" class="btn btn-dark mt-2">Ver Catálogo</a>
+
+  <!-- Carrito vacío -->
+  <div style="text-align:center; padding:80px 0;">
+    <div style="font-size:56px; margin-bottom:20px; opacity:.3;">🛒</div>
+    <h3 style="font-family:'Playfair Display',serif; font-size:24px; color:var(--green); margin-bottom:12px;">Tu carrito está vacío</h3>
+    <p style="font-family:'Lora',serif; font-size:14px; color:#aaa; margin-bottom:32px;">Agregá productos desde el catálogo mayorista.</p>
+    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
   </div>
+
   {% endif %}
 </div>

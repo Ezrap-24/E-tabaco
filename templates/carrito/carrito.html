@@ -1,9 +1,29 @@
 {% extends 'base.html' %}
-{% block title %}Mi Carrito — e-Tabaco{% endblock %}
+{% load static %}
+{% block title %}Mi Carrito — Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <h1 class="section-title mb-4">Mi Carrito</h1>
-  {% include 'carrito/carrito_fragment.html' %}
+
+<!-- PAGE HEADER -->
+<div style="background:var(--green); padding:120px 80px 48px;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
+      Resumen de Compra
+    </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,52px); font-weight:700; color:var(--cream); line-height:1.05; margin-bottom:0;">
+      Mi Carrito
+    </h1>
+  </div>
 </div>
+
+<!-- CONTENIDO -->
+<div style="background:var(--off); padding:48px 80px 80px; min-height:50vh;">
+  <div style="max-width:1100px; margin:0 auto;">
+    {% include 'carrito/carrito_fragment.html' %}
+  </div>
+</div>
+
 {% endblock %}

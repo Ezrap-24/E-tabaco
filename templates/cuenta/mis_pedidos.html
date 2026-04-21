@@ -1,0 +1,75 @@
+{% extends 'cuenta/base_cuenta.html' %}
+{% block page_title %}Mis Pedidos{% endblock %}
+
+{% block nav_pedidos %}active{% endblock %}
+
+{% block cuenta_content %}
+
+<div class="cuenta-card">
+  <div class="cuenta-card-title">Historial de Pedidos</div>
+
+  {% if ordenes %}
+    {% for orden in ordenes %}
+    <div style="border:1px solid var(--cream-d); margin-bottom:16px; overflow:hidden;">
+      <!-- Cabecera del pedido -->
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; background:var(--cream); padding:14px 18px;">
+        <div>
+          <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--green);">{{ orden.numero_orden }}</span>
+          <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-left:12px;">{{ orden.fecha_creacion|date:"d \d\e F \d\e Y" }}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">${{ orden.total|floatformat:0 }}</span>
+          <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 10px;
+            background:{% if orden.estado == 'entregado' %}rgba(42,122,59,.12){% elif orden.estado == 'enviado' %}rgba(41,128,185,.12){% elif orden.estado == 'pagado' %}rgba(200,176,138,.2){% else %}rgba(189,195,199,.25){% endif %};
+            color:{% if orden.estado == 'entregado' %}#2a7a3b{% elif orden.estado == 'enviado' %}#2980b9{% elif orden.estado == 'pagado' %}var(--bronze){% else %}#7f8c8d{% endif %};">
+            {{ orden.get_estado_display }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Ítems del pedido -->
+      <div style="padding:0 18px;">
+        {% for detalle in orden.detalles.all %}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(200,176,138,.15);">
+          <div>
+            <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:600; color:var(--green);">{{ detalle.producto.nombre }}</div>
+            <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; text-transform:uppercase; letter-spacing:1px;">
+              {{ detalle.cantidad }} × {{ detalle.tipo_venta }}
+            </div>
+          </div>
+          <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--bronze);">
+            ${{ detalle.subtotal|floatformat:0 }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Footer del pedido -->
+      <div style="padding:12px 18px; background:var(--off); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="font-family:'Lora',serif; font-size:11px; color:#aaa;">
+          📍 {{ orden.direccion_envio }}
+        </div>
+        {% if orden.cliente_telefono %}
+        <div style="font-family:'Lora',serif; font-size:11px; color:#aaa;">
+          ☎ {{ orden.cliente_telefono }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div style="text-align:center; padding:48px 0;">
+      <div style="font-size:40px; margin-bottom:16px; opacity:.25;">📦</div>
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:600; color:var(--green); margin-bottom:8px;">Todavía no tenés pedidos</div>
+      <div style="font-family:'Lora',serif; font-size:13px; color:#bbb; margin-bottom:24px;">
+        Explorá nuestro catálogo y hacé tu primer pedido.
+      </div>
+      <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt" style="font-size:11px; padding:14px 28px; letter-spacing:3px;">
+        Ver Catálogo →
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}
