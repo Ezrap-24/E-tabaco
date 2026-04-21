@@ -1,44 +1,84 @@
 {% extends 'base.html' %}
-{% block title %}Pedido Confirmado — e-Tabaco{% endblock %}
+{% block title %}Pedido Confirmado — Puro Tabaco{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-7 text-center">
-      <div class="mb-4">
-        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-      </div>
-      <h1 class="section-title">¡Pedido confirmado!</h1>
-      <p class="lead text-muted mb-2">Gracias por tu compra, {{ orden.cliente_nombre }}.</p>
-      <p class="text-muted">Enviamos la confirmación a <strong>{{ orden.cliente_email }}</strong></p>
 
-      <div class="card border-0 bg-light p-4 rounded-3 mt-4 text-start">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-semibold mb-0">Número de pedido</h6>
-          <span class="badge bg-dark fs-6">{{ orden.numero_orden }}</span>
-        </div>
-        <hr>
-        {% for detalle in orden.detalles.all %}
-        <div class="d-flex justify-content-between small mb-2">
-          <span>{{ detalle.producto.nombre }} <span class="text-muted">({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span></span>
-          <span>${{ detalle.subtotal }}</span>
-        </div>
-        {% endfor %}
-        <hr>
-        <div class="d-flex justify-content-between fw-bold">
-          <span>Total pagado</span>
-          <span>${{ orden.total }}</span>
-        </div>
-        <hr>
-        <div class="small text-muted">
-          <strong>Envío a:</strong> {{ orden.direccion_envio }}
-        </div>
+<div style="background:var(--green); padding:120px 24px 64px;">
+  <div style="max-width:720px; margin:0 auto; text-align:center;">
+    <div style="font-size:48px; margin-bottom:16px;">✓</div>
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px;">
+      Pedido recibido
+    </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(28px,4vw,44px); font-weight:700; color:var(--cream); line-height:1.1; margin-bottom:8px;">
+      ¡Gracias por tu compra!
+    </h1>
+    <p style="font-family:'Lora',serif; font-size:14px; color:rgba(239,230,214,0.7);">
+      Hola {{ orden.cliente_nombre }}, registramos tu pedido <strong style="color:var(--tan);">{{ orden.numero_orden }}</strong>.
+    </p>
+  </div>
+</div>
+
+<div style="background:var(--off); padding:48px 24px 80px;">
+  <div style="max-width:720px; margin:0 auto;">
+
+    <!-- Estado -->
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:20px; text-align:center;">
+      <div style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Estado actual</div>
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-top:6px;">
+        {{ orden.get_estado_display }}
+      </div>
+      {% if orden.estado == 'pendiente_pago' %}
+      <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
+        Confirmaremos tu pago en unos segundos. Te avisaremos por email.
+      </p>
+      {% else %}
+      <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
+        Te enviamos la confirmación a <strong>{{ orden.cliente_email }}</strong>.
+      </p>
+      {% endif %}
+    </div>
+
+    <!-- Detalle -->
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:20px;">
+      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:14px; padding-bottom:10px; border-bottom:1.5px solid var(--cream-d);">
+        Detalle del pedido
       </div>
 
-      <a href="{% url 'productos:catalogo' %}" class="btn btn-dark mt-4">
-        <i class="bi bi-arrow-left me-2"></i>Seguir comprando
+      {% for detalle in orden.detalles.all %}
+      <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(200,176,138,.15); font-family:'Lora',serif; font-size:13px; color:var(--slate);">
+        <span>
+          {{ detalle.producto_nombre|default:detalle.producto.nombre }}
+          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span>
+        </span>
+        <span style="font-family:'Playfair Display',serif; font-weight:700; color:var(--bronze);">${{ detalle.subtotal|floatformat:0 }}</span>
+      </div>
+      {% endfor %}
+
+      <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:14px; margin-top:8px;">
+        <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total</span>
+        <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">${{ orden.total|floatformat:0 }}</span>
+      </div>
+    </div>
+
+    <!-- Envío -->
+    <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:32px;">
+      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:10px;">
+        Envío a
+      </div>
+      <div style="font-family:'Lora',serif; font-size:13px; color:var(--slate); line-height:1.7;">
+        {{ orden.direccion }}<br>
+        {{ orden.ciudad }}, {{ orden.region }}{% if orden.codigo_postal %} — {{ orden.codigo_postal }}{% endif %}<br>
+        {% if orden.cliente_telefono %}<span style="color:#aaa;">☎ {{ orden.cliente_telefono }}</span>{% endif %}
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt" style="font-size:11px; padding:14px 32px; letter-spacing:3px;">
+        ← Seguir comprando
       </a>
     </div>
   </div>
 </div>
+
 {% endblock %}

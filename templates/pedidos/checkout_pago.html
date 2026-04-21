@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Pago — Puro Tabaco{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
+
+{% block content %}
+
+<div style="background:var(--green); padding:120px 80px 48px;">
+  <div style="max-width:760px; margin:0 auto;">
+    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
+      Paso 2 de 2 — Pago
+    </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(28px,3vw,40px); font-weight:700; color:var(--cream); line-height:1.05;">
+      Confirma tu pago
+    </h1>
+    <p style="font-family:'Lora',serif; font-size:13px; color:rgba(239,230,214,0.6); margin-top:12px;">
+      Pedido <strong style="color:var(--tan);">{{ orden.numero_orden }}</strong> — Total a pagar
+      <strong style="color:var(--tan);">${{ orden.total|floatformat:0 }} CLP</strong>
+    </p>
+  </div>
+</div>
+
+<div style="background:var(--off); padding:48px 24px 80px; min-height:50vh;">
+  <div style="max-width:520px; margin:0 auto; background:#fff; padding:32px; border:1px solid var(--cream-d);">
+
+    <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-bottom:20px; padding-bottom:14px; border-bottom:1.5px solid var(--cream-d);">
+      Datos de la tarjeta
+    </div>
+
+    <form id="payment-form">
+      <div id="payment-element" style="margin-bottom:24px;"></div>
+      <button id="submit"
+              style="width:100%; background:var(--green); color:var(--cream); border:none; padding:16px;
+                     font-family:'Lora',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer;">
+        <span id="button-text">Pagar ${{ orden.total|floatformat:0 }} CLP</span>
+      </button>
+      <div id="payment-message" style="margin-top:16px; font-family:'Lora',serif; font-size:13px; color:#c0392b; display:none;"></div>
+    </form>
+
+    <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:20px; text-align:center;">
+      🔒 Pago seguro procesado por Stripe — no almacenamos datos de tarjetas.
+    </p>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe('{{ stripe_public_key }}');
+  const elements = stripe.elements({ clientSecret: '{{ client_secret }}' });
+  const paymentElement = elements.create('payment');
+  paymentElement.mount('#payment-element');
+
+  const form = document.getElementById('payment-form');
+  const btn = document.getElementById('submit');
+  const btnText = document.getElementById('button-text');
+  const errorEl = document.getElementById('payment-message');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btnText.textContent = 'Procesando…';
+    errorEl.style.display = 'none';
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.origin + '{% url "pedidos:confirmacion" %}',
+      },
+    });
+
+    if (error) {
+      errorEl.textContent = error.message;
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btnText.textContent = 'Reintentar pago';
+    }
+  });
+</script>
+{% endblock %}

@@ -5,22 +5,26 @@ from .carrito import Carrito
 
 
 def ver_carrito(request):
-    carrito = Carrito(request)
-    return render(request, 'carrito/carrito.html', {'carrito': carrito})
+    return render(request, 'carrito/carrito.html', {'carrito': Carrito(request)})
 
 
 def ver_drawer(request):
-    """Retorna solo el contenido del cart drawer (para HTMX)."""
-    carrito = Carrito(request)
-    return render(request, 'carrito/drawer_items.html', {'carrito': carrito})
+    """Devuelve solo el contenido del cart drawer (HTMX)."""
+    return render(request, 'carrito/drawer_items.html', {'carrito': Carrito(request)})
 
 
 @require_POST
 def agregar_al_carrito(request, producto_id):
     carrito = Carrito(request)
     producto = get_object_or_404(Producto, id=producto_id, activo=True)
-    cantidad = int(request.POST.get('cantidad', 1))
+    try:
+        cantidad = max(1, int(request.POST.get('cantidad', 1)))
+    except (ValueError, TypeError):
+        cantidad = 1
     tipo_venta = request.POST.get('tipo_venta', 'unidad')
+    if tipo_venta not in ('unidad', 'caja'):
+        tipo_venta = 'unidad'
+
     carrito.agregar(producto, cantidad=cantidad, tipo_venta=tipo_venta)
 
     if request.htmx:
@@ -28,34 +32,31 @@ def agregar_al_carrito(request, producto_id):
             'producto': producto,
             'cantidad': cantidad,
             'tipo_venta': tipo_venta,
-            'carrito_total': carrito.cantidad_total(),
+            'carrito': carrito,
         })
     return redirect('carrito:ver')
 
 
 @require_POST
-def eliminar_del_carrito(request, producto_id):
+def eliminar_del_carrito(request, producto_id, tipo_venta):
     carrito = Carrito(request)
-    carrito.eliminar(str(producto_id))
-
-    if request.htmx:
-        # Si viene del drawer usa el template del drawer, si no usa el fragment completo
-        target = request.headers.get('HX-Target', '')
-        if 'cart-drawer-body' in target:
-            return render(request, 'carrito/drawer_items.html', {'carrito': carrito})
-        return render(request, 'carrito/carrito_fragment.html', {'carrito': carrito})
-    return redirect('carrito:ver')
+    carrito.eliminar(producto_id, tipo_venta=tipo_venta)
+    return _respuesta_carrito(request, carrito)
 
 
 @require_POST
-def actualizar_carrito(request, producto_id):
+def actualizar_carrito(request, producto_id, tipo_venta):
     carrito = Carrito(request)
     try:
         cantidad = int(request.POST.get('cantidad', 1))
     except (ValueError, TypeError):
         cantidad = 1
-    carrito.actualizar(str(producto_id), cantidad)
+    carrito.actualizar(producto_id, cantidad, tipo_venta=tipo_venta)
+    return _respuesta_carrito(request, carrito)
 
+
+def _respuesta_carrito(request, carrito):
+    """Selecciona el template parcial correcto según el origen del request HTMX."""
     if request.htmx:
         target = request.headers.get('HX-Target', '')
         if 'cart-drawer-body' in target:

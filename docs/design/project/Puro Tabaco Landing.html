@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PURO TABACO — Mayorista de Tabaco Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green:   #30483A;
+  --green-d: #243830;
+  --green-x: #1a2b22;
+  --tan:     #C8B08A;
+  --tan-d:   #b89870;
+  --cream:   #EFE6D6;
+  --cream-d: #e4d8c4;
+  --slate:   #3A3A3A;
+  --bronze:  #8B7355;
+  --bronze-d:#7a6347;
+  --white:   #FDFAF5;
+  --off:     #f7f3ed;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  color: var(--slate);
+  background: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+
+a { text-decoration: none; color: inherit; }
+
+/* ── Typography helpers ─────────────────────────────────── */
+.playfair { font-family: 'Playfair Display', Georgia, serif; }
+.lora { font-family: 'Lora', Georgia, serif; }
+
+/* ── TWEAKS PANEL ────────────────────────────────────────── */
+#tweaks-panel {
+  display: none;
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 260px;
+  background: #fff;
+  border: 1.5px solid var(--tan);
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  z-index: 9999;
+  font-family: 'Lora', serif;
+  overflow: hidden;
+}
+#tweaks-panel.open { display: block; }
+#tweaks-header {
+  background: var(--green);
+  color: var(--cream);
+  padding: 12px 16px;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#tweaks-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.tweak-row { display: flex; flex-direction: column; gap: 5px; }
+.tweak-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
+.tweak-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.tweak-opt {
+  padding: 4px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 2px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #fff;
+  transition: all .2s;
+  font-family: 'Lora', serif;
+}
+.tweak-opt:hover { border-color: var(--tan); color: var(--bronze); }
+.tweak-opt.active { background: var(--green); color: var(--cream); border-color: var(--green); }
+.tweak-swatch {
+  width: 28px; height: 28px;
+  border-radius: 2px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.tweak-swatch:hover { transform: scale(1.1); }
+.tweak-swatch.active { border-color: var(--slate); }
+
+/* ── NAVIGATION ─────────────────────────────────────────── */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  transition: background .4s, box-shadow .4s;
+  padding: 0 48px;
+}
+#nav.scrolled {
+  background: rgba(36,56,48,0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 24px rgba(0,0,0,0.18);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  gap: 48px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+.nav-logo-shield {
+  width: 36px; height: 42px;
+  flex-shrink: 0;
+}
+.nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+.nav-logo-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cream);
+  letter-spacing: 2px;
+}
+.nav-logo-sub {
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  color: var(--tan);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(239,230,214,0.75);
+  transition: color .2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: var(--tan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s;
+}
+.nav-links a:hover { color: var(--cream); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-cta {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: var(--tan);
+  padding: 9px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--cream); }
+
+/* Hamburger */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: auto;
+}
+.nav-hamburger span {
+  width: 24px; height: 1.5px;
+  background: var(--tan);
+  display: block;
+  transition: all .3s;
+}
+
+/* Mobile menu */
+.nav-mobile {
+  display: none;
+  position: fixed;
+  top: 72px; left: 0; right: 0;
+  background: var(--green-x);
+  padding: 24px 32px;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 99;
+}
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cream);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(200,176,138,0.15);
+}
+
+/* ── HERO ───────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  height: 100vh;
+  min-height: 640px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--green-d);
+  overflow: hidden;
+}
+/* Hatched SVG placeholder */
+.hero-img-placeholder {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+}
+.hero-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(26,43,34,0.97) 0%,
+    rgba(26,43,34,0.7) 35%,
+    rgba(26,43,34,0.2) 65%,
+    rgba(26,43,34,0.05) 100%
+  );
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 80px 80px;
+  max-width: 900px;
+}
+.hero-eyebrow {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--tan);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 40px; height: 1px;
+  background: var(--tan);
+  flex-shrink: 0;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--cream);
+  margin-bottom: 28px;
+  letter-spacing: -1px;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--tan);
+}
+.hero-sub {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(239,230,214,0.75);
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  background: var(--bronze);
+  color: var(--cream);
+  padding: 16px 32px;
+  border: none;
+  cursor: pointer;
+  transition: background .25s, transform .2s;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--bronze-d); transform: translateY(-1px); }
+.btn-ghost {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--tan);
+  padding: 15px 32px;
+  border: 1px solid rgba(200,176,138,0.5);
+  cursor: pointer;
+  transition: border-color .25s, color .25s;
+  display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--tan); color: var(--cream); }
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute;
+  bottom: 32px; right: 80px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.hero-scroll span {
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.5);
+  writing-mode: vertical-rl;
+}
+.hero-scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(200,176,138,0.5), transparent);
+  animation: scrollpulse 2s ease-in-out infinite;
+}
+@keyframes scrollpulse {
+  0%,100% { opacity: 0.4; } 50% { opacity: 1; }
+}
+
+/* ── STATS BAND ─────────────────────────────────────────── */
+#stats {
+  background: var(--tan);
+  padding: 0 80px;
+}
+.stats-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  flex: 1;
+  position: relative;
+}
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: rgba(48,72,58,0.2);
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-d);
+  opacity: 0.7;
+}
+
+/* ── ABOUT ──────────────────────────────────────────────── */
+#about {
+  background: var(--white);
+  padding: 100px 80px;
+}
+.about-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.about-img-wrap {
+  position: relative;
+}
+.about-img-placeholder {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: var(--cream-d);
+  position: relative;
+  overflow: hidden;
+}
+.about-img-deco {
+  position: absolute;
+  bottom: -20px; right: -20px;
+  width: 200px; height: 200px;
+  border: 1.5px solid var(--tan);
+  z-index: -1;
+}
+.about-tag {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.about-tag::before {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--tan);
+}
+.about-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.about-title em { font-style: italic; color: var(--bronze); }
+.about-body {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--slate);
+  margin-bottom: 36px;
+  opacity: 0.85;
+}
+.about-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.value-card {
+  padding: 18px 20px;
+  border-left: 2px solid var(--tan);
+  background: var(--off);
+  transition: border-color .2s, background .2s;
+}
+.value-card:hover { border-color: var(--bronze); background: var(--cream); }
+.value-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+.value-desc {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* ── BRANDS ─────────────────────────────────────────────── */
+#brands {
+  background: var(--green);
+  padding: 100px 80px;
+}
+.brands-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 80px;
+  align-items: start;
+}
+.brands-left { position: sticky; top: 120px; }
+.brands-tag {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.6);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brands-tag::before {
+  content: '';
+  width: 32px; height: 1px;
+  background: rgba(200,176,138,0.4);
+}
+.brands-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.brands-title em { font-style: italic; color: var(--tan); }
+.brands-desc {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(239,230,214,0.6);
+  margin-bottom: 32px;
+}
+.brands-list { }
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(200,176,138,0.15);
+  cursor: default;
+  transition: background .2s;
+  position: relative;
+  group: true;
+}
+.brand-row:first-child { border-top: 1px solid rgba(200,176,138,0.15); }
+.brand-row::after {
+  content: '';
+  position: absolute;
+  left: -24px; right: -24px; top: 0; bottom: 0;
+  background: rgba(200,176,138,0.05);
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+}
+.brand-row:hover::after { opacity: 1; }
+.brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 600;
+  color: var(--tan);
+  transition: color .2s;
+}
+.brand-row:hover .brand-name { color: var(--cream); }
+.brand-meta {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.4);
+  transition: color .2s;
+}
+.brand-row:hover .brand-meta { color: rgba(200,176,138,0.7); }
+.brand-arrow {
+  color: rgba(200,176,138,0.3);
+  font-size: 16px;
+  transition: transform .2s, color .2s;
+}
+.brand-row:hover .brand-arrow { transform: translateX(4px); color: var(--tan); }
+
+/* ── VENTAJAS ───────────────────────────────────────────── */
+#ventajas {
+  background: var(--cream);
+  padding: 100px 80px;
+}
+.ventajas-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.section-tag {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.section-tag::before, .section-tag::after {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--tan);
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.1;
+}
+.ventajas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--tan-d);
+}
+.ventaja-card {
+  background: var(--cream);
+  padding: 40px 32px;
+  transition: background .25s;
+}
+.ventaja-card:hover { background: var(--white); }
+.ventaja-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--tan-d);
+  margin-bottom: 20px;
+}
+.ventaja-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.ventaja-desc {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #777;
+}
+
+/* ── CÓMO FUNCIONA ──────────────────────────────────────── */
+#como {
+  background: var(--white);
+  padding: 100px 80px;
+}
+.como-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.pasos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 64px;
+  position: relative;
+}
+.pasos-grid::after {
+  content: '';
+  position: absolute;
+  top: 28px; left: 12%; right: 12%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--tan) 20%, var(--tan) 80%, transparent);
+}
+.paso {
+  padding: 0 24px;
+  text-align: center;
+  position: relative;
+}
+.paso-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--cream-d);
+  line-height: 1;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+  transition: color .3s;
+}
+.paso:hover .paso-num { color: var(--tan); }
+.paso-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--tan);
+  margin: 12px auto;
+  border: 3px solid var(--white);
+  box-shadow: 0 0 0 1.5px var(--tan);
+  position: relative;
+  z-index: 2;
+}
+.paso-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.paso-desc {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #999;
+}
+
+/* ── CLIENTES ───────────────────────────────────────────── */
+#clientes {
+  background: var(--off);
+  padding: 100px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.clientes-deco {
+  position: absolute;
+  right: -60px; top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.04;
+}
+.clientes-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.clientes-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.clientes-title em { font-style: italic; color: var(--bronze); }
+.clientes-body {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #777;
+  margin-bottom: 40px;
+}
+.clientes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.cliente-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--cream-d);
+  transition: padding-left .2s;
+}
+.cliente-item:hover { padding-left: 8px; }
+.cliente-check {
+  width: 32px; height: 32px;
+  border: 1.5px solid var(--tan);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--bronze);
+  font-size: 13px;
+  transition: background .2s, color .2s;
+}
+.cliente-item:hover .cliente-check {
+  background: var(--green);
+  color: var(--cream);
+  border-color: var(--green);
+}
+.cliente-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+}
+.cliente-sub {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: #999;
+}
+
+/* ── CTA FINAL ──────────────────────────────────────────── */
+#cta-final {
+  background: var(--green);
+  padding: 120px 80px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.cta-deco-shield {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.04;
+  pointer-events: none;
+}
+.cta-tag {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.6);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.cta-tag::before, .cta-tag::after {
+  content: '';
+  width: 40px; height: 1px;
+  background: rgba(200,176,138,0.3);
+}
+.cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4.5vw, 64px);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.05;
+  margin-bottom: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+.cta-title em { font-style: italic; color: var(--tan); }
+.cta-body {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgba(239,230,214,0.65);
+  max-width: 520px;
+  margin: 0 auto 48px;
+  position: relative;
+  z-index: 1;
+}
+.cta-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+.cta-actions .btn-primary {
+  font-size: 12px;
+  padding: 18px 44px;
+  letter-spacing: 3px;
+}
+.cta-wp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: var(--tan);
+  opacity: 0.75;
+  transition: opacity .2s;
+  cursor: pointer;
+}
+.cta-wp:hover { opacity: 1; }
+.cta-wp-icon {
+  width: 20px; height: 20px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+footer {
+  background: #111;
+  padding: 64px 80px 36px;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 64px;
+  margin-bottom: 48px;
+}
+.footer-logo-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tan);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.footer-logo-sub {
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.5);
+  margin-bottom: 16px;
+}
+.footer-about {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  line-height: 1.75;
+  color: #555;
+  max-width: 260px;
+  margin-bottom: 24px;
+}
+.footer-social {
+  display: flex;
+  gap: 12px;
+}
+.footer-soc {
+  width: 32px; height: 32px;
+  border: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  color: #555;
+  transition: border-color .2s, color .2s;
+  cursor: pointer;
+  letter-spacing: 0;
+}
+.footer-soc:hover { border-color: var(--tan); color: var(--tan); }
+.footer-col-title {
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(200,176,138,0.5);
+  margin-bottom: 20px;
+}
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+.footer-links a {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: #555;
+  transition: color .2s;
+}
+.footer-links a:hover { color: var(--tan); }
+.footer-divider {
+  height: 1px;
+  background: #222;
+  margin-bottom: 24px;
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  color: #444;
+}
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+.footer-legal a {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  color: #444;
+  letter-spacing: 0.5px;
+  transition: color .2s;
+}
+.footer-legal a:hover { color: var(--tan); }
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  #nav { padding: 0 32px; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+  #hero { height: 100svh; }
+  .hero-content { padding: 0 32px 64px; }
+  .hero-scroll { display: none; }
+  #stats { padding: 0 32px; }
+  #about { padding: 72px 32px; }
+  .about-inner { grid-template-columns: 1fr; gap: 48px; }
+  .about-img-wrap { max-width: 480px; }
+  #brands { padding: 72px 32px; }
+  .brands-inner { grid-template-columns: 1fr; gap: 48px; }
+  .brands-left { position: static; }
+  #ventajas { padding: 72px 32px; }
+  .ventajas-grid { grid-template-columns: 1fr 1fr; }
+  #como { padding: 72px 32px; }
+  .pasos-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .pasos-grid::after { display: none; }
+  #clientes { padding: 72px 32px; }
+  .clientes-inner { grid-template-columns: 1fr; gap: 48px; }
+  #cta-final { padding: 80px 32px; }
+  footer { padding: 48px 32px 24px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+}
+
+@media (max-width: 640px) {
+  #nav { padding: 0 20px; }
+  .hero-content { padding: 0 20px 56px; }
+  .hero-title { font-size: 44px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  #stats { padding: 0 20px; }
+  .stats-inner { flex-direction: column; }
+  .stat-item + .stat-item::before { display: none; }
+  #about, #brands, #ventajas, #como, #clientes, #cta-final { padding: 60px 20px; }
+  .ventajas-grid { grid-template-columns: 1fr; }
+  .pasos-grid { grid-template-columns: 1fr 1fr; }
+  footer { padding: 40px 20px 20px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Fade-in on scroll ─────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-up.d1 { transition-delay: .1s; }
+.fade-up.d2 { transition-delay: .2s; }
+.fade-up.d3 { transition-delay: .3s; }
+.fade-up.d4 { transition-delay: .4s; }
+
+/* ── ANNOUNCEMENT BAR ───────────────────────────────────── */
+#announce-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--bronze);
+  color: var(--cream);
+  text-align: center;
+  padding: 9px 48px;
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+#announce-bar .ann-icon { font-size: 14px; }
+#announce-bar .ann-close {
+  position: absolute; right: 16px;
+  cursor: pointer; opacity: 0.6; font-size: 16px;
+  transition: opacity .2s;
+  background: none; border: none; color: var(--cream);
+}
+#announce-bar .ann-close:hover { opacity: 1; }
+#announce-bar.hidden { display: none; }
+body.has-bar #nav { top: 38px; }
+body.has-bar #hero { padding-top: 38px; }
+
+/* ── CART ICON ──────────────────────────────────────────── */
+.nav-cart-btn {
+  position: relative;
+  background: none; border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--tan);
+  transition: color .2s;
+  flex-shrink: 0;
+}
+.nav-cart-btn:hover { color: var(--cream); }
+.nav-cart-btn svg { display: block; }
+.cart-badge {
+  position: absolute; top: 2px; right: 2px;
+  width: 17px; height: 17px;
+  background: var(--bronze);
+  color: #fff;
+  border-radius: 50%;
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
+  display: none;
+}
+.cart-badge.show { display: flex; }
+
+/* ── CART DRAWER ────────────────────────────────────────── */
+#cart-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+#cart-overlay.open { opacity: 1; pointer-events: all; }
+#cart-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 420px; max-width: 95vw;
+  background: var(--white);
+  z-index: 301;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow: -4px 0 32px rgba(0,0,0,0.15);
+}
+#cart-drawer.open { transform: translateX(0); }
+.cart-head {
+  background: var(--green);
+  padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.cart-head-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--cream); letter-spacing: 1px;
+}
+.cart-head-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--tan); font-size: 22px; line-height: 1;
+  transition: color .2s;
+}
+.cart-head-close:hover { color: var(--cream); }
+.cart-body {
+  flex: 1; overflow-y: auto;
+  padding: 16px 24px;
+}
+.cart-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; gap: 12px;
+  color: #bbb;
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 0;
+}
+.cart-empty-icon { font-size: 40px; opacity: 0.4; }
+.cart-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--cream-d);
+}
+.cart-item-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--green); flex: 1;
+}
+.cart-item-type {
+  font-family: 'Lora', serif;
+  font-size: 10px; color: #aaa;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 2px;
+}
+.cart-qty {
+  display: flex; align-items: center; gap: 6px;
+}
+.cart-qty-btn {
+  width: 24px; height: 24px;
+  border: 1.5px solid var(--tan);
+  background: none; cursor: pointer;
+  font-size: 14px; line-height: 1;
+  color: var(--bronze); border-radius: 2px;
+  transition: background .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-qty-btn:hover { background: var(--cream); }
+.cart-qty-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--slate); min-width: 20px; text-align: center;
+}
+.cart-item-price {
+  font-family: 'Lora', serif;
+  font-size: 12px; color: var(--bronze); min-width: 70px; text-align: right;
+}
+.cart-item-remove {
+  background: none; border: none; cursor: pointer;
+  color: #ccc; font-size: 16px; transition: color .2s; padding: 0 4px;
+}
+.cart-item-remove:hover { color: #e05; }
+.cart-foot {
+  padding: 20px 24px;
+  border-top: 1.5px solid var(--cream-d);
+  flex-shrink: 0;
+  background: var(--off);
+}
+.cart-subtotal {
+  display: flex; justify-content: space-between;
+  align-items: baseline; margin-bottom: 6px;
+}
+.cart-subtotal-label {
+  font-family: 'Lora', serif; font-size: 12px; color: #888; letter-spacing: 1px;
+}
+.cart-subtotal-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; color: var(--green);
+}
+.cart-shipping-note {
+  font-family: 'Lora', serif; font-size: 11px;
+  color: var(--bronze); margin-bottom: 16px;
+  padding: 6px 10px; background: rgba(139,115,85,0.08);
+  border-left: 2px solid var(--tan);
+}
+.cart-shipping-note.free { color: #2a7a3b; background: rgba(42,122,59,0.07); border-color: #2a7a3b; }
+.btn-whatsapp {
+  width: 100%;
+  background: #25D366; color: #fff;
+  border: none; cursor: pointer;
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 16px; display: flex; align-items: center;
+  justify-content: center; gap: 10px;
+  transition: background .2s;
+}
+.btn-whatsapp:hover { background: #1ebe5a; }
+.btn-whatsapp-icon { font-size: 18px; }
+
+/* ── CATALOG SECTION ────────────────────────────────────── */
+#catalogo {
+  background: var(--off);
+  padding: 100px 80px;
+}
+.catalogo-inner { max-width: 1200px; margin: 0 auto; }
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 56px;
+}
+.prod-card {
+  background: var(--white);
+  border: 1px solid var(--cream-d);
+  padding: 0;
+  transition: box-shadow .25s, transform .25s;
+  cursor: default;
+  display: flex; flex-direction: column;
+}
+.prod-card:hover {
+  box-shadow: 0 6px 24px rgba(48,72,58,0.10);
+  transform: translateY(-2px);
+}
+.prod-img {
+  height: 100px;
+  background: var(--green);
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.prod-img svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.prod-initials {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 700;
+  color: rgba(200,176,138,0.25);
+  position: relative; z-index: 1;
+  letter-spacing: 2px;
+}
+.prod-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+.prod-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--green); margin-bottom: 2px;
+}
+.prod-type {
+  font-family: 'Lora', serif; font-size: 10px;
+  color: #aaa; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.prod-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--bronze); margin-top: auto; margin-bottom: 12px;
+}
+.prod-price span { font-size: 11px; font-family: 'Lora', serif; color: #aaa; font-weight: 400; margin-left: 4px; }
+.btn-add-cart {
+  width: 100%; background: var(--green); color: var(--cream);
+  border: none; cursor: pointer;
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 10px; transition: background .2s;
+}
+.btn-add-cart:hover { background: var(--green-d); }
+.btn-add-cart.added { background: var(--bronze); }
+
+@media (max-width: 1024px) {
+  #catalogo { padding: 72px 32px; }
+  .catalogo-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  #catalogo { padding: 60px 20px; }
+  .catalogo-grid { grid-template-columns: repeat(2, 1fr); }
+  #cart-drawer { width: 100%; }
+}
+</style>
+</head>
+<body class="has-bar">
+
+<!-- ── ANNOUNCEMENT BAR ─────────────────────────────────── -->
+<div id="announce-bar">
+  <span class="ann-icon">🚚</span>
+  <span>Compras por sobre <strong>$50.000</strong> — Envío gratis a todo Chile</span>
+  <button class="ann-close" onclick="closeBar()" aria-label="Cerrar">×</button>
+</div>
+
+<!-- ── NAV ──────────────────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg class="nav-logo-shield" viewBox="0 0 36 44" fill="none">
+        <path d="M18 2 L34 8 L34 24 C34 34 27 40 18 42 C9 40 2 34 2 24 L2 8 Z" stroke="#C8B08A" stroke-width="1.5" fill="none"/>
+        <text x="18" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">PURO</text>
+        <text x="18" y="30" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">TABACO</text>
+        <text x="18" y="37" text-anchor="middle" font-family="Lora, serif" font-size="3.5" fill="#8B7355">EST. 1902</text>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">PURO TABACO</span>
+        <span class="nav-logo-sub">Mayorista de Tabaco Premium</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">Sobre Nosotros</a></li>
+      <li><a href="#brands">Marcas</a></li>
+      <li><a href="#ventajas">Ventajas</a></li>
+      <li><a href="#clientes">Clientes</a></li>
+    </ul>
+    <a href="#catalogo" class="nav-cta">Catálogo</a>
+    <button class="nav-cart-btn" onclick="openCart()" aria-label="Carrito">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <span class="cart-badge" id="cart-badge">0</span>
+    </button>
+    <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="nav-mobile" id="mobile-menu">
+  <a href="#about" onclick="closeMenu()">Sobre Nosotros</a>
+  <a href="#brands" onclick="closeMenu()">Marcas</a>
+  <a href="#ventajas" onclick="closeMenu()">Ventajas</a>
+  <a href="#como" onclick="closeMenu()">Cómo Funciona</a>
+  <a href="#clientes" onclick="closeMenu()">Clientes</a>
+  <a href="#cta-final" onclick="closeMenu()" style="color:var(--tan);font-weight:600;">Acceso Mayorista</a>
+</div>
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg">
+    <!-- Hatched placeholder: foto vintage tabaco / Londres / bodega histórica -->
+    <svg class="hero-img-placeholder" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="heroHatch" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(200,176,138,0.12)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#heroHatch)"/>
+      <text x="50%" y="44%" text-anchor="middle" font-family="Lora, serif" font-size="13" fill="rgba(200,176,138,0.3)" letter-spacing="3">fotografía</text>
+      <text x="50%" y="50%" text-anchor="middle" font-family="Lora, serif" font-size="13" fill="rgba(200,176,138,0.3)" letter-spacing="3">tabaco vintage / Londres 1902</text>
+      <text x="50%" y="56%" text-anchor="middle" font-family="Lora, serif" font-size="11" fill="rgba(200,176,138,0.2)" letter-spacing="2">bodega · barril · Big Ben</text>
+    </svg>
+    <div class="hero-gradient"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Mayorista de Tabaco Premium · Est. 1902</div>
+    <h1 class="hero-title">Tradición que<br><em>mueve negocios</em></h1>
+    <p class="hero-sub">Desde 1902, conectamos empresas confiables con tabaco premium de calidad mundial. Stock permanente, precios mayoristas y despachos rápidos a todo Chile.</p>
+    <div class="hero-actions">
+      <a href="#cta-final" class="btn-primary">Solicitar Catálogo</a>
+      <a href="#brands" class="btn-ghost">Ver Marcas Líderes</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ── STATS ─────────────────────────────────────────────── -->
+<section id="stats">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">120+</div>
+      <div class="stat-label">Años de Herencia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Marcas Líderes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">48 h</div>
+      <div class="stat-label">Despacho Promedio</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Productos Originales</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CATÁLOGO ───────────────────────────────────────────── -->
+<section id="catalogo">
+  <div class="catalogo-inner">
+    <div class="section-header">
+      <div class="section-tag fade-up">Catálogo Mayorista</div>
+      <h2 class="section-title fade-up d1">Nuestros productos</h2>
+    </div>
+    <div class="catalogo-grid" id="products-grid"></div>
+  </div>
+</section>
+
+<!-- ── ABOUT ──────────────────────────────────────────────── -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-img-wrap fade-up">
+      <div class="about-img-placeholder">
+        <svg width="100%" height="100%">
+          <defs>
+            <pattern id="aboutHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(139,115,85,0.18)" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#aboutHatch)"/>
+          <text x="50%" y="48%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">imagen bodega</text>
+          <text x="50%" y="55%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">o tabaco enrollado</text>
+        </svg>
+      </div>
+      <div class="about-img-deco"></div>
+    </div>
+    <div>
+      <div class="about-tag fade-up">Sobre Nosotros</div>
+      <h2 class="about-title fade-up d1">Herencia que inspira.<br><em>Eficiencia que</em> construye.</h2>
+      <p class="about-body fade-up d2">Somos mayoristas de tabaco premium con más de 120 años de historia. Nuestra misión es simple: conectar negocios confiables con las mejores marcas del mundo, garantizando stock permanente, precios competitivos y un servicio a la altura de tu empresa.</p>
+      <div class="about-values">
+        <div class="value-card fade-up d1">
+          <div class="value-name">Herencia</div>
+          <div class="value-desc">120 años de tradición en la industria tabacalera</div>
+        </div>
+        <div class="value-card fade-up d2">
+          <div class="value-name">Confianza</div>
+          <div class="value-desc">Distribuidores certificados de marcas líderes</div>
+        </div>
+        <div class="value-card fade-up d3">
+          <div class="value-name">Calidad</div>
+          <div class="value-desc">Productos 100% originales con sellos fiscales válidos</div>
+        </div>
+        <div class="value-card fade-up d4">
+          <div class="value-name">Eficiencia</div>
+          <div class="value-desc">Despachos rápidos a todo Chile en 2–3 días</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BRANDS ─────────────────────────────────────────────── -->
+<section id="brands">
+  <div class="brands-inner">
+    <div class="brands-left">
+      <div class="brands-tag fade-up">Marcas Certificadas</div>
+      <h2 class="brands-title fade-up d1">Distribuidores<br>oficiales de las<br><em>mejores marcas</em></h2>
+      <p class="brands-desc fade-up d2">Garantía de autenticidad y frescura en cada producto. Trabajamos directamente con los fabricantes para asegurar la mejor calidad para tu negocio.</p>
+      <a href="#cta-final" class="btn-ghost fade-up d3">Solicitar Acceso</a>
+    </div>
+    <div class="brands-list">
+      <div class="brand-row fade-up">
+        <div>
+          <div class="brand-name">Kuroko</div>
+          <div class="brand-meta">Tabaco · Distribución mayorista</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d1">
+        <div>
+          <div class="brand-name">Bristol</div>
+          <div class="brand-meta">Cigarrillo · Stock permanente</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d2">
+        <div>
+          <div class="brand-name">Madison</div>
+          <div class="brand-meta">Cigarrillo · Distribución nacional</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d3">
+        <div>
+          <div class="brand-name">Verso</div>
+          <div class="brand-meta">Cigarrillo · Precios mayoristas</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d4">
+        <div>
+          <div class="brand-name">Tennesie</div>
+          <div class="brand-meta">Tabaco · Calidad certificada</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up">
+        <div>
+          <div class="brand-name">Stanley</div>
+          <div class="brand-meta">Tabaco · Distribución mayorista</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d1">
+        <div>
+          <div class="brand-name">Red Field</div>
+          <div class="brand-meta">Tabaco · Stock permanente</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+      <div class="brand-row fade-up d2">
+        <div>
+          <div class="brand-name">Roadhouse</div>
+          <div class="brand-meta">Tabaco · Precios mayoristas</div>
+        </div>
+        <span class="brand-arrow">→</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VENTAJAS ───────────────────────────────────────────── -->
+<section id="ventajas">
+  <div class="ventajas-inner">
+    <div class="section-header">
+      <div class="section-tag fade-up">Ventajas Mayorista</div>
+      <h2 class="section-title fade-up d1">Por qué elegir<br>Puro Tabaco</h2>
+    </div>
+    <div class="ventajas-grid">
+      <div class="ventaja-card fade-up">
+        <div class="ventaja-num">01</div>
+        <div class="ventaja-name">Stock Permanente</div>
+        <div class="ventaja-desc">Inventario actualizado de todas nuestras marcas. Sin quiebres de stock para tu negocio.</div>
+      </div>
+      <div class="ventaja-card fade-up d1">
+        <div class="ventaja-num">02</div>
+        <div class="ventaja-name">Precios Mayoristas</div>
+        <div class="ventaja-desc">Márgenes competitivos diseñados para distribuidores y negocios de volumen.</div>
+      </div>
+      <div class="ventaja-card fade-up d2">
+        <div class="ventaja-num">03</div>
+        <div class="ventaja-name">Despachos Rápidos</div>
+        <div class="ventaja-desc">Entregas a todo Chile en 2–3 días hábiles. Logística eficiente y confiable.</div>
+      </div>
+      <div class="ventaja-card fade-up d3">
+        <div class="ventaja-num">04</div>
+        <div class="ventaja-name">Atención Personalizada</div>
+        <div class="ventaja-desc">Equipo especializado dedicado a tu negocio. Ejecutivo comercial asignado.</div>
+      </div>
+      <div class="ventaja-card fade-up d4">
+        <div class="ventaja-num">05</div>
+        <div class="ventaja-name">Garantía de Autenticidad</div>
+        <div class="ventaja-desc">Productos 100% originales con sellos fiscales válidos. Trazabilidad completa.</div>
+      </div>
+      <div class="ventaja-card fade-up" style="background:var(--green);">
+        <div class="ventaja-num" style="color:rgba(200,176,138,0.4);">+</div>
+        <div class="ventaja-name" style="color:var(--cream);">¿Listo para comenzar?</div>
+        <div class="ventaja-desc" style="color:rgba(239,230,214,0.6);margin-bottom:20px;">Solicita acceso mayorista y descubre nuestros programas especiales.</div>
+        <a href="#cta-final" class="btn-primary" style="font-size:10px;padding:12px 20px;">Solicitar Acceso</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CÓMO FUNCIONA ──────────────────────────────────────── -->
+<section id="como">
+  <div class="como-inner">
+    <div class="section-header">
+      <div class="section-tag fade-up">Proceso</div>
+      <h2 class="section-title fade-up d1">Cómo trabajamos<br>contigo</h2>
+    </div>
+    <div class="pasos-grid">
+      <div class="paso fade-up">
+        <div class="paso-num">01</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Solicitar</div>
+        <div class="paso-desc">Pide acceso mayorista o nuestro catálogo completo de marcas y precios.</div>
+      </div>
+      <div class="paso fade-up d1">
+        <div class="paso-num">02</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Revisar</div>
+        <div class="paso-desc">Explora marcas, referencias y condiciones especiales para tu volumen.</div>
+      </div>
+      <div class="paso fade-up d2">
+        <div class="paso-num">03</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Encargar</div>
+        <div class="paso-desc">Realiza tu pedido con condiciones mayoristas acordadas con tu ejecutivo.</div>
+      </div>
+      <div class="paso fade-up d3">
+        <div class="paso-num">04</div>
+        <div class="paso-dot"></div>
+        <div class="paso-name">Recibir</div>
+        <div class="paso-desc">Despacho rápido a tu negocio en 2–3 días hábiles a todo Chile.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLIENTES ───────────────────────────────────────────── -->
+<section id="clientes">
+  <!-- Deco shield -->
+  <div class="clientes-deco">
+    <svg width="500" height="560" viewBox="0 0 100 112">
+      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)" stroke="none"/>
+    </svg>
+  </div>
+  <div class="clientes-inner">
+    <div>
+      <div class="about-tag fade-up">¿Quiénes nos eligen?</div>
+      <h2 class="clientes-title fade-up d1">Empresas de todos<br>los tamaños<br><em>confían en nosotros</em></h2>
+      <p class="clientes-body fade-up d2">Trabajamos con negocios serios que valoran la confiabilidad, los precios competitivos y el servicio profesional. Si tu empresa mueve tabaco, somos tu mayorista.</p>
+    </div>
+    <div class="clientes-list">
+      <div class="cliente-item fade-up">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Distribuidoras</div>
+          <div class="cliente-sub">Distribuidoras de bebidas, cigarrería y abarrotes</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d1">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Locales de Detalle</div>
+          <div class="cliente-sub">Botillerías, minimarkets y locales especializados</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d2">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Gastronomía y Esparcimiento</div>
+          <div class="cliente-sub">Restaurantes, bares y clubes nocturnos</div>
+        </div>
+      </div>
+      <div class="cliente-item fade-up d3">
+        <div class="cliente-check">✓</div>
+        <div>
+          <div class="cliente-name">Mayoristas y Revendedores</div>
+          <div class="cliente-sub">Operadores que redistribuyen a la cadena</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA FINAL ──────────────────────────────────────────── -->
+<section id="cta-final">
+  <!-- Deco shield bg -->
+  <div class="cta-deco-shield">
+    <svg width="700" height="800" viewBox="0 0 100 112">
+      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)"/>
+    </svg>
+  </div>
+  <div class="cta-tag fade-up">Acceso Mayorista</div>
+  <h2 class="cta-title fade-up d1">¿Listo para llevar tu<br>negocio al <em>siguiente nivel?</em></h2>
+  <p class="cta-body fade-up d2">Somos mayoristas con más de 120 años de experiencia. Pregúntanos sobre volúmenes, condiciones especiales y programas de distribución para tu empresa.</p>
+  <div class="cta-actions fade-up d3">
+    <a href="mailto:contacto@purotabaco.cl" class="btn-primary">Solicitar Acceso Mayorista</a>
+    <div class="cta-wp">
+      <div class="cta-wp-icon">💬</div>
+      <span>+56 9 1234 5678</span>
+    </div>
+    <div style="font-family:'Lora',serif;font-size:12px;color:rgba(200,176,138,0.5);">contacto@purotabaco.cl</div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo-name">PURO TABACO</div>
+        <div class="footer-logo-sub">Mayorista de Tabaco</div>
+        <p class="footer-about">Contamos con las mejores marcas de tabaco. Stock permanente, precios mayoristas y despacho rápido a todo Chile.</p>
+        <div class="footer-social">
+          <div class="footer-soc">IG</div>
+          <div class="footer-soc">FB</div>
+          <div class="footer-soc">LI</div>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Empresa</div>
+        <ul class="footer-links">
+          <li><a href="#about">Sobre Nosotros</a></li>
+          <li><a href="#brands">Marcas</a></li>
+          <li><a href="#ventajas">Ventajas</a></li>
+          <li><a href="#como">Cómo Funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Servicios</div>
+        <ul class="footer-links">
+          <li><a href="#cta-final">Catálogo Mayorista</a></li>
+          <li><a href="#cta-final">Acceso Distribuidores</a></li>
+          <li><a href="#brands">Marcas Premium</a></li>
+          <li><a href="#cta-final">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="mailto:contacto@purotabaco.cl">contacto@purotabaco.cl</a></li>
+          <li><a href="tel:+56912345678">+56 9 1234 5678</a></li>
+          <li><a href="#">purotabaco.cl</a></li>
+          <li style="color:#333;font-family:'Lora',serif;font-size:12px;margin-top:4px;">Chile</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Puro Tabaco — Mayorista de Tabaco.</div>
+      <div class="footer-legal">
+        <a href="#">Términos de Uso</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Política Comercial</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── CART OVERLAY + DRAWER ──────────────────────────────── -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+<div id="cart-drawer">
+  <div class="cart-head">
+    <span class="cart-head-title">Tu Pedido</span>
+    <button class="cart-head-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty" id="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <div>Tu carrito está vacío.</div>
+      <div style="font-size:11px;color:#ddd;">Agrega productos desde el catálogo.</div>
+    </div>
+  </div>
+  <div class="cart-foot" id="cart-foot" style="display:none">
+    <div class="cart-subtotal">
+      <span class="cart-subtotal-label">SUBTOTAL</span>
+      <span class="cart-subtotal-val" id="cart-total">$0</span>
+    </div>
+    <div class="cart-shipping-note" id="cart-ship-note">Agrega $<span id="cart-ship-diff">50.000</span> más para envío gratis 🚚</div>
+    <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
+      <span class="btn-whatsapp-icon">💬</span>
+      Enviar Pedido por WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- ── TWEAKS PANEL ───────────────────────────────────────── -->
+<div id="tweaks-panel">
+  <div id="tweaks-header">
+    <span>Tweaks</span>
+    <span style="cursor:pointer;opacity:0.6;font-size:16px;" onclick="document.getElementById('tweaks-panel').classList.remove('open')">×</span>
+  </div>
+  <div id="tweaks-body">
+    <div class="tweak-row">
+      <div class="tweak-label">Estilo de Hero</div>
+      <div class="tweak-options">
+        <div class="tweak-opt active" onclick="setHeroStyle('overlay')" id="tw-hero-overlay">Con overlay</div>
+        <div class="tweak-opt" onclick="setHeroStyle('solid')" id="tw-hero-solid">Fondo sólido</div>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <div class="tweak-label">Color de Título Hero</div>
+      <div class="tweak-options">
+        <div class="tweak-opt active" onclick="setHeroTitleColor('tan')" id="tw-tc-tan">Tabaco claro</div>
+        <div class="tweak-opt" onclick="setHeroTitleColor('cream')" id="tw-tc-cream">Marfil</div>
+        <div class="tweak-opt" onclick="setHeroTitleColor('white')" id="tw-tc-white">Blanco</div>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <div class="tweak-label">Fondo de Sección Stats</div>
+      <div class="tweak-options" style="gap:8px;">
+        <div class="tweak-swatch active" style="background:#C8B08A;" onclick="setStatsBg('#C8B08A')" id="sw-tan" title="Tabaco Claro"></div>
+        <div class="tweak-swatch" style="background:#30483A;" onclick="setStatsBg('#30483A')" id="sw-green" title="Verde Tabaco"></div>
+        <div class="tweak-swatch" style="background:#EFE6D6;" onclick="setStatsBg('#EFE6D6')" id="sw-cream" title="Marfil"></div>
+        <div class="tweak-swatch" style="background:#1a2b22;" onclick="setStatsBg('#1a2b22')" id="sw-dark" title="Verde Oscuro"></div>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <div class="tweak-label">Animaciones Scroll</div>
+      <div class="tweak-options">
+        <div class="tweak-opt active" onclick="setAnimations(true)" id="tw-anim-on">Activadas</div>
+        <div class="tweak-opt" onclick="setAnimations(false)" id="tw-anim-off">Desactivadas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Nav scroll ───────────────────────────────────────────────
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+// Force scrolled on start if needed
+if (window.scrollY > 60) nav.classList.add('scrolled');
+// Always show on hero (transparent bg shows the hero)
+nav.classList.add('scrolled'); // start dark for readability
+
+// ── Mobile menu ──────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+// ── Scroll fade-in ───────────────────────────────────────────
+let animEnabled = true;
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && animEnabled) e.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ── Tweaks ───────────────────────────────────────────────────
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode') document.getElementById('tweaks-panel').classList.add('open');
+  if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaks-panel').classList.remove('open');
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "heroStyle": "overlay",
+  "heroTitleColor": "tan",
+  "statsBg": "#C8B08A",
+  "animations": true
+}/*EDITMODE-END*/;
+
+function setHeroStyle(v) {
+  document.getElementById('tw-hero-overlay').classList.toggle('active', v==='overlay');
+  document.getElementById('tw-hero-solid').classList.toggle('active', v==='solid');
+  const hatchEl = document.querySelector('.hero-img-placeholder');
+  hatchEl.style.opacity = v === 'solid' ? '0' : '0.35';
+  window.parent.postMessage({ type:'__edit_mode_set_keys', edits:{ heroStyle:v }}, '*');
+}
+function setHeroTitleColor(v) {
+  ['tan','cream','white'].forEach(x => document.getElementById('tw-tc-'+x).classList.toggle('active', x===v));
+  const map = { tan:'var(--tan)', cream:'var(--cream)', white:'#fff' };
+  document.querySelector('.hero-title em').style.color = map[v];
+  window.parent.postMessage({ type:'__edit_mode_set_keys', edits:{ heroTitleColor:v }}, '*');
+}
+function setStatsBg(v) {
+  document.getElementById('stats').style.background = v;
+  const isLight = v === '#EFE6D6' || v === '#C8B08A';
+  const numColor = isLight ? 'var(--green)' : 'var(--tan)';
+  const lblColor = isLight ? 'var(--green-d)' : 'rgba(239,230,214,0.7)';
+  document.querySelectorAll('.stat-num').forEach(el => el.style.color = numColor);
+  document.querySelectorAll('.stat-label').forEach(el => el.style.color = lblColor);
+  ['sw-tan','sw-green','sw-cream','sw-dark'].forEach(id => document.getElementById(id).classList.remove('active'));
+  const map = { '#C8B08A':'sw-tan','#30483A':'sw-green','#EFE6D6':'sw-cream','#1a2b22':'sw-dark' };
+  if (map[v]) document.getElementById(map[v]).classList.add('active');
+  window.parent.postMessage({ type:'__edit_mode_set_keys', edits:{ statsBg:v }}, '*');
+}
+function setAnimations(v) {
+  animEnabled = v;
+  document.getElementById('tw-anim-on').classList.toggle('active', v);
+  document.getElementById('tw-anim-off').classList.toggle('active', !v);
+  if (!v) document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+  window.parent.postMessage({ type:'__edit_mode_set_keys', edits:{ animations:v }}, '*');
+}
+
+// Apply saved defaults
+setHeroStyle(TWEAK_DEFAULTS.heroStyle);
+setHeroTitleColor(TWEAK_DEFAULTS.heroTitleColor);
+setStatsBg(TWEAK_DEFAULTS.statsBg);
+setAnimations(TWEAK_DEFAULTS.animations);
+
+// ── ANNOUNCEMENT BAR ────────────────────────────────────────
+function closeBar() {
+  document.getElementById('announce-bar').classList.add('hidden');
+  document.body.classList.remove('has-bar');
+}
+
+// ── PRODUCTS DATA ────────────────────────────────────────────
+const PRODUCTS = [
+  { id:'bristol',    name:'Bristol',       type:'Cigarrillo',    price:3990,  color:'#2d4535' },
+  { id:'madison',    name:'Madison',       type:'Cigarrillo',    price:4290,  color:'#3a3a2a' },
+  { id:'verso',      name:'Verso',         type:'Cigarrillo',    price:3890,  color:'#2a3a45' },
+  { id:'tennesie',   name:'Tennesie',      type:'Tabaco',        price:4490,  color:'#453a2a' },
+  { id:'stanley',    name:'Stanley',       type:'Tabaco',        price:4190,  color:'#2a4535' },
+  { id:'redfield',   name:'Red Field',     type:'Tabaco',        price:3790,  color:'#452a2a' },
+  { id:'roadhouse',  name:'Roadhouse',     type:'Tabaco',        price:3990,  color:'#2d3a45' },
+  { id:'captblack',  name:'Captain Black', type:'Pipa Premium',  price:8990,  color:'#1a2b22' },
+  { id:'flandria',   name:'Flandria',      type:'Tabaco Natural',price:5490,  color:'#3a452a' },
+  { id:'springfield',name:'Springfield',   type:'Cigarrillo',    price:4990,  color:'#2a352d' },
+  { id:'macbaren',   name:'Mac Baren',     type:'Pipa Artesanal',price:12990, color:'#243830' },
+  { id:'cavalier',   name:'Cavalier',      type:'Tabaco Premium',price:9990,  color:'#352a1a' },
+  { id:'hi',         name:'HI',            type:'Cigarrillo',    price:3690,  color:'#2a3535' },
+  { id:'kuroko',     name:'Kuroko',        type:'Tabaco',        price:4890,  color:'#1e2d38' },
+  { id:'cerrito',    name:'Cerrito',       type:'Cigarrillo',    price:3490,  color:'#352d2a' },
+];
+
+// ── RENDER CATALOG ────────────────────────────────────────────
+const grid = document.getElementById('products-grid');
+PRODUCTS.forEach(p => {
+  const initials = p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const card = document.createElement('div');
+  card.className = 'prod-card fade-up';
+  card.innerHTML = `
+    <div class="prod-img" style="background:${p.color}">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid slice">
+        <defs><pattern id="ph_${p.id}" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="12" stroke="rgba(200,176,138,0.1)" stroke-width="1"/>
+        </pattern></defs>
+        <rect width="200" height="100" fill="url(#ph_${p.id})"/>
+      </svg>
+      <span class="prod-initials">${initials}</span>
+    </div>
+    <div class="prod-body">
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-type">${p.type}</div>
+      <div class="prod-price">$${p.price.toLocaleString('es-CL')} <span>/ unidad</span></div>
+      <button class="btn-add-cart" id="btn-${p.id}" onclick="addToCart('${p.id}')">+ Agregar al Pedido</button>
+    </div>`;
+  grid.appendChild(card);
+});
+// re-observe new cards
+document.querySelectorAll('.prod-card.fade-up').forEach(el => observer.observe(el));
+
+// ── CART STATE ────────────────────────────────────────────────
+let cart = {};
+
+function openCart() {
+  document.getElementById('cart-overlay').classList.add('open');
+  document.getElementById('cart-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  renderCart();
+  updateBadge();
+  // Flash button
+  const btn = document.getElementById('btn-'+id);
+  if (btn) { btn.classList.add('added'); btn.textContent = '✓ Agregado'; setTimeout(()=>{ btn.classList.remove('added'); btn.textContent = '+ Agregar al Pedido'; }, 1400); }
+  openCart();
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  renderCart();
+  updateBadge();
+}
+
+function removeItem(id) {
+  delete cart[id];
+  renderCart();
+  updateBadge();
+}
+
+function updateBadge() {
+  const total = Object.values(cart).reduce((a,b)=>a+b, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = total;
+  badge.classList.toggle('show', total > 0);
+}
+
+function fmtCLP(n) { return '$' + n.toLocaleString('es-CL'); }
+
+function renderCart() {
+  const body = document.getElementById('cart-body');
+  const foot = document.getElementById('cart-foot');
+  const empty = document.getElementById('cart-empty');
+  const ids = Object.keys(cart);
+  if (ids.length === 0) {
+    body.innerHTML = ''; body.appendChild(empty); empty.style.display='flex';
+    foot.style.display = 'none'; return;
+  }
+  empty.style.display = 'none';
+  // Build items
+  let html = '';
+  let subtotal = 0;
+  ids.forEach(id => {
+    const p = PRODUCTS.find(x=>x.id===id);
+    if (!p) return;
+    const qty = cart[id];
+    const line = p.price * qty;
+    subtotal += line;
+    html += `<div class="cart-item">
+      <div style="flex:1">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-type">${p.type}</div>
+      </div>
+      <div class="cart-qty">
+        <button class="cart-qty-btn" onclick="changeQty('${id}',-1)">−</button>
+        <span class="cart-qty-num">${qty}</span>
+        <button class="cart-qty-btn" onclick="changeQty('${id}',1)">+</button>
+      </div>
+      <div class="cart-item-price">${fmtCLP(line)}</div>
+      <button class="cart-item-remove" onclick="removeItem('${id}')" title="Eliminar">×</button>
+    </div>`;
+  });
+  body.innerHTML = html;
+  // Footer
+  foot.style.display = 'block';
+  document.getElementById('cart-total').textContent = fmtCLP(subtotal);
+  const note = document.getElementById('cart-ship-note');
+  const diff = 50000 - subtotal;
+  if (diff <= 0) {
+    note.className = 'cart-shipping-note free';
+    note.innerHTML = '🎉 ¡Envío gratis incluido en tu pedido!';
+  } else {
+    note.className = 'cart-shipping-note';
+    note.innerHTML = `Agrega <strong>${fmtCLP(diff)}</strong> más para envío gratis 🚚`;
+  }
+}
+
+function checkoutWhatsApp() {
+  const ids = Object.keys(cart);
+  if (!ids.length) return;
+  let lines = ['*Pedido Mayorista — Puro Tabaco*', ''];
+  let total = 0;
+  ids.forEach(id => {
+    const p = PRODUCTS.find(x=>x.id===id);
+    if (!p) return;
+    const qty = cart[id];
+    const line = p.price * qty;
+    total += line;
+    lines.push(`• ${p.name} × ${qty} = ${fmtCLP(line)}`);
+  });
+  lines.push('');
+  lines.push(`*Total: ${fmtCLP(total)}*`);
+  if (total >= 50000) lines.push('✅ Envío gratis incluido');
+  lines.push('');
+  lines.push('Por favor confirmar disponibilidad y condiciones. Gracias.');
+  const msg = encodeURIComponent(lines.join('\n'));
+  window.open(`https://wa.me/56912345678?text=${msg}`, '_blank');
+}
+</script>
+</body>
+</html>
