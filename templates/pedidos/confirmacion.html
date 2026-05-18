@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}Pedido Confirmado — Puro Tabaco{% endblock %}
+{% block title %}Pedido Confirmado &mdash; Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block content %}
 
 <div style="background:var(--green); padding:120px 24px 64px;">
   <div style="max-width:720px; margin:0 auto; text-align:center;">
-    <div style="font-size:48px; margin-bottom:16px;">✓</div>
+    <div style="font-size:48px; margin-bottom:16px; color:var(--tan);">&#10003;</div>
     <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px;">
       Pedido recibido
     </div>
     <h1 style="font-family:'Playfair Display',serif; font-size:clamp(28px,4vw,44px); font-weight:700; color:var(--cream); line-height:1.1; margin-bottom:8px;">
-      ¡Gracias por tu compra!
+      Gracias por tu compra
     </h1>
     <p style="font-family:'Lora',serif; font-size:14px; color:rgba(239,230,214,0.7);">
       Hola {{ orden.cliente_nombre }}, registramos tu pedido <strong style="color:var(--tan);">{{ orden.numero_orden }}</strong>.
@@ -34,7 +35,7 @@
       </p>
       {% else %}
       <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
-        Te enviamos la confirmación a <strong>{{ orden.cliente_email }}</strong>.
+        Te enviamos la confirmacion a <strong>{{ orden.cliente_email }}</strong>.
       </p>
       {% endif %}
     </div>
@@ -49,33 +50,33 @@
       <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(200,176,138,.15); font-family:'Lora',serif; font-size:13px; color:var(--slate);">
         <span>
           {{ detalle.producto_nombre|default:detalle.producto.nombre }}
-          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span>
+          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ detalle.tipo_venta }}) &times;{{ detalle.cantidad }}</span>
         </span>
-        <span style="font-family:'Playfair Display',serif; font-weight:700; color:var(--bronze);">${{ detalle.subtotal|floatformat:0 }}</span>
+        <span style="font-family:'Playfair Display',serif; font-weight:700; color:var(--bronze);">{{ detalle.subtotal|pesos }}</span>
       </div>
       {% endfor %}
 
       <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:14px; margin-top:8px;">
         <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total</span>
-        <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">${{ orden.total|floatformat:0 }}</span>
+        <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">{{ orden.total|pesos }}</span>
       </div>
     </div>
 
-    <!-- Envío -->
+    <!-- Envio -->
     <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:32px;">
       <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:10px;">
-        Envío a
+        Envio a
       </div>
       <div style="font-family:'Lora',serif; font-size:13px; color:var(--slate); line-height:1.7;">
         {{ orden.direccion }}<br>
-        {{ orden.ciudad }}, {{ orden.region }}{% if orden.codigo_postal %} — {{ orden.codigo_postal }}{% endif %}<br>
-        {% if orden.cliente_telefono %}<span style="color:#aaa;">☎ {{ orden.cliente_telefono }}</span>{% endif %}
+        {{ orden.ciudad }}, {{ orden.region }}{% if orden.codigo_postal %} &mdash; {{ orden.codigo_postal }}{% endif %}<br>
+        {% if orden.cliente_telefono %}<span style="color:#aaa;">{{ orden.cliente_telefono }}</span>{% endif %}
       </div>
     </div>
 
     <div style="text-align:center;">
       <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt" style="font-size:11px; padding:14px 32px; letter-spacing:3px;">
-        ← Seguir comprando
+        &larr; Seguir comprando
       </a>
     </div>
   </div>

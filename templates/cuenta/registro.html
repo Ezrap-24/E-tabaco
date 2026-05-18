@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
 {% block title %}Crear Cuenta — Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block extra_css %}
 <style>
   .auth-page {
-    min-height: 100vh;
+    min-height: calc(100vh - 98px);
     background: var(--green);
     display: flex;
     align-items: center;

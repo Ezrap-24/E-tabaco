@@ -1,141 +1,452 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Catálogo — Puro Tabaco{% endblock %}
+{% block title %}
+  {% if categoria_nombre %}{{ categoria_nombre }} — {% elif oferta_activa %}Ofertas & Packs — {% elif q_actual %}Búsqueda: {{ q_actual }} — {% endif %}Catálogo · Puro Tabaco
+{% endblock %}
 {% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── PAGE HEADER ─────────────────────────────────────────────── */
+.cat-header {
+  background: var(--green);
+  padding: 120px 48px 40px;
+}
+.cat-header .inner { max-width: 1200px; margin: 0 auto; }
+.cat-header-eyebrow {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(200,176,138,0.55);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.cat-header-eyebrow span { display: inline-block; width: 32px; height: 1px; background: rgba(200,176,138,0.35); }
+.cat-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 48px); font-weight: 700;
+  color: var(--cream); line-height: 1.05; margin-bottom: 10px;
+}
+.cat-header-sub {
+  font-family: 'Lora', serif; font-size: 13px;
+  color: rgba(239,230,214,0.55); max-width: 480px;
+}
+
+/* ── SEARCH BAR en header ─────────────────────────────────────── */
+.cat-search-bar {
+  margin-top: 24px; max-width: 420px;
+  display: flex; border: 1px solid rgba(239,230,214,0.2);
+  background: rgba(255,255,255,0.07);
+}
+.cat-search-bar input {
+  flex: 1; padding: 11px 16px;
+  background: none; border: none; outline: none;
+  font-family: 'Lora', serif; font-size: 13px;
+  color: var(--cream);
+}
+.cat-search-bar input::placeholder { color: rgba(239,230,214,0.35); }
+.cat-search-bar button {
+  padding: 11px 16px; background: none; border: none;
+  cursor: pointer; color: rgba(239,230,214,0.5);
+  transition: color .2s;
+}
+.cat-search-bar button:hover { color: var(--cream); }
+
+/* ── FILTROS ACTIVOS (chips) ──────────────────────────────────── */
+.cat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; min-height: 28px; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(239,230,214,0.25);
+  padding: 4px 12px; font-family: 'Lora', serif;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--cream); text-decoration: none;
+  transition: background .2s;
+}
+.cat-chip:hover { background: rgba(255,255,255,0.18); color: var(--cream); }
+.cat-chip-x { opacity: 0.6; font-size: 13px; line-height: 1; }
+
+/* ── BODY ─────────────────────────────────────────────────────── */
+.cat-body {
+  background: #f5f4f0; min-height: 60vh;
+  padding: 40px 48px 80px;
+}
+.cat-body .inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 200px 1fr;
+  gap: 40px; align-items: start;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────────── */
+.cat-sidebar { position: sticky; top: 108px; }
+.cat-sidebar-label {
+  font-family: 'Lora', serif; font-size: 9px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: rgba(48,72,58,0.45); margin-bottom: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid #e0ddd5;
+}
+.cat-nav a {
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Lora', serif; font-size: 13px;
+  padding: 9px 14px; border-left: 2px solid transparent;
+  color: #777; text-decoration: none;
+  transition: all .18s; margin-bottom: 2px;
+}
+.cat-nav a:hover { color: var(--green); background: rgba(48,72,58,0.04); border-left-color: rgba(48,72,58,0.2); }
+.cat-nav a.active { color: var(--green); background: var(--cream); border-left-color: var(--green); font-weight: 600; }
+.cat-nav-count {
+  font-size: 10px; font-family: 'Lora', serif;
+  background: #e8e5de; color: #888;
+  padding: 1px 6px; border-radius: 20px;
+  min-width: 20px; text-align: center;
+}
+.cat-nav a.active .cat-nav-count { background: var(--green); color: var(--cream); }
+
+.cat-sidebar-divider { height: 1px; background: #e0ddd5; margin: 16px 0; }
+
+.cat-sidebar-oferta {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Lora', serif; font-size: 13px;
+  color: {% if oferta_activa %}var(--green){% else %}#888{% endif %};
+  text-decoration: none; padding: 9px 14px;
+  border-left: 2px solid {% if oferta_activa %}var(--green){% else %}transparent{% endif %};
+  background: {% if oferta_activa %}var(--cream){% else %}transparent{% endif %};
+  transition: all .18s;
+}
+.cat-sidebar-oferta:hover { color: var(--green); background: rgba(48,72,58,0.04); border-left-color: rgba(48,72,58,0.2); }
+
+/* ── MOBILE: botón filtros ────────────────────────────────────── */
+.cat-mobile-toggle {
+  display: none;
+  width: 100%; padding: 12px 16px;
+  background: white; border: 1.5px solid var(--green);
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); cursor: pointer;
+  margin-bottom: 20px; text-align: left;
+  justify-content: space-between; align-items: center;
+}
+
+/* ── GRID PRODUCTOS ───────────────────────────────────────────── */
+.cat-main-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; gap: 16px;
+}
+.cat-main-head h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700; color: var(--green); margin: 0;
+}
+.cat-count {
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 1px; color: #aaa;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+/* ── PRODUCT CARD ─────────────────────────────────────────────── */
+.pc {
+  background: white; display: flex; flex-direction: column;
+  border: 1px solid #ebebeb; overflow: hidden;
+  transition: box-shadow .25s, transform .25s;
+  text-decoration: none; color: inherit;
+}
+.pc:hover { box-shadow: 0 8px 28px rgba(48,72,58,0.10); transform: translateY(-3px); }
+
+.pc-img {
+  width: 100%; aspect-ratio: 1;
+  background: var(--cream); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; position: relative;
+}
+.pc-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.pc-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--green); color: var(--cream);
+  font-family: 'Lora', serif; font-size: 8px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 8px;
+}
+.pc-badge-oferta { background: var(--bronze); }
+
+.pc-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+.pc-cat {
+  font-family: 'Lora', serif; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--bronze); margin-bottom: 5px;
+}
+.pc-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--green); margin-bottom: 6px;
+  line-height: 1.25; flex: 1;
+}
+.pc-desc {
+  font-family: 'Lora', serif; font-size: 12px;
+  color: #999; line-height: 1.5; margin-bottom: 12px;
+}
+.pc-prices { margin-bottom: 12px; }
+.pc-price-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 5px 0; border-bottom: 1px solid #f0ede8;
+}
+.pc-price-row:last-child { border-bottom: none; }
+.pc-price-label {
+  font-family: 'Lora', serif; font-size: 9px;
+  letter-spacing: 1.5px; text-transform: uppercase; color: #bbb;
+}
+.pc-price-value {
+  font-family: 'Playfair Display', serif; font-size: 15px;
+  font-weight: 700; color: var(--green);
+}
+.pc-price-value.menor { color: var(--bronze); }
+
+.pc-sin-stock {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 1px; color: #bbb; text-align: center;
+  padding: 5px; border: 1px solid #eee; margin-bottom: 8px;
+}
+.pc-cta {
+  display: block; text-align: center;
+  background: var(--green); color: var(--cream);
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 11px; text-decoration: none;
+  transition: background .2s; margin-top: auto;
+}
+.pc-cta:hover { background: #1a2f25; color: var(--cream); }
+.pc-warn {
+  font-family: 'Lora', serif; font-size: 9px;
+  color: #bbb; padding: 5px 14px;
+  border-top: 1px solid #f0ede8;
+  background: white; letter-spacing: .5px;
+}
+
+/* ── ESTADO VACÍO ─────────────────────────────────────────────── */
+.cat-empty {
+  grid-column: 1/-1; text-align: center;
+  padding: 72px 32px;
+}
+.cat-empty-icon {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px; color: #e0ddd5;
+  margin-bottom: 16px; line-height: 1;
+}
+.cat-empty h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--green); margin-bottom: 8px;
+}
+.cat-empty p {
+  font-family: 'Lora', serif; font-size: 13px;
+  color: #bbb; margin-bottom: 24px;
+}
+.cat-empty a {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); border: 1.5px solid var(--green);
+  padding: 11px 28px; text-decoration: none;
+  transition: all .2s; display: inline-block;
+}
+.cat-empty a:hover { background: var(--green); color: var(--cream); }
+
+/* ── PAGINACIÓN ───────────────────────────────────────────────── */
+.cat-pagination {
+  display: flex; justify-content: center;
+  align-items: center; gap: 6px; margin-top: 48px;
+}
+.cat-pagination a, .cat-pagination span {
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 10px 20px; text-decoration: none; transition: all .2s;
+}
+.cat-pagination a { border: 1.5px solid #d8d5cd; color: var(--green); background: white; }
+.cat-pagination a:hover { border-color: var(--green); background: var(--green); color: var(--cream); }
+.cat-pagination span { background: var(--green); color: var(--cream); border: 1.5px solid var(--green); }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .cat-body .inner { grid-template-columns: 1fr; }
+  .cat-sidebar { position: static; display: none; }
+  .cat-sidebar.open { display: block; }
+  .cat-mobile-toggle { display: flex; }
+  .cat-body { padding: 32px 24px 60px; }
+  .cat-header { padding: 110px 24px 36px; }
+}
+@media (max-width: 560px) {
+  .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<!-- PAGE HEADER -->
-<div style="background:var(--green); padding:120px 80px 48px; margin-top:0;">
-  <div style="max-width:1200px; margin:0 auto;">
-    <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
-      <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
+<!-- ── PAGE HEADER ─────────────────────────────────────────────── -->
+<div class="cat-header">
+  <div class="inner">
+    <div class="cat-header-eyebrow">
+      <span></span>
       Catálogo Mayorista
     </div>
-    <h1 style="font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,56px); font-weight:700; color:var(--cream); line-height:1.05; margin-bottom:12px;">
-      Nuestros Productos
+    <h1>
+      {% if categoria_nombre %}
+        {{ categoria_nombre }}
+      {% elif oferta_activa %}
+        Ofertas & Packs
+      {% elif q_actual %}
+        Resultados para "{{ q_actual }}"
+      {% else %}
+        Nuestros Productos
+      {% endif %}
     </h1>
-    <p style="font-family:'Lora',serif; font-size:14px; color:rgba(239,230,214,0.65); max-width:480px;">
-      Stock permanente de las mejores marcas. Precios mayoristas para tu negocio.
-    </p>
+    <p class="cat-header-sub">Stock permanente de las mejores marcas. Precios mayoristas para tu negocio.</p>
+
+    <!-- Buscador -->
+    <form class="cat-search-bar" method="get" action="">
+      <input type="text" name="q" value="{{ q_actual }}" placeholder="Buscar productos...">
+      {% if categoria_actual %}<input type="hidden" name="categoria" value="{{ categoria_actual }}">{% endif %}
+      <button type="submit" aria-label="Buscar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </form>
+
+    <!-- Chips de filtros activos -->
+    <div class="cat-chips">
+      {% if categoria_nombre %}
+      <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}" class="cat-chip">
+        {{ categoria_nombre }} <span class="cat-chip-x">×</span>
+      </a>
+      {% endif %}
+      {% if oferta_activa %}
+      <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}" class="cat-chip">
+        Ofertas & Packs <span class="cat-chip-x">×</span>
+      </a>
+      {% endif %}
+      {% if q_actual %}
+      <a href="{% url 'productos:catalogo' %}{% if categoria_actual %}?categoria={{ categoria_actual }}{% endif %}" class="cat-chip">
+        "{{ q_actual }}" <span class="cat-chip-x">×</span>
+      </a>
+      {% endif %}
+    </div>
   </div>
 </div>
 
-<!-- CONTENIDO -->
-<div style="background:var(--off); min-height:60vh; padding:48px 80px 80px;">
-  <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns:220px 1fr; gap:48px; align-items:start;">
+<!-- ── CUERPO ───────────────────────────────────────────────────── -->
+<div class="cat-body">
+  <div class="inner">
 
-    <!-- SIDEBAR FILTROS -->
-    <aside>
-      <div style="font-family:'Lora',serif; font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:rgba(48,72,58,0.5); margin-bottom:16px;">Categorías</div>
-      <nav>
-        <a href="{% url 'productos:catalogo' %}"
-           style="display:block; font-family:'Lora',serif; font-size:13px; color:{% if not categoria_actual %}var(--green){% else %}#888{% endif %}; padding:10px 16px; border-left:2px solid {% if not categoria_actual %}var(--green){% else %}transparent{% endif %}; background:{% if not categoria_actual %}var(--cream){% else %}transparent{% endif %}; text-decoration:none; transition:all .2s; margin-bottom:2px;">
+    <!-- SIDEBAR -->
+    <button class="cat-mobile-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+      <span>Filtrar por categoría</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <aside class="cat-sidebar">
+      <div class="cat-sidebar-label">Categorías</div>
+      <nav class="cat-nav">
+        <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}"
+           class="{% if not categoria_actual and not oferta_activa %}active{% endif %}">
           Todos
+          <span class="cat-nav-count">{{ page_obj.paginator.count }}</span>
         </a>
         {% for cat in categorias %}
-        <a href="?categoria={{ cat.id }}"
-           style="display:block; font-family:'Lora',serif; font-size:13px; color:{% if categoria_actual == cat.id|stringformat:'s' %}var(--green){% else %}#888{% endif %}; padding:10px 16px; border-left:2px solid {% if categoria_actual == cat.id|stringformat:'s' %}var(--green){% else %}transparent{% endif %}; background:{% if categoria_actual == cat.id|stringformat:'s' %}var(--cream){% else %}transparent{% endif %}; text-decoration:none; transition:all .2s; margin-bottom:2px;">
+        <a href="?categoria={{ cat.id }}{% if q_actual %}&q={{ q_actual }}{% endif %}"
+           class="{% if categoria_actual == cat.id|stringformat:'s' or categoria_actual|lower == cat.nombre|lower %}active{% endif %}">
           {{ cat.nombre }}
         </a>
         {% endfor %}
       </nav>
+
+      <div class="cat-sidebar-divider"></div>
+
+      <a href="?oferta=true{% if q_actual %}&q={{ q_actual }}{% endif %}" class="cat-sidebar-oferta">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Ofertas & Packs
+      </a>
     </aside>
 
-    <!-- GRID PRODUCTOS -->
+    <!-- GRID PRINCIPAL -->
     <div>
-      <!-- Header -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
-        <h2 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green); margin:0;">
-          {% if categoria_actual %}{{ categorias|dictsort:"id"|first }}{% else %}Todos los productos{% endif %}
+      <div class="cat-main-head">
+        <h2>
+          {% if categoria_nombre %}{{ categoria_nombre }}
+          {% elif oferta_activa %}Ofertas & Packs
+          {% elif q_actual %}Resultados
+          {% else %}Todos los productos{% endif %}
         </h2>
-        <span style="font-family:'Lora',serif; font-size:12px; color:#aaa; letter-spacing:1px;">
-          {{ page_obj.paginator.count }} producto{{ page_obj.paginator.count|pluralize }}
-        </span>
+        <span class="cat-count">{{ page_obj.paginator.count }} producto{{ page_obj.paginator.count|pluralize }}</span>
       </div>
 
-      <!-- Cards -->
-      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px;">
+      <!-- Productos -->
+      <div class="cat-grid">
         {% for producto in productos %}
-        <div class="producto-card" style="display:flex; flex-direction:column;">
-          <!-- Imagen -->
-          {% if producto.imagen %}
-          <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
-          {% else %}
-          <div class="producto-img-placeholder">
-            <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:rgba(200,176,138,0.3); letter-spacing:2px;">PT</span>
-          </div>
-          {% endif %}
-
-          <!-- Body -->
-          <div style="padding:16px; flex:1; display:flex; flex-direction:column; background:var(--white);">
-            <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--bronze); margin-bottom:4px; display:block;">{{ producto.categoria }}</span>
-            <h3 style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green); margin-bottom:8px; line-height:1.2;">{{ producto.nombre }}</h3>
-            <p style="font-family:'Lora',serif; font-size:13px; color:#888; line-height:1.6; flex-grow:1; margin-bottom:12px;">{{ producto.descripcion|truncatewords:10 }}</p>
-
-            <!-- Precios -->
-            <div style="margin-bottom:12px; padding:10px 12px; background:var(--cream); border-left:2px solid var(--tan);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Unidad</span>
-                <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--bronze);">${{ producto.precio_unidad }}</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Caja</span>
-                <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green);">${{ producto.precio_caja }}</span>
-              </div>
-            </div>
-
-            {% if not producto.tiene_stock %}
-            <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; letter-spacing:1px; text-align:center; padding:4px; margin-bottom:8px; border:1px solid var(--cream-d);">Sin stock</div>
+        <a href="{{ producto.get_absolute_url }}" class="pc">
+          <div class="pc-img">
+            {% if producto.imagen %}
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% else %}
+              🚬
             {% endif %}
-
-            <a href="{{ producto.get_absolute_url }}" class="btn-add-cart">Ver Producto</a>
+            {% if producto.precio_mayor %}
+              <span class="pc-badge pc-badge-oferta">Mayorista</span>
+            {% endif %}
           </div>
-
-          <!-- Footer advertencia -->
-          <div style="padding:6px 16px; background:var(--white); border-top:1px solid var(--cream-d);">
-            <small class="advertencia-sanitaria">⚠️ El tabaco es perjudicial para la salud.</small>
+          <div class="pc-body">
+            <div class="pc-cat">{{ producto.categoria }}</div>
+            <div class="pc-name">{{ producto.nombre }}</div>
+            {% if producto.descripcion %}
+            <div class="pc-desc">{{ producto.descripcion|truncatewords:8 }}</div>
+            {% endif %}
+            <div class="pc-prices">
+              <div class="pc-price-row">
+                <span class="pc-price-label">Unidad</span>
+                <span class="pc-price-value menor">{{ producto.precio_unidad|pesos }}</span>
+              </div>
+              {% if producto.precio_mayor %}
+              <div class="pc-price-row">
+                <span class="pc-price-label">Mayor (×{{ producto.cantidad_minima_mayor }})</span>
+                <span class="pc-price-value">{{ producto.precio_mayor|pesos }}</span>
+              </div>
+              {% endif %}
+            </div>
+            {% if not producto.tiene_stock %}
+            <div class="pc-sin-stock">Sin stock</div>
+            {% endif %}
+            <span class="pc-cta">Ver Producto</span>
           </div>
-        </div>
+          <div class="pc-warn">⚠️ El tabaco es perjudicial para la salud.</div>
+        </a>
         {% empty %}
-        <div style="grid-column:1/-1; text-align:center; padding:80px 0; color:#aaa;">
-          <div style="font-size:48px; margin-bottom:16px;">🔍</div>
-          <p style="font-family:'Lora',serif; font-size:14px;">No hay productos disponibles en esta categoría.</p>
+        <div class="cat-empty">
+          <div class="cat-empty-icon">∅</div>
+          <h3>Sin resultados</h3>
+          <p>No encontramos productos{% if q_actual %} para "{{ q_actual }}"{% elif categoria_nombre %} en {{ categoria_nombre }}{% endif %}.<br>Intenta con otro término o revisa el catálogo completo.</p>
+          <a href="{% url 'productos:catalogo' %}">Ver todos los productos</a>
         </div>
         {% endfor %}
       </div>
 
       <!-- PAGINACIÓN -->
       {% if is_paginated %}
-      <div style="display:flex; justify-content:center; gap:8px; margin-top:48px;">
+      <div class="cat-pagination">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}"
-           style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; border:1.5px solid var(--tan); color:var(--green); text-decoration:none; transition:all .2s; background:transparent;">
-          ← Anterior
-        </a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">← Anterior</a>
         {% endif %}
-        <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; background:var(--green); color:var(--cream);">
-          {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
-        </span>
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}"
-           style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; border:1.5px solid var(--tan); color:var(--green); text-decoration:none; transition:all .2s; background:transparent;">
-          Siguiente →
-        </a>
+        <a href="?page={{ page_obj.next_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">Siguiente →</a>
         {% endif %}
       </div>
       {% endif %}
-    </div>
 
+    </div><!-- /cat-main -->
   </div>
 </div>
-
-<!-- Responsive -->
-<style>
-@media (max-width:768px) {
-  .catalogo-layout { grid-template-columns:1fr !important; padding:32px 20px 60px !important; }
-}
-</style>
 
 {% endblock %}

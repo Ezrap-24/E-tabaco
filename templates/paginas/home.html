@@ -1,371 +1,1065 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Puro Tabaco — Mayorista de Tabaco Premium{% endblock %}
+{% load static pt_filters %}
+{% block title %}Puro Tabaco — Tabaco Premium de Calidad{% endblock %}
 {% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
+{% block extra_css %}
+<style>
+:root {
+  --green: #30483A;
+  --bronze: #8B7355;
+  --tan: #C8808A;
+  --cream: #EFE6D6;
+  --dark: #343A3A;
+}
+
+/* ── HERO ────────────────────────────────────────────────────────── */
+#hero {
+  height: 100vh;
+  min-height: 600px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;        /* contenido arriba */
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #EFE6D6 0%, #ffffff 100%);
+  padding-bottom: 110px;          /* espacio para los banners superpuestos */
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  opacity: 0.35;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 65%);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 700px;
+  padding: 100px 40px 40px;       /* empuja el texto hacia abajo del ticker+nav */
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 800;
+  color: white;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero-title em {
+  display: block;
+  font-style: italic;
+  color: var(--tan);
+}
+
+.hero-sub {
+  font-family: 'Lora', serif;
+  font-size: 17px;
+  color: rgba(239, 230, 214, 0.85);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-actions a {
+  min-width: 180px;
+  text-align: center;
+}
+
+.btn-primary-pt {
+  background: var(--bronze);
+  color: white;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 0;
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  height: 50px;
+  line-height: 1;
+}
+
+.btn-primary-pt:hover {
+  background: #6d5644;
+  transform: translateY(-2px);
+}
+
+.btn-ghost-pt {
+  background: transparent;
+  color: var(--cream);
+  padding: 15px 40px;
+  border: 1.5px solid rgba(239,230,214,0.6);
+  border-radius: 0;
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  height: 50px;
+  line-height: 1;
+}
+
+.btn-ghost-pt:hover {
+  background: var(--cream);
+  color: var(--green);
+  border-color: var(--cream);
+}
+
+/* ── BANNERS ACCESO RAPIDO ────────────────────────────────────── */
+#hero-banners {
+  position: relative;
+  z-index: 20;
+  margin-top: -80px;              /* se superpone al hero */
+  padding: 0 48px 0;
+}
+
+#hero-banners .inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.hb-card {
+  display: block;
+  text-decoration: none;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.hb-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.16);
+}
+
+.hb-card-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  background: var(--green);       /* placeholder hasta tener imagen */
+}
+
+/* Placeholders de color por categoría */
+.hb-card:nth-child(1) .hb-card-img { background: linear-gradient(135deg, #30483A 0%, #1a2f25 100%); }
+.hb-card:nth-child(2) .hb-card-img { background: linear-gradient(135deg, #5a7a62 0%, #30483A 100%); }
+.hb-card:nth-child(3) .hb-card-img { background: linear-gradient(135deg, #8B7355 0%, #6d5644 100%); }
+.hb-card:nth-child(4) .hb-card-img { background: linear-gradient(135deg, #3d5c46 0%, #243b2c 100%); }
+.hb-card:nth-child(5) .hb-card-img { background: linear-gradient(135deg, #C8808A 0%, #a05a65 100%); }
+
+.hb-card-body {
+  padding: 14px 16px 16px;
+  border-top: 2px solid var(--green);
+}
+
+.hb-card-label {
+  font-family: 'Lora', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 4px;
+}
+
+.hb-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.25;
+}
+
+/* ── RESPONSIVE banners ──────────────────────────────────────── */
+@media (max-width: 1000px) {
+  #hero-banners .inner { grid-template-columns: repeat(3, 1fr); }
+  .hb-card:nth-child(4),
+  .hb-card:nth-child(5) { display: none; }
+}
+
+@media (max-width: 640px) {
+  #hero-banners { margin-top: -48px; padding: 0 20px; }
+  #hero-banners .inner { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hb-card:nth-child(5) { display: none; }
+  .hb-card:nth-child(4) { display: block; }
+}
+
+/* ── SECCIONES LEGACY (ocultar — reemplazadas abajo) ─────────────── */
+#gallery, #story, #featured, #mayorista { display: none; }
+
+/* ── ETIQUETA DE SECCIÓN ─────────────────────────────── */
+.sec-label {
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 12px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 0;
+  line-height: 1.15;
+}
+.sec-title em { font-style: italic; color: var(--bronze); }
+
+/* ── CATEGORÍAS ──────────────────────────────────────── */
+#categorias {
+  padding: 72px 48px;
+  background: #fff;
+}
+#categorias .inner { max-width: 1200px; margin: 0 auto; }
+.cat-head {
+  display: flex; align-items: flex-end;
+  justify-content: space-between; margin-bottom: 36px; gap: 16px;
+}
+.cat-ver-todo {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--bronze); text-decoration: none;
+  border-bottom: 1px solid var(--bronze); padding-bottom: 2px;
+  transition: color .2s, border-color .2s; white-space: nowrap; flex-shrink: 0;
+}
+.cat-ver-todo:hover { color: var(--green); border-color: var(--green); }
+.cat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.cat-card {
+  position: relative; aspect-ratio: 3/4; overflow: hidden;
+  background: var(--cream-d); cursor: pointer; text-decoration: none;
+}
+.cat-card-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, var(--green) 0%, var(--green-x) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  transition: transform .5s cubic-bezier(.25,.46,.45,.94);
+}
+.cat-card:hover .cat-card-bg { transform: scale(1.06); }
+.cat-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 55%);
+}
+.cat-card-label { position: absolute; bottom: 18px; left: 18px; right: 18px; }
+.cat-card-label span {
+  display: block; font-family: 'Playfair Display', serif;
+  font-size: 14px; font-weight: 700; color: #fff;
+}
+.cat-card-label small {
+  font-family: 'Lora', serif; font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.55);
+  margin-top: 3px; display: block;
+}
+
+/* ── BANNER MAYORISTA ────────────────────────────────── */
+#banner-mayorista { background: var(--green); padding: 48px; }
+#banner-mayorista .inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+}
+.bm-copy h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700;
+  color: var(--cream); margin-bottom: 6px; line-height: 1.2;
+}
+.bm-copy p {
+  font-family: 'Lora', serif; font-size: 13px;
+  color: rgba(239,230,214,0.7); max-width: 420px;
+}
+.bm-cta {
+  flex-shrink: 0; font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--green); background: var(--cream);
+  padding: 14px 32px; text-decoration: none; transition: background .2s; white-space: nowrap;
+}
+.bm-cta:hover { background: var(--tan); color: var(--green); }
+
+/* ── DESTACADOS ──────────────────────────────────────── */
+#dest-section { padding: 72px 48px; background: #fafaf8; }
+#dest-section .inner { max-width: 1200px; margin: 0 auto; }
+.dest-head {
+  display: flex; align-items: flex-end;
+  justify-content: space-between; margin-bottom: 36px; gap: 16px;
+}
+.dest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.dest-card {
+  background: #fff; border: 1px solid #ebebeb; overflow: hidden;
+  transition: box-shadow .25s, transform .25s;
+  text-decoration: none; color: inherit; display: block;
+}
+.dest-card:hover {
+  box-shadow: 0 8px 28px rgba(48,72,58,0.10); transform: translateY(-4px);
+}
+.dest-card-img {
+  width: 100%; aspect-ratio: 1; background: var(--cream-d);
+  overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 52px;
+}
+.dest-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.dest-card-body { padding: 16px 18px 18px; }
+.dest-card-cat {
+  font-family: 'Lora', serif; font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--bronze); margin-bottom: 5px;
+}
+.dest-card-name {
+  font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700;
+  color: var(--green); margin-bottom: 12px; line-height: 1.3;
+}
+.dest-card-foot { display: flex; align-items: center; justify-content: space-between; }
+.dest-card-price {
+  font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--green);
+}
+.dest-card-link {
+  font-family: 'Lora', serif; font-size: 9px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--bronze);
+  border-bottom: 1px solid transparent; transition: border-color .2s;
+}
+.dest-card:hover .dest-card-link { border-color: var(--bronze); }
+
+/* ── NEWSLETTER ──────────────────────────────────────── */
+#nl-section { padding: 64px 48px; background: #111; text-align: center; }
+#nl-section .inner { max-width: 520px; margin: 0 auto; }
+#nl-section .sec-label { color: var(--tan); }
+#nl-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2rem); font-weight: 700;
+  color: #fff; margin-bottom: 10px; line-height: 1.2;
+}
+#nl-section p {
+  font-family: 'Lora', serif; font-size: 13px;
+  color: rgba(255,255,255,0.4); margin-bottom: 28px;
+}
+.nl-form {
+  display: flex; max-width: 400px; margin: 0 auto;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.nl-form input {
+  flex: 1; padding: 13px 16px; border: none;
+  background: rgba(255,255,255,0.06);
+  font-family: 'Lora', serif; font-size: 12px; color: #fff; outline: none;
+}
+.nl-form input::placeholder { color: rgba(255,255,255,0.3); }
+.nl-form button {
+  padding: 13px 20px; background: var(--bronze); color: #fff; border: none;
+  font-family: 'Lora', serif; font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; transition: background .2s; white-space: nowrap;
+}
+.nl-form button:hover { background: var(--bronze-d); }
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 900px) {
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .dest-grid { grid-template-columns: repeat(2, 1fr); }
+  #banner-mayorista .inner { flex-direction: column; align-items: flex-start; }
+  #categorias, #dest-section, #nl-section, #banner-mayorista { padding: 52px 32px; }
+}
+@media (max-width: 580px) {
+  #categorias, #dest-section, #nl-section, #banner-mayorista { padding: 40px 20px; }
+  .cat-grid { gap: 10px; }
+  .dest-grid { grid-template-columns: 1fr; }
+  .nl-form { flex-direction: column; }
+  .nl-form button { padding: 12px; }
+}
+
+/* ── REVEAL ON SCROLL ────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity .65s cubic-bezier(.25,.46,.45,.94),
+              transform .65s cubic-bezier(.25,.46,.45,.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* escalonar hijos dentro de la sección */
+.reveal-children > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.reveal-children.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0s; }
+.reveal-children.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: .1s; }
+.reveal-children.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: .2s; }
+.reveal-children.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: .3s; }
+
+/* ── PLACEHOLDER (no borrar — mantiene estructura) ───── */
+#gallery .container { max-width: 1200px; margin: 0 auto; }
+
+.section-tag {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 56px;
+  max-width: 500px;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--bronze);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+  margin-bottom: 60px;
+}
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: pointer;
+  group;
+}
+
+.gallery-item-image {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--cream) 0%, #ddd3c0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: bold;
+  transition: transform 0.4s ease;
+}
+
+.gallery-item:hover .gallery-item-image {
+  transform: scale(1.05);
+}
+
+.gallery-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(48, 72, 58, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  padding: 20px;
+  text-align: center;
+}
+
+.gallery-item:hover .gallery-item-overlay {
+  opacity: 1;
+}
+
+.gallery-item-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+
+.gallery-item-desc {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: rgba(239, 230, 214, 0.8);
+  letter-spacing: 1px;
+}
+
+/* ── STORY ───────────────────────────────────────────────────────── */
+#story {
+  padding: 100px 40px;
+  background: white;
+}
+
+#story .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.story-image {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--green), #1a2f25);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.story-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.story-content h2 em {
+  display: block;
+  font-style: italic;
+  color: var(--bronze);
+}
+
+.story-content p {
+  font-family: 'Lora', serif;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.story-cta {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  text-decoration: none;
+  border: 2px solid var(--green);
+  padding: 12px 28px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.story-cta:hover {
+  background: var(--green);
+  color: white;
+}
+
+/* ── FEATURED ────────────────────────────────────────────────────── */
+#featured {
+  padding: 100px 40px;
+  background: #fafaf8;
+}
+
+#featured .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+  margin-top: 56px;
+}
+
+.featured-card {
+  background: white;
+  border-radius: 2px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #efefef;
+}
+
+.featured-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(48, 72, 58, 0.12);
+}
+
+.featured-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--cream) 0%, #ddd3c0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.featured-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featured-card-content {
+  padding: 28px;
+}
+
+.featured-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+.featured-card p {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.featured-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--bronze);
+  margin-bottom: 16px;
+}
+
+.featured-btn {
+  background: var(--bronze);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.featured-btn:hover {
+  background: #6d5644;
+}
+
+/* ── NEWSLETTER ──────────────────────────────────────────────────── */
+#newsletter {
+  padding: 80px 40px;
+  background: var(--green);
+  text-align: center;
+}
+
+#newsletter .container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#newsletter h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+#newsletter p {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: rgba(239, 230, 214, 0.8);
+  margin-bottom: 40px;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.newsletter-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 14px 20px;
+  border: none;
+  background: white;
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: var(--dark);
+  border-radius: 0;
+}
+
+.newsletter-form input::placeholder {
+  color: #aaa;
+}
+
+.newsletter-form button {
+  padding: 14px 32px;
+  background: var(--bronze);
+  color: white;
+  border: none;
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.newsletter-form button:hover {
+  background: #6d5644;
+}
+
+/* ── MAYORISTA ───────────────────────────────────────────────────── */
+#mayorista {
+  padding: 80px 40px;
+  background: var(--cream);
+}
+
+#mayorista .container {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 2px solid var(--green);
+  border-left-width: 8px;
+  padding: 40px;
+  text-align: center;
+}
+
+#mayorista h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+#mayorista p {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.mayorista-btn {
+  background: var(--green);
+  color: var(--cream);
+  border: none;
+  padding: 12px 32px;
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.mayorista-btn:hover {
+  background: #1a2f25;
+  color: var(--cream);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #hero { min-height: 80vh; }
+  .hero-content { padding: 40px 24px; }
+  .hero-title { font-size: 2rem; }
+  .hero-sub { font-size: 14px; }
+
+  #story .container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #gallery, #story, #featured, #newsletter, #mayorista {
+    padding: 60px 24px;
+  }
+
+  #newsletter .container { max-width: 100%; }
+  #mayorista .container { padding: 28px 20px; }
+
+  .newsletter-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .newsletter-form input,
+  .newsletter-form button {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<!-- ── HERO ──────────────────────────────────────────────── -->
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
 <section id="hero">
   <div class="hero-bg">
-    {% if hero_imagen %}
-    <img src="{{ hero_imagen }}" alt="Puro Tabaco" class="hero-img-main">
-    {% else %}
-    <!-- Placeholder hasta tener foto -->
-    <svg class="hero-img-placeholder" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <pattern id="heroHatch" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
-          <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(200,176,138,0.12)" stroke-width="1"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#heroHatch)"/>
-      <text x="50%" y="47%" text-anchor="middle" font-family="Lora, serif" font-size="13" fill="rgba(200,176,138,0.25)" letter-spacing="3">fotografía del local</text>
-      <text x="50%" y="53%" text-anchor="middle" font-family="Lora, serif" font-size="11" fill="rgba(200,176,138,0.18)" letter-spacing="2">bodega · productos · ambiente</text>
-    </svg>
-    {% endif %}
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="{{ MEDIA_URL }}hero/Video_Generado_Listo_Para_Ver.mp4" type="video/mp4">
+    </video>
     <div class="hero-gradient"></div>
   </div>
-
   <div class="hero-content">
-    <div class="hero-eyebrow">Mayorista de Tabaco Premium · Est. 1902</div>
-    <h1 class="hero-title">Tradición que<br><em>mueve negocios</em></h1>
-    <p class="hero-sub">Desde 1902, conectamos empresas confiables con tabaco premium de calidad mundial. Stock permanente, precios mayoristas y despachos rápidos a todo Chile.</p>
+    <h1 class="hero-title">El tabaco que<br><em>tu negocio necesita</em></h1>
+    <p class="hero-sub">
+      Stock permanente, precios mayoristas y despacho en 24–48 hrs a todo Chile. Calidad garantizada en cada pedido.
+    </p>
     <div class="hero-actions">
       <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
-      <a href="#brands" class="btn-ghost-pt">Ver Marcas Líderes</a>
-    </div>
-  </div>
-
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    <span>Scroll</span>
-  </div>
-</section>
-
-<!-- ── STATS BAND ────────────────────────────────────────── -->
-<section id="stats">
-  <div class="stats-inner">
-    <div class="stat-item">
-      <div class="stat-num">120+</div>
-      <div class="stat-label">Años de Herencia</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">8+</div>
-      <div class="stat-label">Marcas Líderes</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">48 h</div>
-      <div class="stat-label">Despacho Promedio</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Productos Originales</div>
+      <a href="#dest-section" class="btn-ghost-pt js-smooth-scroll">Productos Destacados</a>
     </div>
   </div>
 </section>
 
-<!-- ── PRODUCTOS DESTACADOS ──────────────────────────────── -->
-{% if destacados %}
-<section style="background:var(--off); padding:100px 80px;">
-  <div style="max-width:1200px; margin:0 auto;">
-    <div class="section-header">
-      <div class="section-tag fade-up">Catálogo Mayorista</div>
-      <h2 class="section-title fade-up d1">Productos Destacados</h2>
-    </div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-top:56px;">
-      {% for producto in destacados %}
-      <div class="producto-card fade-up">
-        {% if producto.imagen %}
-        <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
-        {% else %}
-        <div class="producto-img-placeholder">
-          <span style="font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:rgba(200,176,138,0.3); letter-spacing:2px;">PT</span>
-        </div>
-        {% endif %}
-        <div style="padding:16px; flex:1; display:flex; flex-direction:column;">
-          <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--green); margin-bottom:2px;">{{ producto.nombre }}</div>
-          <div style="font-family:'Lora',serif; font-size:10px; color:#aaa; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;">{{ producto.categoria }}</div>
-          <p style="font-family:'Lora',serif; font-size:13px; color:#777; line-height:1.6; flex-grow:1;">{{ producto.descripcion|truncatewords:12 }}</p>
-          <div style="margin-top:12px;">
-            <span class="precio-label">Unidad: </span><span class="precio">${{ producto.precio_unidad }}</span>
-          </div>
-          <div style="margin-bottom:12px;">
-            <span class="precio-label">Caja: </span><span class="precio">${{ producto.precio_caja }}</span>
-          </div>
-          <a href="{{ producto.get_absolute_url }}" class="btn-add-cart">Ver Producto</a>
-        </div>
-        <div style="padding:8px 16px; border-top:1px solid var(--cream-d);">
-          <small class="advertencia-sanitaria">⚠️ El tabaco es perjudicial para la salud.</small>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div style="text-align:center; margin-top:48px;">
-      <a href="{% url 'productos:catalogo' %}" class="btn-outline-verde">Ver todos los productos</a>
-    </div>
-  </div>
-</section>
-{% endif %}
+<!-- ── BANNERS ACCESO RÁPIDO ──────────────────────────────────────── -->
+<section id="hero-banners">
+  <div class="inner">
 
-<!-- ── ABOUT ──────────────────────────────────────────────── -->
-<section id="about">
-  <div class="about-inner">
-    <div class="about-img-wrap fade-up">
-      <div class="about-img-placeholder">
-        <!-- Reemplazar con foto real del local cuando esté disponible -->
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="aboutHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(139,115,85,0.18)" stroke-width="1"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#aboutHatch)"/>
-          <text x="50%" y="46%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">foto del local</text>
-          <text x="50%" y="53%" text-anchor="middle" font-family="Lora, serif" font-size="12" fill="rgba(139,115,85,0.45)" letter-spacing="2">o bodega</text>
-        </svg>
+    <!-- Banner 1: Tabaco -->
+    <a href="{% url 'productos:catalogo' %}?categoria=tabaco" class="hb-card">
+      <div class="hb-card-img"></div>
+      <div class="hb-card-body">
+        <div class="hb-card-label">Categoría</div>
+        <div class="hb-card-title">Tabacos</div>
       </div>
-      <div class="about-img-deco"></div>
-    </div>
-    <div>
-      <div class="about-tag fade-up">Sobre Nosotros</div>
-      <h2 class="about-title fade-up d1">Herencia que inspira.<br><em>Eficiencia que</em> construye.</h2>
-      <p class="about-body fade-up d2">Somos mayoristas de tabaco premium con más de 120 años de historia. Nuestra misión es simple: conectar negocios confiables con las mejores marcas del mundo, garantizando stock permanente, precios competitivos y un servicio a la altura de tu empresa.</p>
-      <div class="about-values">
-        <div class="value-card fade-up d1">
-          <div class="value-name">Herencia</div>
-          <div class="value-desc">120 años de tradición en la industria tabacalera</div>
-        </div>
-        <div class="value-card fade-up d2">
-          <div class="value-name">Confianza</div>
-          <div class="value-desc">Distribuidores certificados de marcas líderes</div>
-        </div>
-        <div class="value-card fade-up d3">
-          <div class="value-name">Calidad</div>
-          <div class="value-desc">Productos 100% originales con sellos fiscales válidos</div>
-        </div>
-        <div class="value-card fade-up d4">
-          <div class="value-name">Eficiencia</div>
-          <div class="value-desc">Despachos rápidos a todo Chile en 2–3 días hábiles</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── BRANDS ─────────────────────────────────────────────── -->
-<section id="brands">
-  <div class="brands-inner">
-    <div class="brands-left">
-      <div class="brands-tag fade-up">Marcas Certificadas</div>
-      <h2 class="brands-title fade-up d1">Distribuidores<br>oficiales de las<br><em>mejores marcas</em></h2>
-      <p class="brands-desc fade-up d2">Garantía de autenticidad y frescura en cada producto. Trabajamos directamente con los fabricantes para asegurar la mejor calidad para tu negocio.</p>
-      <a href="#cta-final" class="btn-ghost-pt fade-up d3">Solicitar Acceso</a>
-    </div>
-    <div class="brands-list">
-      <div class="brand-row fade-up">
-        <div>
-          <div class="brand-name">Kuroko</div>
-          <div class="brand-meta">Tabaco · Distribución mayorista</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d1">
-        <div>
-          <div class="brand-name">Bristol</div>
-          <div class="brand-meta">Cigarrillo · Stock permanente</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d2">
-        <div>
-          <div class="brand-name">Madison</div>
-          <div class="brand-meta">Cigarrillo · Distribución nacional</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d3">
-        <div>
-          <div class="brand-name">Verso</div>
-          <div class="brand-meta">Cigarrillo · Precios mayoristas</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d4">
-        <div>
-          <div class="brand-name">Tennesie</div>
-          <div class="brand-meta">Tabaco · Calidad certificada</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up">
-        <div>
-          <div class="brand-name">Stanley</div>
-          <div class="brand-meta">Tabaco · Distribución mayorista</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d1">
-        <div>
-          <div class="brand-name">Red Field</div>
-          <div class="brand-meta">Tabaco · Stock permanente</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-      <div class="brand-row fade-up d2">
-        <div>
-          <div class="brand-name">Roadhouse</div>
-          <div class="brand-meta">Tabaco · Precios mayoristas</div>
-        </div>
-        <span class="brand-arrow">→</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── VENTAJAS ───────────────────────────────────────────── -->
-<section id="ventajas">
-  <div class="ventajas-inner">
-    <div class="section-header">
-      <div class="section-tag fade-up">Ventajas Mayorista</div>
-      <h2 class="section-title fade-up d1">Por qué elegir<br>Puro Tabaco</h2>
-    </div>
-    <div class="ventajas-grid">
-      <div class="ventaja-card fade-up">
-        <div class="ventaja-num">01</div>
-        <div class="ventaja-name">Stock Permanente</div>
-        <div class="ventaja-desc">Inventario actualizado de todas nuestras marcas. Sin quiebres de stock para tu negocio.</div>
-      </div>
-      <div class="ventaja-card fade-up d1">
-        <div class="ventaja-num">02</div>
-        <div class="ventaja-name">Precios Mayoristas</div>
-        <div class="ventaja-desc">Márgenes competitivos diseñados para distribuidores y negocios de volumen.</div>
-      </div>
-      <div class="ventaja-card fade-up d2">
-        <div class="ventaja-num">03</div>
-        <div class="ventaja-name">Despachos Rápidos</div>
-        <div class="ventaja-desc">Entregas a todo Chile en 2–3 días hábiles. Logística eficiente y confiable.</div>
-      </div>
-      <div class="ventaja-card fade-up d3">
-        <div class="ventaja-num">04</div>
-        <div class="ventaja-name">Atención Personalizada</div>
-        <div class="ventaja-desc">Equipo especializado dedicado a tu negocio. Ejecutivo comercial asignado.</div>
-      </div>
-      <div class="ventaja-card fade-up d4">
-        <div class="ventaja-num">05</div>
-        <div class="ventaja-name">Garantía de Autenticidad</div>
-        <div class="ventaja-desc">Productos 100% originales con sellos fiscales válidos. Trazabilidad completa.</div>
-      </div>
-      <div class="ventaja-card fade-up" style="background:var(--green);">
-        <div class="ventaja-num" style="color:rgba(200,176,138,0.4);">+</div>
-        <div class="ventaja-name" style="color:var(--cream);">¿Listo para comenzar?</div>
-        <div class="ventaja-desc" style="color:rgba(239,230,214,0.6); margin-bottom:20px;">Solicita acceso mayorista y descubre nuestros programas especiales.</div>
-        <a href="#cta-final" class="btn-primary-pt" style="font-size:10px; padding:12px 20px;">Solicitar Acceso</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CÓMO FUNCIONA ──────────────────────────────────────── -->
-<section id="como">
-  <div class="como-inner">
-    <div class="section-header">
-      <div class="section-tag fade-up">Proceso</div>
-      <h2 class="section-title fade-up d1">Cómo trabajamos<br>contigo</h2>
-    </div>
-    <div class="pasos-grid">
-      <div class="paso fade-up">
-        <div class="paso-num">01</div>
-        <div class="paso-dot"></div>
-        <div class="paso-name">Solicitar</div>
-        <div class="paso-desc">Pide acceso mayorista o explora nuestro catálogo completo de marcas y precios.</div>
-      </div>
-      <div class="paso fade-up d1">
-        <div class="paso-num">02</div>
-        <div class="paso-dot"></div>
-        <div class="paso-name">Revisar</div>
-        <div class="paso-desc">Explora marcas, referencias y condiciones especiales para tu volumen.</div>
-      </div>
-      <div class="paso fade-up d2">
-        <div class="paso-num">03</div>
-        <div class="paso-dot"></div>
-        <div class="paso-name">Encargar</div>
-        <div class="paso-desc">Realiza tu pedido directamente desde el carrito con condiciones mayoristas.</div>
-      </div>
-      <div class="paso fade-up d3">
-        <div class="paso-num">04</div>
-        <div class="paso-dot"></div>
-        <div class="paso-name">Recibir</div>
-        <div class="paso-desc">Despacho rápido a tu negocio en 2–3 días hábiles a todo Chile.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CLIENTES ───────────────────────────────────────────── -->
-<section id="clientes">
-  <div class="clientes-deco">
-    <svg width="500" height="560" viewBox="0 0 100 112">
-      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)" stroke="none"/>
-    </svg>
-  </div>
-  <div class="clientes-inner">
-    <div>
-      <div class="about-tag fade-up">¿Quiénes nos eligen?</div>
-      <h2 class="clientes-title fade-up d1">Empresas de todos<br>los tamaños<br><em>confían en nosotros</em></h2>
-      <p class="clientes-body fade-up d2">Trabajamos con negocios serios que valoran la confiabilidad, los precios competitivos y el servicio profesional. Si tu empresa mueve tabaco, somos tu mayorista.</p>
-    </div>
-    <div class="clientes-list">
-      <div class="cliente-item fade-up">
-        <div class="cliente-check">✓</div>
-        <div>
-          <div class="cliente-name">Distribuidoras</div>
-          <div class="cliente-sub">Distribuidoras de bebidas, cigarrería y abarrotes</div>
-        </div>
-      </div>
-      <div class="cliente-item fade-up d1">
-        <div class="cliente-check">✓</div>
-        <div>
-          <div class="cliente-name">Locales de Detalle</div>
-          <div class="cliente-sub">Botillerías, minimarkets y locales especializados</div>
-        </div>
-      </div>
-      <div class="cliente-item fade-up d2">
-        <div class="cliente-check">✓</div>
-        <div>
-          <div class="cliente-name">Gastronomía y Esparcimiento</div>
-          <div class="cliente-sub">Restaurantes, bares y clubes nocturnos</div>
-        </div>
-      </div>
-      <div class="cliente-item fade-up d3">
-        <div class="cliente-check">✓</div>
-        <div>
-          <div class="cliente-name">Mayoristas y Revendedores</div>
-          <div class="cliente-sub">Operadores que redistribuyen a la cadena</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CTA FINAL ──────────────────────────────────────────── -->
-<section id="cta-final">
-  <div class="cta-deco-shield">
-    <svg width="700" height="800" viewBox="0 0 100 112">
-      <path d="M50 4 L96 22 L96 58 C96 82 76 100 50 108 C24 100 4 82 4 58 L4 22 Z" fill="var(--tan)"/>
-    </svg>
-  </div>
-  <div class="cta-tag fade-up">Acceso Mayorista</div>
-  <h2 class="cta-title fade-up d1">¿Listo para llevar tu<br>negocio al <em>siguiente nivel?</em></h2>
-  <p class="cta-body fade-up d2">Somos mayoristas con más de 120 años de experiencia. Pregúntanos sobre volúmenes, condiciones especiales y programas de distribución para tu empresa.</p>
-  <div class="cta-actions fade-up d3">
-    <a href="{% url 'paginas:contacto' %}" class="btn-primary-pt" style="font-size:12px; padding:18px 44px; letter-spacing:3px;">Solicitar Acceso Mayorista</a>
-    <a href="https://wa.me/56912345678" class="cta-wp" target="_blank" rel="noopener">
-      <div class="cta-wp-icon">💬</div>
-      <span>+56 9 1234 5678</span>
     </a>
-    <div style="font-family:'Lora',serif; font-size:12px; color:rgba(200,176,138,0.5);">contacto@purotabaco.cl</div>
+
+    <!-- Banner 2: Rolling & Papelillos -->
+    <a href="{% url 'productos:catalogo' %}?categoria=rolling" class="hb-card">
+      <div class="hb-card-img"></div>
+      <div class="hb-card-body">
+        <div class="hb-card-label">Categoría</div>
+        <div class="hb-card-title">Rolling & Papelillos</div>
+      </div>
+    </a>
+
+    <!-- Banner 3: Filtros -->
+    <a href="{% url 'productos:catalogo' %}?categoria=filtros" class="hb-card">
+      <div class="hb-card-img"></div>
+      <div class="hb-card-body">
+        <div class="hb-card-label">Categoría</div>
+        <div class="hb-card-title">Filtros & Tips</div>
+      </div>
+    </a>
+
+    <!-- Banner 4: Accesorios -->
+    <a href="{% url 'productos:catalogo' %}?categoria=accesorios" class="hb-card">
+      <div class="hb-card-img"></div>
+      <div class="hb-card-body">
+        <div class="hb-card-label">Categoría</div>
+        <div class="hb-card-title">Accesorios</div>
+      </div>
+    </a>
+
+    <!-- Banner 5: Ofertas & Packs -->
+    <a href="{% url 'productos:catalogo' %}?oferta=true" class="hb-card">
+      <div class="hb-card-img"></div>
+      <div class="hb-card-body">
+        <div class="hb-card-label">Destacado</div>
+        <div class="hb-card-title">Ofertas & Packs</div>
+      </div>
+    </a>
+
   </div>
 </section>
 
+<!-- ── CATEGORÍAS ──────────────────────────────────────────────── -->
+<section id="categorias" class="reveal">
+  <div class="inner">
+    <div class="cat-head">
+      <div>
+        <span class="sec-label">Nuestro Surtido</span>
+        <h2 class="sec-title">Explora por<br><em>Categoría</em></h2>
+      </div>
+      <a href="{% url 'productos:catalogo' %}" class="cat-ver-todo">Ver todo el catálogo →</a>
+    </div>
+    <div class="cat-grid reveal-children">
+      <a href="{% url 'productos:catalogo' %}?categoria=tabaco" class="cat-card">
+        <div class="cat-card-bg">🚬</div>
+        <div class="cat-card-overlay"></div>
+        <div class="cat-card-label">
+          <span>Tabaco</span>
+          <small>Virginia · Burley · Oriental</small>
+        </div>
+      </a>
+      <a href="{% url 'productos:catalogo' %}?categoria=rolling" class="cat-card">
+        <div class="cat-card-bg">📜</div>
+        <div class="cat-card-overlay"></div>
+        <div class="cat-card-label">
+          <span>Papelillos & Rolling</span>
+          <small>Clasico · Slim · Cónicos</small>
+        </div>
+      </a>
+      <a href="{% url 'productos:catalogo' %}?categoria=filtros" class="cat-card">
+        <div class="cat-card-bg">🌿</div>
+        <div class="cat-card-overlay"></div>
+        <div class="cat-card-label">
+          <span>Filtros & Tips</span>
+          <small>Regular · Slim · Carbón</small>
+        </div>
+      </a>
+      <a href="{% url 'productos:catalogo' %}?categoria=accesorios" class="cat-card">
+        <div class="cat-card-bg">⚙️</div>
+        <div class="cat-card-overlay"></div>
+        <div class="cat-card-label">
+          <span>Accesorios</span>
+          <small>Máquinas · Bolsas · Cajas</small>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── BANNER MAYORISTA ────────────────────────────────────────── -->
+<section id="banner-mayorista" class="reveal">
+  <div class="inner">
+    <div class="bm-copy">
+      <h3>¿Buscas precios<br>mayoristas?</h3>
+      <p>Contamos con programas especiales para distribuidores y revendedores con stock permanente y despacho prioritario.</p>
+    </div>
+    <a href="{% url 'paginas:contacto' %}?ref=mayorista" class="bm-cta">Solicitar acceso →</a>
+  </div>
+</section>
+
+<!-- ── PRODUCTOS DESTACADOS ───────────────────────────────────── -->
+<section id="dest-section" class="reveal">
+  <div class="inner">
+    <div class="dest-head">
+      <div>
+        <span class="sec-label">Lo Más Vendido</span>
+        <h2 class="sec-title">Productos<br><em>Destacados</em></h2>
+      </div>
+      <a href="{% url 'productos:catalogo' %}" class="cat-ver-todo">Ver catálogo completo →</a>
+    </div>
+    <div class="dest-grid reveal-children">
+      {% if destacados %}
+        {% for producto in destacados %}
+        <a href="{{ producto.get_absolute_url }}" class="dest-card">
+          <div class="dest-card-img">
+            {% if producto.imagen %}
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% else %}
+              🚬
+            {% endif %}
+          </div>
+          <div class="dest-card-body">
+            <div class="dest-card-cat">{{ producto.categoria }}</div>
+            <div class="dest-card-name">{{ producto.nombre }}</div>
+            <div class="dest-card-foot">
+              <span class="dest-card-price">{{ producto.precio_unidad|pesos }}</span>
+              <span class="dest-card-link">Ver →</span>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div style="grid-column:1/-1; padding: 48px; text-align:center; color:#bbb; font-family:'Lora',serif; font-size:13px; letter-spacing:1px;">
+          Pronto agregaremos nuestros productos destacados.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ── NEWSLETTER ────────────────────────────────────────────── -->
+<section id="nl-section" class="reveal">
+  <div class="inner">
+    <span class="sec-label">Mantente al dia</span>
+    <h2>Ofertas y novedades</h2>
+    <p>Recibe descuentos exclusivos y lanzamientos directamente en tu correo.</p>
+    <form class="nl-form" method="post" action="{% url 'paginas:contacto' %}">
+      {% csrf_token %}
+      <input type="email" name="email" placeholder="tu@correo.com" required>
+      <button type="submit">Suscribirse</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* REVEAL ON SCROLL */
+(function () {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal, .reveal-children').forEach(function (el) {
+    io.observe(el);
+  });
+})();
+
+/* SMOOTH SCROLL para el boton del hero */
+document.querySelectorAll('.js-smooth-scroll').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
 {% endblock %}

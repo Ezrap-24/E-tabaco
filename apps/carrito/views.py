@@ -33,6 +33,7 @@ def agregar_al_carrito(request, producto_id):
             'cantidad': cantidad,
             'tipo_venta': tipo_venta,
             'carrito': carrito,
+            'carrito_total': carrito.cantidad_total(),
         })
     return redirect('carrito:ver')
 

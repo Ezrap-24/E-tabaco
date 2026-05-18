@@ -1,31 +1,277 @@
 {% extends 'base.html' %}
-{% block title %}Contacto — e-Tabaco{% endblock %}
+{% block title %}Contacto &mdash; Puro Tabaco{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+
+{% block extra_css %}
+<style>
+.ct-hero {
+  background: var(--green);
+  padding: 120px 24px 64px;
+  text-align: center;
+}
+.ct-hero-eyebrow {
+  font-family: 'Lora', serif;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(200,176,138,0.5); margin-bottom: 14px;
+}
+.ct-hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px,5vw,52px); font-weight: 700;
+  color: var(--cream); line-height: 1.1; margin-bottom: 12px;
+}
+.ct-hero-sub {
+  font-family: 'Lora', serif;
+  font-size: 15px; color: rgba(239,230,214,0.65);
+  max-width: 480px; margin: 0 auto;
+}
+
+/* Main layout */
+.ct-body {
+  background: var(--off);
+  padding: 64px 24px 96px;
+}
+.ct-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 700px) {
+  .ct-inner { grid-template-columns: 1fr; }
+}
+
+/* Info lateral */
+.ct-info-box {
+  background: #fff;
+  border: 1px solid var(--cream-d);
+  padding: 36px 32px;
+}
+.ct-info-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700; color: var(--green);
+  margin-bottom: 24px; padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--cream-d);
+}
+.ct-info-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 22px;
+}
+.ct-info-icon {
+  width: 36px; height: 36px;
+  background: var(--green); color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 16px;
+}
+.ct-info-label {
+  font-family: 'Lora', serif;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: #aaa; margin-bottom: 3px;
+}
+.ct-info-value {
+  font-family: 'Lora', serif;
+  font-size: 14px; color: var(--slate); line-height: 1.5;
+}
+.ct-info-value a {
+  color: var(--green); text-decoration: none;
+}
+.ct-info-value a:hover { text-decoration: underline; }
+
+.ct-horario {
+  background: var(--off);
+  border: 1px solid var(--cream-d);
+  padding: 18px 20px;
+  margin-top: 28px;
+}
+.ct-horario-title {
+  font-family: 'Lora', serif;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: #888; margin-bottom: 12px;
+}
+.ct-horario-row {
+  display: flex; justify-content: space-between;
+  font-family: 'Lora', serif; font-size: 13px;
+  color: var(--slate); padding: 4px 0;
+  border-bottom: 1px solid rgba(200,176,138,0.15);
+}
+.ct-horario-row:last-child { border-bottom: none; }
+
+/* Formulario */
+.ct-form-box {
+  background: #fff;
+  border: 1px solid var(--cream-d);
+  padding: 36px 36px 40px;
+}
+.ct-form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700; color: var(--green);
+  margin-bottom: 8px;
+}
+.ct-form-sub {
+  font-family: 'Lora', serif;
+  font-size: 13px; color: #aaa;
+  margin-bottom: 28px;
+}
+.ct-form-group { margin-bottom: 18px; }
+.ct-label {
+  display: block;
+  font-family: 'Lora', serif;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: #888; margin-bottom: 6px;
+}
+.ct-input, .ct-textarea {
+  width: 100%; border: 1.5px solid var(--cream-d);
+  padding: 13px 14px;
+  font-family: 'Lora', serif; font-size: 14px;
+  color: var(--slate); background: var(--off);
+  outline: none; transition: border-color .2s;
+  box-sizing: border-box;
+}
+.ct-input:focus, .ct-textarea:focus {
+  border-color: var(--green); background: #fff;
+}
+.ct-textarea { resize: vertical; min-height: 130px; }
+.ct-btn {
+  width: 100%;
+  background: var(--green); color: var(--cream);
+  border: none; padding: 16px;
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: background .2s; margin-top: 8px;
+}
+.ct-btn:hover { background: #253c2e; }
+
+/* Mensajes Django */
+.ct-alert {
+  padding: 12px 16px; margin-bottom: 20px;
+  font-family: 'Lora', serif; font-size: 13px;
+  border-left: 3px solid;
+}
+.ct-alert-success {
+  background: rgba(48,72,58,0.07);
+  border-color: var(--green); color: var(--green);
+}
+.ct-alert-error {
+  background: rgba(192,57,43,0.07);
+  border-color: #c0392b; color: #922b21;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <h1 class="section-title mb-4">Contacto</h1>
-      {% if enviado %}
-      <div class="alert alert-success">¡Mensaje enviado! Te responderemos pronto.</div>
-      {% else %}
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" name="nombre" class="form-control" required>
+
+<!-- Hero -->
+<div class="ct-hero">
+  <div class="ct-hero-eyebrow">Estamos para ayudarte</div>
+  <h1 class="ct-hero-title">Contacto</h1>
+  <p class="ct-hero-sub">Responderemos tu consulta dentro de las 24 horas hábiles.</p>
+</div>
+
+<!-- Cuerpo -->
+<div class="ct-body">
+  <div class="ct-inner">
+
+    <!-- Info de contacto -->
+    <div>
+      <div class="ct-info-box">
+        <div class="ct-info-title">Información de contacto</div>
+
+        <div class="ct-info-row">
+          <div class="ct-info-icon">&#9993;</div>
+          <div>
+            <div class="ct-info-label">Email</div>
+            <div class="ct-info-value">
+              <a href="mailto:{{ empresa.email|default:'contacto@purotabaco.cl' }}">
+                {{ empresa.email|default:'contacto@purotabaco.cl' }}
+              </a>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" required>
+
+        {% if empresa.telefono %}
+        <div class="ct-info-row">
+          <div class="ct-info-icon">&#9990;</div>
+          <div>
+            <div class="ct-info-label">Tel&eacute;fono / WhatsApp</div>
+            <div class="ct-info-value">
+              <a href="tel:{{ empresa.telefono }}">{{ empresa.telefono }}</a>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Mensaje</label>
-          <textarea name="mensaje" class="form-control" rows="5" required></textarea>
+        {% endif %}
+
+        <div class="ct-info-row">
+          <div class="ct-info-icon">&#9635;</div>
+          <div>
+            <div class="ct-info-label">Despacho</div>
+            <div class="ct-info-value">Todo Chile &mdash; 24 a 48 hrs h&aacute;biles</div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-gold w-100">Enviar mensaje</button>
-      </form>
-      {% endif %}
+
+        <div class="ct-info-row">
+          <div class="ct-info-icon">&#9673;</div>
+          <div>
+            <div class="ct-info-label">Retiro en tienda</div>
+            <div class="ct-info-value">Disponible &mdash; coordinamos por email</div>
+          </div>
+        </div>
+
+        <div class="ct-horario">
+          <div class="ct-horario-title">Horario de atenci&oacute;n</div>
+          <div class="ct-horario-row">
+            <span>Lunes a viernes</span><span>9:00 &mdash; 18:00</span>
+          </div>
+          <div class="ct-horario-row">
+            <span>S&aacute;bados</span><span>10:00 &mdash; 14:00</span>
+          </div>
+          <div class="ct-horario-row">
+            <span>Domingos y festivos</span><span>Cerrado</span>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Formulario -->
+    <div class="ct-form-box">
+      <div class="ct-form-title">Env&iacute;anos un mensaje</div>
+      <div class="ct-form-sub">Consultas, pedidos mayoristas, disponibilidad de productos.</div>
+
+      {% for message in messages %}
+        <div class="ct-alert {% if message.tags == 'success' %}ct-alert-success{% else %}ct-alert-error{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="ct-form-group">
+          <label class="ct-label" for="ct-nombre">Nombre</label>
+          <input class="ct-input" type="text" id="ct-nombre" name="nombre"
+                 placeholder="Tu nombre completo" autocomplete="name"
+                 value="{{ request.POST.nombre|default:'' }}">
+        </div>
+
+        <div class="ct-form-group">
+          <label class="ct-label" for="ct-email">Email</label>
+          <input class="ct-input" type="email" id="ct-email" name="email"
+                 placeholder="tu@email.com" autocomplete="email"
+                 value="{{ request.POST.email|default:'' }}">
+        </div>
+
+        <div class="ct-form-group">
+          <label class="ct-label" for="ct-mensaje">Mensaje</label>
+          <textarea class="ct-textarea" id="ct-mensaje" name="mensaje"
+                    placeholder="Escribe tu consulta...">{{ request.POST.mensaje|default:'' }}</textarea>
+        </div>
+
+        <button type="submit" class="ct-btn">Enviar mensaje &rarr;</button>
+      </form>
+    </div>
+
   </div>
 </div>
+
 {% endblock %}

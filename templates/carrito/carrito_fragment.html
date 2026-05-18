@@ -31,23 +31,23 @@
 
       <!-- Precio unitario -->
       <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--slate);">
-        ${{ item.precio }}
+        {{ item.precio|pesos }}
       </div>
 
       <!-- Cantidad con botones -->
       <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
-        <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
-              hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+        <form action="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}" method="post"
+              hx-post="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}"
               hx-target="#carrito-fragment" hx-swap="outerHTML">
           {% csrf_token %}
           <input type="hidden" name="cantidad" value="{{ item.cantidad|add:'-1' }}">
-          <button type="submit" style="width:28px; height:28px; border:1.5px solid var(--tan); background:none; cursor:pointer; font-size:16px; line-height:1; color:var(--bronze); display:flex; align-items:center; justify-content:center; transition:background .15s;">−</button>
+          <button type="submit" style="width:28px; height:28px; border:1.5px solid var(--tan); background:none; cursor:pointer; font-size:16px; line-height:1; color:var(--bronze); display:flex; align-items:center; justify-content:center; transition:background .15s;">&minus;</button>
         </form>
 
         <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:600; color:var(--slate); min-width:24px; text-align:center;">{{ item.cantidad }}</span>
 
-        <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
-              hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+        <form action="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}" method="post"
+              hx-post="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}"
               hx-target="#carrito-fragment" hx-swap="outerHTML">
           {% csrf_token %}
           <input type="hidden" name="cantidad" value="{{ item.cantidad|add:'1' }}">
@@ -57,16 +57,16 @@
 
       <!-- Subtotal -->
       <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">
-        ${{ item.subtotal }}
+        {{ item.subtotal|pesos }}
       </div>
 
       <!-- Eliminar -->
       <div>
-        <form action="{% url 'carrito:eliminar' item.producto.id %}" method="post"
-              hx-post="{% url 'carrito:eliminar' item.producto.id %}"
+        <form action="{% url 'carrito:eliminar' item.producto.id item.tipo_venta %}" method="post"
+              hx-post="{% url 'carrito:eliminar' item.producto.id item.tipo_venta %}"
               hx-target="#carrito-fragment" hx-swap="outerHTML">
           {% csrf_token %}
-          <button type="submit" style="background:none; border:none; cursor:pointer; color:#ccc; font-size:18px; line-height:1; transition:color .2s; padding:4px;" title="Eliminar">×</button>
+          <button type="submit" style="background:none; border:none; cursor:pointer; color:#ccc; font-size:18px; line-height:1; transition:color .2s; padding:4px;" title="Eliminar">&times;</button>
         </form>
       </div>
     </div>
@@ -77,34 +77,40 @@
       <div></div>
       <div style="display:flex; justify-content:space-between; align-items:baseline;">
         <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total del pedido</span>
-        <span style="font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--green);">${{ carrito.total }}</span>
+        <span style="font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--green);">{{ carrito.total|pesos }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Nota envío -->
-  <div style="font-family:'Lora',serif; font-size:12px; color:var(--bronze); padding:10px 16px; background:rgba(139,115,85,0.07); border-left:2px solid var(--tan); margin-bottom:24px;">
-    🚚 Compras por sobre $50.000 — Envío gratis a todo Chile
+  <!-- Nota envio -->
+  {% if carrito.califica_envio_gratis %}
+  <div style="font-family:'Lora',serif; font-size:12px; color:#2a7a3b; padding:10px 16px; background:rgba(42,122,59,0.07); border-left:2px solid #2a7a3b; margin-bottom:24px;">
+    &#128666; Compra califica para envio gratis a todo Chile
   </div>
+  {% else %}
+  <div style="font-family:'Lora',serif; font-size:12px; color:var(--bronze); padding:10px 16px; background:rgba(139,115,85,0.07); border-left:2px solid var(--tan); margin-bottom:24px;">
+    &#128666; Agrega {{ carrito.falta_envio_gratis|pesos }} mas para envio gratis a todo Chile
+  </div>
+  {% endif %}
 
   <!-- Acciones -->
   <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
     <a href="{% url 'productos:catalogo' %}" class="btn-ghost-pt">
-      ← Seguir comprando
+      &larr; Seguir comprando
     </a>
     <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt" style="font-size:12px; padding:18px 40px; letter-spacing:3px;">
-      Ir al Checkout →
+      Ir al Checkout &rarr;
     </a>
   </div>
 
   {% else %}
 
-  <!-- Carrito vacío -->
+  <!-- Carrito vacio -->
   <div style="text-align:center; padding:80px 0;">
-    <div style="font-size:56px; margin-bottom:20px; opacity:.3;">🛒</div>
-    <h3 style="font-family:'Playfair Display',serif; font-size:24px; color:var(--green); margin-bottom:12px;">Tu carrito está vacío</h3>
-    <p style="font-family:'Lora',serif; font-size:14px; color:#aaa; margin-bottom:32px;">Agregá productos desde el catálogo mayorista.</p>
-    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
+    <div style="font-size:56px; margin-bottom:20px; opacity:.3;">&#128722;</div>
+    <h3 style="font-family:'Playfair Display',serif; font-size:24px; color:var(--green); margin-bottom:12px;">Tu carrito esta vacio</h3>
+    <p style="font-family:'Lora',serif; font-size:14px; color:#aaa; margin-bottom:32px;">Agrega productos desde el catalogo mayorista.</p>
+    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catalogo</a>
   </div>
 
   {% endif %}

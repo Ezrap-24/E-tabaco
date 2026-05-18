@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Renombrador de Fotos — e-Tabaco</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #eee; }
+
+  header {
+    background: #30483A;
+    color: #EFE6D6;
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 1.1rem; white-space: nowrap; }
+  header .stats { font-size: 0.82rem; opacity: 0.8; }
+
+  /* Banner carga Excel */
+  .excel-banner {
+    background: #1e2e22;
+    border-bottom: 2px solid #30483A;
+    padding: 14px 30px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .excel-banner .label { font-size: 0.85rem; color: #aaa; }
+  .excel-status {
+    font-size: 0.82rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #333;
+    color: #888;
+  }
+  .excel-status.ok { background: #1a3a22; color: #6fcf8a; }
+  .excel-status.error { background: #3a1a1a; color: #cf6f6f; }
+
+  .btn-excel {
+    padding: 8px 16px;
+    background: #C8B08A;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .btn-excel:hover { opacity: 0.85; }
+  #excelInput { display: none; }
+
+  .toolbar {
+    background: #252525;
+    padding: 10px 30px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    flex-wrap: wrap;
+  }
+  .toolbar input[type=text] {
+    padding: 7px 12px;
+    background: #333;
+    border: 1px solid #444;
+    color: #eee;
+    border-radius: 6px;
+    width: 260px;
+    font-size: 0.88rem;
+  }
+  .toolbar label { font-size: 0.82rem; color: #aaa; }
+  .toolbar select {
+    padding: 6px 10px;
+    background: #333;
+    border: 1px solid #444;
+    color: #eee;
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+
+  .btn {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-green  { background: #30483A; color: #EFE6D6; }
+  .btn-gold   { background: #C8B08A; color: #1a1a1a; }
+  .btn-red    { background: #8B3030; color: #eee; }
+  .btn-gray   { background: #444;    color: #eee; }
+
+  .progress-bar { height: 3px; background: #333; }
+  .progress-fill { height: 100%; background: #C8B08A; transition: width 0.3s; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+    padding: 18px 30px;
+  }
+
+  .card {
+    background: #2a2a2a;
+    border-radius: 10px;
+    overflow: visible;
+    border: 2px solid #333;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .card.asignada { border-color: #30483A; }
+  .card.skip     { border-color: #444; opacity: 0.55; }
+  .card.already  { border-color: #C8B08A; }
+
+  .badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+  .badge-ok     { background: #30483A; color: #EFE6D6; }
+  .badge-auto   { background: #C8B08A; color: #1a1a1a; }
+  .badge-skip   { background: #555;    color: #aaa; }
+
+  .card img {
+    width: 100%; height: 175px;
+    object-fit: cover; display: block;
+    background: #111;
+    border-radius: 8px 8px 0 0;
+  }
+  .card-body { padding: 10px 12px 12px; }
+  .card-filename { font-size: 0.68rem; color: #666; margin-bottom: 7px; word-break: break-all; }
+
+  .search-wrap { position: relative; }
+  .search-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    color: #eee;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+  .search-input:focus { outline: none; border-color: #C8B08A; }
+  .dropdown {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #222; border: 1px solid #555;
+    border-top: none; border-radius: 0 0 8px 8px;
+    max-height: 260px; overflow-y: auto;
+    z-index: 999; display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  }
+  .dropdown.open { display: block; }
+  .dropdown-item {
+    padding: 6px 10px; cursor: pointer;
+    font-size: 0.78rem; border-bottom: 1px solid #2a2a2a;
+  }
+  .dropdown-item:hover { background: #30483A; color: #EFE6D6; }
+  .marca-tag { font-size: 0.68rem; color: #C8B08A; margin-left: 5px; }
+
+  .assigned-label {
+    margin-top: 5px; font-size: 0.75rem;
+    color: #C8B08A; font-weight: 600; min-height: 16px;
+  }
+  .card-actions { display: flex; gap: 5px; margin-top: 7px; }
+  .card-actions .btn { padding: 4px 8px; font-size: 0.72rem; flex: 1; }
+  .btn-usar {
+    width: 100%; margin-top: 5px;
+    padding: 5px; background: #30483A;
+    color: #EFE6D6; border: none;
+    border-radius: 6px; cursor: pointer;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .btn-usar:hover { opacity: 0.85; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #222; border-radius: 12px;
+    padding: 28px; max-width: 800px; width: 92%;
+    max-height: 85vh; overflow-y: auto;
+    border: 1px solid #444;
+  }
+  .modal h2 { color: #C8B08A; margin-bottom: 14px; }
+  .modal pre {
+    background: #111; padding: 14px;
+    border-radius: 8px; font-size: 0.76rem;
+    color: #aaffaa; white-space: pre-wrap;
+    max-height: 320px; overflow-y: auto;
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .instructions {
+    background: #1a2a1a; padding: 12px 14px;
+    border-radius: 8px; margin-top: 12px;
+    font-size: 0.8rem; color: #aaa; line-height: 1.6;
+  }
+  .instructions strong { color: #C8B08A; }
+
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center; padding: 60px 20px;
+    color: #555; font-size: 0.9rem;
+  }
+  footer { text-align: center; padding: 18px; color: #444; font-size: 0.75rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗂 Renombrador de Fotos — e-Tabaco</h1>
+  <div class="stats" id="stats">Carga el Excel para comenzar</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<!-- Banner carga Excel -->
+<div class="excel-banner">
+  <span class="label">📊 Catálogo:</span>
+  <button class="btn-excel" onclick="document.getElementById('excelInput').click()">
+    📂 Cargar catalogo-productos-v3.xlsx
+  </button>
+  <input type="file" id="excelInput" accept=".xlsx,.xls" onchange="cargarExcel(this)">
+  <span class="excel-status" id="excelStatus">Sin cargar — haz clic para seleccionar el archivo</span>
+  <span style="font-size:0.78rem; color:#555; margin-left:auto;">
+    💡 Cada vez que actualices el Excel, vuelve a cargarlo aquí
+  </span>
+</div>
+
+<div class="toolbar">
+  <input type="text" id="filterInput" placeholder="🔍 Filtrar fotos..." oninput="renderGrid()">
+  <label>Ver:
+    <select id="filterStatus" onchange="renderGrid()">
+      <option value="todas">Todas</option>
+      <option value="pendientes">Pendientes</option>
+      <option value="asignadas">Asignadas</option>
+      <option value="saltadas">Saltadas</option>
+    </select>
+  </label>
+  <button class="btn btn-green" onclick="abrirModal()">⬇ Generar Script PowerShell</button>
+  <button class="btn btn-gray" onclick="limpiarTodo()">🗑 Limpiar asignaciones</button>
+</div>
+
+<div class="grid" id="grid">
+  <div class="empty-state">👆 Carga el archivo Excel primero para ver las fotos con el buscador de productos</div>
+</div>
+
+<!-- Modal Script -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>📋 Script de Renombrado PowerShell</h2>
+    <p style="color:#aaa;margin-bottom:10px;font-size:0.82rem;">Copia este script, pégalo en PowerShell y ejecútalo.</p>
+    <pre id="scriptContent"></pre>
+    <div class="instructions">
+      <strong>Cómo ejecutarlo:</strong><br>
+      1. Abre PowerShell (busca "PowerShell" en inicio)<br>
+      2. Copia el script de arriba<br>
+      3. Pégalo en PowerShell y presiona Enter<br>
+      4. Las fotos quedan renombradas en la misma carpeta
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="copiarScript()">📋 Copiar</button>
+      <button class="btn btn-green" onclick="descargarScript()">⬇ Descargar .ps1</button>
+      <button class="btn btn-gray" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<footer>e-Tabaco · Renombrador de fotos · Actualizado: 16 mayo 2026 · 40 imágenes Gemini pendientes</footer>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const CARPETA = String.raw`C:\Users\YASITCOMPUTER\Documents\Claude Code\e-Tabaco\static\img\Fotos Productos\Tabacos`;
+
+// ✅ Archivos Gemini sin renombrar (40 fotos)
+// Actualizado: 16 mayo 2026
+const fotos = [
+  "Gemini_Generated_Image_2ng9qq2ng9qq2ng9.png",
+  "Gemini_Generated_Image_3h6tv73h6tv73h6t.png",
+  "Gemini_Generated_Image_3m6qtn3m6qtn3m6q.png",
+  "Gemini_Generated_Image_3u1oja3u1oja3u1o.png",
+  "Gemini_Generated_Image_4hcw9r4hcw9r4hcw.png",
+  "Gemini_Generated_Image_4jahn14jahn14jah.png",
+  "Gemini_Generated_Image_4psdx44psdx44psd.png",
+  "Gemini_Generated_Image_4xj9r74xj9r74xj9.png",
+  "Gemini_Generated_Image_5woaef5woaef5woa.png",
+  "Gemini_Generated_Image_6ewpni6ewpni6ewp.png",
+  "Gemini_Generated_Image_6jms6i6jms6i6jms.png",
+  "Gemini_Generated_Image_6uj2ko6uj2ko6uj2.png",
+  "Gemini_Generated_Image_8nvjql8nvjql8nvj.png",
+  "Gemini_Generated_Image_93k5tu93k5tu93k5.png",
+  "Gemini_Generated_Image_9a9ftf9a9ftf9a9f.png",
+  "Gemini_Generated_Image_ca1n7dca1n7dca1n.png",
+  "Gemini_Generated_Image_cnngg1cnngg1cnng.png",
+  "Gemini_Generated_Image_f8mqmtf8mqmtf8mq.png",
+  "Gemini_Generated_Image_gtcji0gtcji0gtcj.png",
+  "Gemini_Generated_Image_ich9idich9idich9.png",
+  "Gemini_Generated_Image_jkzb2xjkzb2xjkzb.png",
+  "Gemini_Generated_Image_k7yyo1k7yyo1k7yy.png",
+  "Gemini_Generated_Image_l6bv2ql6bv2ql6bv.png",
+  "Gemini_Generated_Image_m7y6uum7y6uum7y6.png",
+  "Gemini_Generated_Image_mf3g5imf3g5imf3g.png",
+  "Gemini_Generated_Image_p84157p84157p841.png",
+  "Gemini_Generated_Image_q1hrloq1hrloq1hr.png",
+  "Gemini_Generated_Image_q4i4x9q4i4x9q4i4.png",
+  "Gemini_Generated_Image_q67tw2q67tw2q67t.png",
+  "Gemini_Generated_Image_q7rbslq7rbslq7rb.png",
+  "Gemini_Generated_Image_r4knpqr4knpqr4kn.png",
+  "Gemini_Generated_Image_rd5nn4rd5nn4rd5n.png",
+  "Gemini_Generated_Image_sq73w9sq73w9sq73.png",
+  "Gemini_Generated_Image_tgccvmtgccvmtgcc.png",
+  "Gemini_Generated_Image_tyvrbetyvrbetyvr.png",
+  "Gemini_Generated_Image_uil91tuil91tuil9.png",
+  "Gemini_Generated_Image_w2qozsw2qozsw2qo.png",
+  "Gemini_Generated_Image_xr10t8xr10t8xr10.png",
+  "Gemini_Generated_Image_z6bxdcz6bxdcz6bx.png"
+];
+
+// Kuroko ya fueron renombradas, no hay auto-map pendiente
+const autoMap = {};
+
+// ============================================================
+// ESTADO
+// ============================================================
+let productos = [];   // se llena al cargar el Excel
+const estado = {};
+
+Object.keys(autoMap).forEach(fn => {
+  estado[fn] = { imagen: autoMap[fn], skip: false };
+});
+
+// ============================================================
+// CARGA EXCEL con SheetJS
+// ============================================================
+function cargarExcel(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('excelStatus');
+  statusEl.className = 'excel-status';
+  statusEl.textContent = 'Leyendo...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+
+      // Buscar hoja Productos
+      const nombreHoja = wb.SheetNames.find(n => n.includes('Producto') || n.includes('producto'))
+                      || wb.SheetNames[0];
+      const ws = wb.Sheets[nombreHoja];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+      // Encontrar fila header (buscar 'nombre' e 'imagen')
+      let headerRow = -1;
+      for (let i = 0; i < Math.min(rows.length, 10); i++) {
+        if (rows[i] && rows[i].includes('nombre') && rows[i].includes('imagen')) {
+          headerRow = i;
+          break;
+        }
+      }
+      if (headerRow === -1) {
+        throw new Error('No encontré columnas "nombre" e "imagen" en la hoja');
+      }
+
+      const headers = rows[headerRow];
+      const iNombre = headers.indexOf('nombre');
+      const iMarca  = headers.indexOf('marca');
+      const iImagen = headers.indexOf('imagen');
+
+      productos = [];
+      for (let i = headerRow + 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || !row[iNombre] || !row[iImagen]) continue;
+        productos.push({
+          nombre: String(row[iNombre]),
+          marca:  iMarca >= 0 && row[iMarca] ? String(row[iMarca]) : '',
+          imagen: String(row[iImagen])
+        });
+      }
+
+      statusEl.className = 'excel-status ok';
+      statusEl.textContent = `✓ ${file.name} — ${productos.length} productos cargados`;
+      renderGrid();
+    } catch(err) {
+      statusEl.className = 'excel-status error';
+      statusEl.textContent = '✗ Error: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function imageUrl(fn) {
+  return `file:///${CARPETA.replace(/\\/g,'/')}/${encodeURIComponent(fn)}`;
+}
+
+function safeId(fn) {
+  return fn.replace(/[^a-z0-9]/gi, '_');
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const filterText  = (document.getElementById('filterInput').value || '').toLowerCase();
+  const filterStatus = document.getElementById('filterStatus').value;
+
+  if (productos.length === 0) {
+    grid.innerHTML = '<div class="empty-state">👆 Carga primero el archivo Excel para activar el buscador de productos</div>';
+    actualizarStats();
+    return;
+  }
+
+  grid.innerHTML = '';
+  let shown = 0;
+  fotos.forEach(fn => {
+    const est = estado[fn] || {};
+    const isAsignada = !!est.imagen;
+    const isSkip     = !!est.skip;
+    const isAuto     = !!autoMap[fn];
+
+    if (filterText && !fn.toLowerCase().includes(filterText) &&
+        !(est.imagen || '').toLowerCase().includes(filterText)) return;
+    if (filterStatus === 'pendientes' && (isAsignada || isSkip)) return;
+    if (filterStatus === 'asignadas'  && !isAsignada) return;
+    if (filterStatus === 'saltadas'   && !isSkip) return;
+
+    shown++;
+    const sid = safeId(fn);
+    const card = document.createElement('div');
+    card.className = `card ${isAsignada?'asignada':''} ${isSkip?'skip':''} ${isAuto?'already':''}`;
+
+    let badge = '';
+    if (isAuto)     badge = `<div class="badge badge-auto">Auto ✓</div>`;
+    else if (isAsignada) badge = `<div class="badge badge-ok">✓ OK</div>`;
+    else if (isSkip) badge = `<div class="badge badge-skip">Saltar</div>`;
+
+    const valorActual = isAuto ? autoMap[fn] : (est.imagen || '');
+    const readonlyAttr = isAuto ? 'readonly style="color:#C8B08A;cursor:default"' : '';
+
+    card.innerHTML = `
+      ${badge}
+      <img src="${imageUrl(fn)}" loading="lazy" alt="${fn}"
+           onerror="this.style.background='#222';this.removeAttribute('src')">
+      <div class="card-body">
+        <div class="card-filename">${fn}</div>
+        <div class="search-wrap">
+          <input class="search-input" type="text"
+            id="inp_${sid}"
+            placeholder="Buscar o escribir nombre..."
+            value="${valorActual}"
+            ${readonlyAttr}
+            data-fn="${fn}"
+            oninput="buscar(this)"
+            onfocus="abrirDropdown(this)"
+            onblur="cerrarDropdown(this)"
+            onkeydown="if(event.key==='Enter'){ event.preventDefault(); usarTextoLibre('${fn}'); }"
+          >
+          <div class="dropdown" id="dd_${sid}"></div>
+        </div>
+        ${isAuto ? '' : `<button class="btn-usar" onclick="usarTextoLibre('${fn}')">✓ Usar este nombre</button>`}
+        <div class="assigned-label">
+          ${isAuto ? '↳ ' + autoMap[fn] : (est.imagen ? '↳ ' + est.imagen : '')}
+        </div>
+        <div class="card-actions">
+          ${isAuto ? '' : isSkip
+            ? `<button class="btn btn-gold" onclick="recuperarFoto('${fn}')">↩ Recuperar</button>`
+            : `<button class="btn btn-gray" onclick="saltarFoto('${fn}')">Saltar</button>`
+          }
+          ${isAsignada && !isAuto
+            ? `<button class="btn btn-red" onclick="limpiarFoto('${fn}')">✕ Quitar</button>`
+            : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  if (shown === 0) {
+    grid.innerHTML = '<div class="empty-state">No hay fotos que coincidan con el filtro</div>';
+  }
+  actualizarStats();
+}
+
+// ============================================================
+// BUSCADOR
+// ============================================================
+function buscar(input) {
+  const fn  = input.dataset.fn;
+  const q   = input.value.toLowerCase();
+  const dd  = document.getElementById('dd_' + safeId(fn));
+  if (!dd) return;
+
+  if (!q) { dd.classList.remove('open'); return; }
+
+  const res = productos.filter(p =>
+    p.nombre.toLowerCase().includes(q) || p.marca.toLowerCase().includes(q)
+  ).slice(0, 35);
+
+  dd.innerHTML = res.map(p =>
+    `<div class="dropdown-item"
+       onmousedown="event.preventDefault(); seleccionar('${fn}','${p.imagen.replace(/'/g,"\\'")}','${p.nombre.replace(/'/g,"\\'")}')">
+      ${p.nombre}<span class="marca-tag">${p.marca}</span>
+    </div>`
+  ).join('');
+  dd.classList.toggle('open', res.length > 0);
+}
+
+function abrirDropdown(input) { buscar(input); }
+
+function cerrarDropdown(input) {
+  setTimeout(() => {
+    const dd = document.getElementById('dd_' + safeId(input.dataset.fn));
+    if (dd) dd.classList.remove('open');
+  }, 200);
+}
+
+function seleccionar(fn, imagen, nombre) {
+  if (!estado[fn]) estado[fn] = {};
+  estado[fn].imagen = imagen;
+  estado[fn].skip   = false;
+  guardar();
+  renderGrid();
+}
+
+function usarTextoLibre(fn) {
+  const inp = document.getElementById('inp_' + safeId(fn));
+  if (!inp) return;
+  let val = inp.value.trim();
+  if (!val) { alert('Escribe un nombre de archivo primero\nEj: stanley-coffee.jpg'); return; }
+  if (!/\.(jpg|jpeg|png|webp)$/i.test(val)) val += '.jpg';
+  if (!estado[fn]) estado[fn] = {};
+  estado[fn].imagen = val;
+  estado[fn].skip   = false;
+  guardar();
+  renderGrid();
+}
+
+function saltarFoto(fn) {
+  estado[fn] = { skip: true, imagen: null };
+  guardar(); renderGrid();
+}
+
+function limpiarFoto(fn) {
+  delete estado[fn];
+  guardar(); renderGrid();
+}
+
+function recuperarFoto(fn) {
+  delete estado[fn];
+  guardar(); renderGrid();
+}
+
+function limpiarTodo() {
+  if (!confirm('¿Borrar todas las asignaciones manuales?\n(Las Kuroko automáticas se mantienen)')) return;
+  Object.keys(estado).forEach(k => { if (!autoMap[k]) delete estado[k]; });
+  guardar(); renderGrid();
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function actualizarStats() {
+  const total     = fotos.length;
+  const asignadas = fotos.filter(fn => estado[fn]?.imagen).length;
+  const saltadas  = fotos.filter(fn => estado[fn]?.skip).length;
+  const pct       = Math.round(asignadas / total * 100);
+  document.getElementById('stats').textContent =
+    `${asignadas}/${total} asignadas (${pct}%) · ${saltadas} saltadas`;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ============================================================
+// PERSISTENCIA
+// ============================================================
+function guardar() {
+  try { localStorage.setItem('etabaco_rename_v2', JSON.stringify(estado)); } catch(e) {}
+}
+function cargar() {
+  try {
+    const d = localStorage.getItem('etabaco_rename_v2');
+    if (d) Object.assign(estado, JSON.parse(d));
+  } catch(e) {}
+}
+
+// ============================================================
+// SCRIPT POWERSHELL
+// ============================================================
+function generarScript() {
+  const asignadas = fotos.filter(fn => estado[fn]?.imagen && !estado[fn]?.skip);
+  let lines = [
+    `# Script de renombrado — e-Tabaco`,
+    `# Generado: ${new Date().toLocaleString('es-CL')}`,
+    `# Total: ${asignadas.length} archivos`,
+    ``,
+    `$carpeta = "${CARPETA}"`,
+    ``
+  ];
+  asignadas.forEach(fn => {
+    lines.push(`Rename-Item -Path "$carpeta\\${fn}" -NewName "${estado[fn].imagen}"`);
+  });
+  lines.push(``, `Write-Host "✓ ${asignadas.length} archivos renombrados." -ForegroundColor Green`);
+  return lines.join('\n');
+}
+
+function abrirModal() {
+  document.getElementById('scriptContent').textContent = generarScript();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function cerrarModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+function copiarScript() {
+  navigator.clipboard.writeText(document.getElementById('scriptContent').textContent)
+    .then(() => alert('✓ Script copiado'));
+}
+
+function descargarScript() {
+  const blob = new Blob([document.getElementById('scriptContent').textContent], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'renombrar-fotos-etabaco.ps1';
+  a.click();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+cargar();
+actualizarStats();
+</script>
+</body>
+</html>

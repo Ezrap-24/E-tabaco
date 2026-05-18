@@ -1,21 +1,30 @@
-{% extends 'base.html' %}
-{% block title %}Términos y Condiciones — e-Tabaco{% endblock %}
-{% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <h1 class="section-title mb-4">Términos y Condiciones</h1>
-      <p class="text-muted">Al utilizar este sitio web aceptás los siguientes términos y condiciones.</p>
-      <h5 class="mt-4">1. Mayoría de edad</h5>
-      <p class="text-muted">Este sitio está destinado exclusivamente a personas mayores de 18 años. Al ingresar confirmás tener la edad legal requerida en tu país para adquirir productos de tabaco.</p>
-      <h5 class="mt-4">2. Productos</h5>
-      <p class="text-muted">Todos los productos ofrecidos son tabaco para liar. Los precios pueden cambiar sin previo aviso. Nos reservamos el derecho de limitar cantidades de compra.</p>
-      <h5 class="mt-4">3. Envíos</h5>
-      <p class="text-muted">Los envíos se realizan dentro del territorio nacional. Los tiempos de entrega son estimativos y pueden variar según la zona.</p>
-      <h5 class="mt-4">4. Pagos</h5>
-      <p class="text-muted">Los pagos se procesan de forma segura a través de Stripe. No almacenamos datos de tarjetas de crédito.</p>
-      <p class="advertencia-sanitaria mt-4">⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>
-    </div>
-  </div>
-</div>
+{% extends 'paginas/_base_legal.html' %}
+{% block title %}Términos y Condiciones — Puro Tabaco{% endblock %}
+
+{% block legal_eyebrow %}Legal{% endblock %}
+{% block legal_title %}Términos y Condiciones{% endblock %}
+{% block legal_subtitle %}
+<p class="legal-subtitle">Al utilizar este sitio web aceptas los siguientes términos y condiciones.</p>
+{% endblock %}
+
+{% block legal_content %}
+<h2 class="legal-section-title">1. Mayoría de edad</h2>
+<p class="legal-text">Este sitio está destinado exclusivamente a personas mayores de 18 años. Al ingresar confirmas tener la edad legal requerida en Chile para adquirir productos de tabaco. Nos reservamos el derecho de cancelar cualquier pedido donde no se pueda verificar la mayoría de edad del comprador.</p>
+
+<h2 class="legal-section-title">2. Productos</h2>
+<p class="legal-text">Todos los productos ofrecidos son tabaco y accesorios relacionados, con sellos fiscales válidos y adquiridos de distribuidores autorizados. Los precios están expresados en pesos chilenos (CLP) e incluyen IVA. Nos reservamos el derecho de modificar precios o limitar cantidades de compra sin previo aviso.</p>
+
+<h2 class="legal-section-title">3. Envíos</h2>
+<p class="legal-text">Los envíos se realizan dentro del territorio nacional. Los tiempos de entrega indicados son estimativos y pueden variar según la zona geográfica y disponibilidad del servicio de transporte. Compras superiores a $50.000 tienen envío gratuito a todo Chile.</p>
+
+<h2 class="legal-section-title">4. Pagos</h2>
+<p class="legal-text">Los pagos se procesan de forma segura a través de Stripe. No almacenamos ni tenemos acceso a los datos completos de tarjetas de crédito o débito. En caso de fraude o disputa, nos reservamos el derecho de cancelar el pedido y reportar el incidente.</p>
+
+<h2 class="legal-section-title">5. Devoluciones</h2>
+<p class="legal-text">Dado el carácter de los productos comercializados (tabaco), no aceptamos devoluciones una vez despachado el pedido, salvo en casos de error nuestro en el despacho o producto defectuoso. Para reportar un problema, contáctanos dentro de las 48 horas de recibido el pedido.</p>
+
+<h2 class="legal-section-title">6. Uso del sitio</h2>
+<p class="legal-text">Queda prohibido el uso de este sitio para fines ilícitos, la reproducción de su contenido sin autorización, o cualquier acción que pueda dañar, sobrecargar o interferir con el funcionamiento normal de la plataforma.</p>
+
+<div class="legal-warn">⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años. — Ley 20.660, Chile.</div>
 {% endblock %}

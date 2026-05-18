@@ -1,0 +1,182 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                  PASOS PARA CARGAR PRODUCTOS CON IMÁGENES                      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+RESUMEN RÁPIDO:
+───────────────
+✓ He creado un Excel con 116 productos + imágenes correctamente mapeadas
+✓ Todos los productos están en las carpetas correctas
+✓ Ahora necesitas cargar este Excel en Django
+
+ARCHIVO PRINCIPAL:
+───────────────
+📁 catalogo-productos-NUEVO.xlsx
+   Ubicación: C:\Users\YASITCOMPUTER\Documents\Claude Code\e-Tabaco\
+   Contiene: 116 productos con imágenes correctamente asignadas
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+OPCIÓN 1: CARGAR SOLO LOS 116 PRODUCTOS CON IMAGEN (RECOMENDADO)
+═════════════════════════════════════════════════════════════════
+
+Este es el flujo más limpio. Los 110 productos sin imagen pueden agregarse después.
+
+PASO 1: Reemplazar el Excel
+───────────────────────────
+Renombra o reemplaza el Excel actual:
+
+   De: catalogo-productos-v3.xlsx
+   A:  catalogo-productos-v3-VIEJO.xlsx  (guarda una copia)
+
+Luego copia:
+   catalogo-productos-NUEVO.xlsx → catalogo-productos-v3.xlsx
+
+PASO 2: Ejecutar el comando de carga (LIMPIAR PRIMERO)
+──────────────────────────────────────────────────────
+Abre terminal en el proyecto e-Tabaco:
+
+   cd C:\Users\YASITCOMPUTER\Documents\Claude Code\e-Tabaco
+   python manage.py cargar_catalogo --limpiar
+
+Esto hará:
+   ✓ Elimina todos los productos actuales
+   ✓ Carga los 116 productos desde el Excel
+   ✓ Asigna las imágenes correctamente
+   ✓ Marca todos como activo=True (porque tienen foto_disponible=SI)
+
+PASO 3: Verificar en Django Admin
+──────────────────────────────────
+   1. Ir a: http://localhost:8000/admin/productos/producto/
+   2. Deberías ver 116 productos
+   3. Filtrar por "Con foto" - deberían verse todos
+   4. Hacer click en algunos para verificar que las imágenes están asignadas
+
+PASO 4: Verificar en el Sitio Web
+──────────────────────────────────
+   1. Ir a: http://localhost:8000/
+   2. Ir a: http://localhost:8000/productos/
+   3. Verificar que las imágenes cargan correctamente
+   4. Probar búsqueda y filtros
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+OPCIÓN 2: CARGAR TODOS LOS 226 PRODUCTOS (CON ADVERTENCIA)
+═══════════════════════════════════════════════════════════
+
+Si prefieres cargar TODOS los productos, incluyendo los 110 sin imagen:
+
+PASO 1: Crear Excel con todos los productos
+─────────────────────────────────────────────
+Te preparé un script para esto. Ejecutar en terminal Python:
+
+   cd C:\Users\YASITCOMPUTER\Documents\Claude Code\e-Tabaco
+   python << 'EOF'
+   import pandas as pd
+
+   # Leer los productos originales
+   df = pd.read_csv('productos_export.csv')
+
+   # Agregar columna foto_disponible (NO para todos, ya que no tienen imagen)
+   df['foto_disponible'] = 'NO'
+
+   # Reordenar columnas
+   cols = ['nombre', 'marca', 'codigo', 'categoria', 'peso_gramos',
+           'procedencia', 'intensidad', 'descripcion', 'precio_unidad',
+           'precio_mayor', 'cantidad_minima_mayor', 'stock', 'activo',
+           'imagen', 'foto_disponible']
+
+   df = df[[c for c in cols if c in df.columns]]
+   df.to_excel('catalogo-productos-v3.xlsx', index=False, sheet_name='Catalogo')
+   print("✓ Excel actualizado con 226 productos")
+   EOF
+
+PASO 2: Ejecutar carga
+──────────────────────
+   python manage.py cargar_catalogo --limpiar
+
+RESULTADO:
+   ✓ Se cargarían 226 productos
+   ✓ Pero solo 116 mostrarían imagen en el sitio
+   ✓ Los otros 110 aparecerían en admin pero NO en el sitio
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+DECISIÓN RECOMENDADA:
+═════════════════════
+
+👉 OPCIÓN 1 (116 productos con imagen)
+
+Razones:
+  1. El sitio se verá mejor (todas las fotos cargan)
+  2. Los usuarios no verán productos sin imagen
+  3. Es más limpio y profesional
+  4. Los 110 productos pueden agregarse después cuando tengas fotos
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+DATOS IMPORTANTES:
+══════════════════
+
+Productos SIN imagen disponible (110):
+  • ~70 accesorios: filtros, papelillos, conos, boquillas, tubos
+  • ~40 marcas sin fotos: Mac Baren, Madison, Manitou, Pepe, Pueblo, etc.
+
+Solución: Obtener fotos para estas marcas o cargarlas sin imagen después.
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+VALIDACIÓN COMPLETA (después de cargar):
+═════════════════════════════════════════
+
+Para verificar que TODO funciona correctamente:
+
+1. Django Admin ✓
+   - http://localhost:8000/admin/productos/producto/
+   - Contar: deberían ser 116 productos
+   - Filtrar por marca y verificar imágenes
+
+2. Sitio Web ✓
+   - http://localhost:8000/
+   - http://localhost:8000/productos/
+   - Verificar que las imágenes cargan en la galería
+
+3. Búsqueda ✓
+   - Buscar un producto (ej: "Bristol")
+   - Verificar que aparecen resultados con imágenes
+
+4. Ficha de Producto ✓
+   - Click en un producto
+   - La imagen debe verse en la ficha
+
+5. Carrito y Checkout ✓
+   - Agregar producto al carrito
+   - Ir a checkout
+   - Completar compra (con Stripe test card)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+ARCHIVOS GENERADOS PARA TI:
+═══════════════════════════
+
+📊 catalogo-productos-NUEVO.xlsx
+   → 116 productos + imágenes correctamente asignadas
+
+📄 REPORTE_MAPEO_IMAGENES.md
+   → Análisis detallado de qué se hizo y por qué
+
+📄 PASOS_SIGUIENTES.txt (este archivo)
+   → Instrucciones paso a paso
+
+Todos están en tu carpeta de Tabacos para fácil acceso.
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+¿PREGUNTAS?
+═══════════
+
+Si algo falla al ejecutar cargar_catalogo:
+  1. Revisa que el archivo Excel esté en la carpeta correcta
+  2. Verifica que las imágenes estén en C:\...\media\products\
+  3. Ejecuta: python manage.py cargar_catalogo (sin --limpiar) primero para ver errores
+
+═══════════════════════════════════════════════════════════════════════════════════

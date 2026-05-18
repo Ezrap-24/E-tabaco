@@ -11,4 +11,5 @@ urlpatterns = [
     path('faqs/', views.faqs, name='faqs'),
     path('terminos/', views.terminos, name='terminos'),
     path('privacidad/', views.privacidad, name='privacidad'),
+    path('acceso-denegado/', views.acceso_denegado, name='acceso_denegado'),
 ]

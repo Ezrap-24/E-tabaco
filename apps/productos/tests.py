@@ -12,10 +12,11 @@ def categoria(db):
 def producto(db, categoria):
     return Producto.objects.create(
         nombre='Virginia Gold',
+        marca='Stanley',
         descripcion='Tabaco rubio suave de alta calidad.',
         precio_unidad=5.50,
-        precio_caja=45.00,
-        unidades_por_caja=10,
+        precio_mayor=4.50,
+        cantidad_minima_mayor=3,
         stock=100,
         activo=True,
         categoria=categoria,
@@ -23,7 +24,7 @@ def producto(db, categoria):
 
 
 def test_producto_str(producto):
-    assert str(producto) == 'Virginia Gold'
+    assert str(producto) == 'Stanley Virginia Gold'
 
 
 def test_producto_tiene_stock(producto):

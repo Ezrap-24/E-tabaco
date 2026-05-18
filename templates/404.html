@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Página no encontrada — Puro Tabaco{% endblock %}
+{% block main_padding %}padding-top: 98px;{% endblock %}
+
+{% block content %}
+<style>
+#error-404 {
+  min-height: calc(100vh - 98px - 280px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  background: var(--white);
+}
+.e404-inner { max-width: 480px; margin: 0 auto; }
+.e404-code {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(80px, 18vw, 140px);
+  font-weight: 800;
+  color: var(--cream-d);
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -4px;
+}
+.e404-line {
+  width: 40px; height: 2px;
+  background: var(--tan);
+  margin: 0 auto 24px;
+}
+.e404-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.e404-sub {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: #888;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+.e404-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.e404-btn-primary {
+  background: var(--green);
+  color: var(--cream);
+  padding: 13px 28px;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background .2s;
+  display: inline-block;
+}
+.e404-btn-primary:hover { background: var(--green-d); color: var(--cream); }
+.e404-btn-ghost {
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 13px 28px;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color .2s, color .2s;
+  display: inline-block;
+}
+.e404-btn-ghost:hover { border-color: var(--green); color: var(--green); }
+</style>
+
+<section id="error-404">
+  <div class="e404-inner">
+    <div class="e404-code">404</div>
+    <div class="e404-line"></div>
+    <h1 class="e404-title">Página no encontrada</h1>
+    <p class="e404-sub">La página que buscas no existe o fue movida.<br>Vuelve al inicio o explora nuestro catálogo.</p>
+    <div class="e404-actions">
+      <a href="{% url 'paginas:home' %}" class="e404-btn-primary">Ir al inicio</a>
+      <a href="{% url 'productos:catalogo' %}" class="e404-btn-ghost">Ver catálogo</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

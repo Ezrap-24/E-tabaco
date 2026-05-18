@@ -11,7 +11,7 @@ class Carrito:
             'pid:tipo_venta': {
                 'producto_id': int,
                 'nombre': str,
-                'tipo_venta': 'unidad' | 'caja',
+                'tipo_venta': 'unidad' | 'mayor',
                 'cantidad': int,
                 'precio': float,
             },
@@ -19,7 +19,7 @@ class Carrito:
         }
 
     La clave compuesta `pid:tipo_venta` permite que un mismo producto exista
-    como dos líneas distintas (ej. 2 unidades + 1 caja).
+    como dos líneas distintas (ej. 2 unidades sueltas + 3 al precio mayor).
     """
 
     def __init__(self, request):
@@ -38,7 +38,7 @@ class Carrito:
     def agregar(self, producto, cantidad=1, tipo_venta='unidad'):
         """Agrega un producto al carrito. Unidad y caja son líneas separadas."""
         key = self._key(producto.id, tipo_venta)
-        precio = float(producto.precio_unidad if tipo_venta == 'unidad' else producto.precio_caja)
+        precio = float(producto.precio_unidad if tipo_venta == 'unidad' else (producto.precio_mayor or producto.precio_unidad))
 
         if key not in self.carrito:
             self.carrito[key] = {

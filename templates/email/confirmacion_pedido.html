@@ -16,7 +16,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <div class="brand">e-Tabaco</div>
+      <div class="brand">Puro Tabaco</div>
       <p style="color: #888; margin: 8px 0 0;">Confirmación de pedido</p>
     </div>
 
@@ -29,17 +29,17 @@
     {% for detalle in orden.detalles.all %}
     <div class="item">
       <span>{{ detalle.producto.nombre }} ({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span>
-      <span>${{ detalle.subtotal }}</span>
+      <span>{{ detalle.subtotal|pesos }}</span>
     </div>
     {% endfor %}
-    <div class="total" style="text-align: right;">Total: ${{ orden.total }}</div>
+    <div class="total" style="text-align: right;">Total: {{ orden.total|pesos }}</div>
 
     <p style="margin-top: 24px;"><strong>Envío a:</strong><br>{{ orden.direccion_envio }}</p>
 
     <div class="footer">
       <p>⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>
-      <p>© 2026 e-Tabaco. Todos los derechos reservados.</p>
+      <p>© 2026 Puro Tabaco. Todos los derechos reservados.</p>
     </div>
   </div>
 </body>
-</html>
+</

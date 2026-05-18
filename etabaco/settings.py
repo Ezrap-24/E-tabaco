@@ -48,6 +48,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # Carrito disponible en todos los templates
@@ -55,20 +56,21 @@ TEMPLATES = [
                 # Datos de empresa (teléfono, email, envío gratis…)
                 'apps.paginas.context_processors.empresa_context',
             ],
+            'builtins': [
+                'apps.paginas.templatetags.pt_filters',
+            ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'etabaco.wsgi.application'
 
+# Usar SQLite en desarrollo, PostgreSQL en producción
+# DEBUG se evalúa a partir de config('DEBUG') que lee del .env
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='etabaco_db'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -128,6 +130,31 @@ EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
 EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
 EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='contacto@purotabaco.cl')
 ENVIO_GRATIS_DESDE = config('ENVIO_GRATIS_DESDE', default=50000, cast=int)
+
+# ── Cifras del home (pendientes de validación con cliente) ──
+# Dejar vacío/None mientras no estén confirmadas: el template las oculta.
+def _int_or_none(key):
+    raw = config(key, default='')
+    raw = (raw or '').strip()
+    try:
+        return int(raw) if raw else None
+    except (TypeError, ValueError):
+        return None
+
+EMPRESA_ANIO_FUNDACION = _int_or_none('EMPRESA_ANIO_FUNDACION')
+EMPRESA_ANIOS_HERENCIA = _int_or_none('EMPRESA_ANIOS_HERENCIA')
+EMPRESA_N_MARCAS = _int_or_none('EMPRESA_N_MARCAS')
+EMPRESA_DESPACHO_HORAS = _int_or_none('EMPRESA_DESPACHO_HORAS')
+
+# ── Validación de edad ──────────────────────────────────────
+# Cookie firmada que recuerda la verificación (30 días por defecto).
+AGE_VERIFICATION_COOKIE = 'edad_verificada'
+AGE_VERIFICATION_COOKIE_MAX_AGE = config(
+    'AGE_VERIFICATION_COOKIE_MAX_AGE',
+    default=60 * 60 * 24 * 30,   # 30 días
+    cast=int,
+)
+AGE_MINIMUM = config('AGE_MINIMUM', default=18, cast=int)
 
 # ── Seguridad (solo prod) ───────────────────────────────────
 if not DEBUG:

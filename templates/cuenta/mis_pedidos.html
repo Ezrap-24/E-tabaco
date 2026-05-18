@@ -18,7 +18,7 @@
           <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-left:12px;">{{ orden.fecha_creacion|date:"d \d\e F \d\e Y" }}</span>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">${{ orden.total|floatformat:0 }}</span>
+          <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">{{ orden.total|pesos }}</span>
           <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 10px;
             background:{% if orden.estado == 'entregado' %}rgba(42,122,59,.12){% elif orden.estado == 'enviado' %}rgba(41,128,185,.12){% elif orden.estado == 'pagado' %}rgba(200,176,138,.2){% else %}rgba(189,195,199,.25){% endif %};
             color:{% if orden.estado == 'entregado' %}#2a7a3b{% elif orden.estado == 'enviado' %}#2980b9{% elif orden.estado == 'pagado' %}var(--bronze){% else %}#7f8c8d{% endif %};">
@@ -38,7 +38,7 @@
             </div>
           </div>
           <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--bronze);">
-            ${{ detalle.subtotal|floatformat:0 }}
+            {{ detalle.subtotal|pesos }}
           </div>
         </div>
         {% endfor %}

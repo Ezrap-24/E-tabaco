@@ -15,7 +15,7 @@
     </h1>
     <p style="font-family:'Lora',serif; font-size:13px; color:rgba(239,230,214,0.6); margin-top:12px;">
       Pedido <strong style="color:var(--tan);">{{ orden.numero_orden }}</strong> — Total a pagar
-      <strong style="color:var(--tan);">${{ orden.total|floatformat:0 }} CLP</strong>
+      <strong style="color:var(--tan);">{{ orden.total|pesos }} CLP</strong>
     </p>
   </div>
 </div>
@@ -32,7 +32,7 @@
       <button id="submit"
               style="width:100%; background:var(--green); color:var(--cream); border:none; padding:16px;
                      font-family:'Lora',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer;">
-        <span id="button-text">Pagar ${{ orden.total|floatformat:0 }} CLP</span>
+        <span id="button-text">Pagar {{ orden.total|pesos }} CLP</span>
       </button>
       <div id="payment-message" style="margin-top:16px; font-family:'Lora',serif; font-size:13px; color:#c0392b; display:none;"></div>
     </form>

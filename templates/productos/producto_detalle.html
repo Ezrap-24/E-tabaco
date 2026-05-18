@@ -1,116 +1,439 @@
 {% extends 'base.html' %}
-{% block title %}{{ producto.nombre }} — e-Tabaco{% endblock %}
+{% load static %}
+{% block title %}{{ producto.nombre }} — Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 98px;{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── BREADCRUMB ──────────────────────────────────────────────── */
+.pd-breadcrumb {
+  background: var(--green);
+  padding: 14px 48px;
+}
+.pd-breadcrumb nav {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+.pd-breadcrumb a { color: rgba(239,230,214,0.5); text-decoration: none; transition: color .2s; }
+.pd-breadcrumb a:hover { color: var(--cream); }
+.pd-breadcrumb .sep { color: rgba(239,230,214,0.25); }
+.pd-breadcrumb .current { color: rgba(239,230,214,0.8); }
+
+/* ── LAYOUT ──────────────────────────────────────────────────── */
+.pd-body {
+  background: #f5f4f0;
+  padding: 48px 48px 80px;
+}
+.pd-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: start;
+}
+
+/* ── IMAGEN ──────────────────────────────────────────────────── */
+.pd-img-wrap {
+  position: sticky; top: 118px;
+}
+.pd-img {
+  width: 100%; aspect-ratio: 1;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 72px; overflow: hidden;
+}
+.pd-img img { width: 100%; height: 100%; object-fit: cover; }
+.pd-img-warn {
+  margin-top: 12px; padding: 10px 14px;
+  background: white; border-left: 3px solid #e8e5de;
+  font-family: 'Lora', serif; font-size: 10px;
+  color: #bbb; letter-spacing: .5px; line-height: 1.5;
+}
+
+/* ── DETALLE ─────────────────────────────────────────────────── */
+.pd-info { background: white; padding: 36px; }
+
+.pd-cat {
+  font-family: 'Lora', serif; font-size: 9px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--bronze); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.pd-cat::before {
+  content: ''; display: inline-block;
+  width: 24px; height: 1px; background: var(--bronze);
+}
+
+.pd-nombre {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 3vw, 32px); font-weight: 700;
+  color: var(--green); line-height: 1.15; margin-bottom: 6px;
+}
+.pd-marca {
+  font-family: 'Lora', serif; font-size: 12px;
+  color: #aaa; letter-spacing: 1px; margin-bottom: 20px;
+}
+
+/* Atributos (intensidad, procedencia, peso) */
+.pd-attrs {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.pd-attr {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--green); background: #f0ede8;
+  padding: 4px 10px; border: 1px solid #e0ddd5;
+}
+
+.pd-divider { height: 1px; background: #f0ede8; margin: 20px 0; }
+
+.pd-desc {
+  font-family: 'Lora', serif; font-size: 14px;
+  color: #666; line-height: 1.75; margin-bottom: 24px;
+}
+
+/* ── PRECIOS ─────────────────────────────────────────────────── */
+.pd-prices { margin-bottom: 24px; }
+.pd-price-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: #f8f7f4; margin-bottom: 2px;
+  border-left: 3px solid transparent; cursor: pointer;
+  transition: all .2s;
+}
+.pd-price-row.selected {
+  background: var(--cream); border-left-color: var(--green);
+}
+.pd-price-row label {
+  cursor: pointer; display: flex; flex-direction: column;
+}
+.pd-price-row-title {
+  font-family: 'Playfair Display', serif; font-size: 14px;
+  font-weight: 700; color: var(--green);
+}
+.pd-price-row-sub {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 1px; color: #aaa; margin-top: 2px;
+}
+.pd-price-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; color: var(--green);
+}
+.pd-price-value.highlight { color: var(--bronze); }
+.pd-price-radio { accent-color: var(--green); width: 16px; height: 16px; }
+
+/* Precio total dinámico */
+.pd-price-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 14px 16px; background: var(--green); margin-top: 8px;
+}
+.pd-price-total-label {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase; color: rgba(239,230,214,0.65);
+}
+.pd-price-total-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 700; color: var(--cream);
+}
+
+/* ── CANTIDAD ────────────────────────────────────────────────── */
+.pd-qty-wrap { margin-bottom: 24px; }
+.pd-qty-label {
+  font-family: 'Lora', serif; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: #aaa; margin-bottom: 10px; display: block;
+}
+.pd-qty {
+  display: flex; align-items: stretch;
+  border: 1.5px solid #e0ddd5; width: fit-content;
+}
+.pd-qty-btn {
+  background: white; border: none; cursor: pointer;
+  width: 44px; font-size: 20px; color: var(--green);
+  transition: background .2s; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.pd-qty-btn:hover { background: var(--cream); }
+.pd-qty-input {
+  width: 56px; border: none; border-left: 1.5px solid #e0ddd5;
+  border-right: 1.5px solid #e0ddd5; text-align: center;
+  font-family: 'Playfair Display', serif; font-size: 18px;
+  font-weight: 700; color: var(--green); outline: none;
+  background: white;
+}
+
+/* Aviso de descuento mayorista */
+.pd-mayor-hint {
+  font-family: 'Lora', serif; font-size: 11px;
+  color: var(--bronze); letter-spacing: .5px;
+  padding: 8px 12px; background: rgba(139,115,85,0.08);
+  border-left: 2px solid var(--bronze); margin-bottom: 16px;
+  display: none;
+}
+.pd-mayor-hint.visible { display: block; }
+
+/* ── BOTÓN AGREGAR ───────────────────────────────────────────── */
+.pd-btn-add {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; width: 100%; padding: 16px;
+  background: var(--green); color: var(--cream);
+  border: none; cursor: pointer;
+  font-family: 'Lora', serif; font-size: 11px;
+  letter-spacing: 3px; text-transform: uppercase;
+  transition: background .2s; margin-bottom: 10px;
+}
+.pd-btn-add:hover { background: #1a2f25; }
+.pd-btn-add:disabled { background: #ccc; cursor: not-allowed; }
+.pd-btn-add svg { flex-shrink: 0; }
+
+.pd-btn-cat {
+  display: block; text-align: center; width: 100%; padding: 13px;
+  background: white; color: var(--green);
+  border: 1.5px solid #e0ddd5; font-family: 'Lora', serif;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; transition: all .2s;
+}
+.pd-btn-cat:hover { border-color: var(--green); color: var(--green); }
+
+/* Mensaje de confirmación HTMX */
+#carrito-msg { margin-bottom: 12px; }
+.msg-ok {
+  padding: 12px 16px; background: rgba(48,72,58,0.08);
+  border-left: 3px solid var(--green);
+  font-family: 'Lora', serif; font-size: 12px; color: var(--green);
+}
+
+/* ── SIN STOCK ───────────────────────────────────────────────── */
+.pd-sin-stock {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; background: #f8f7f4;
+  border: 1.5px solid #e0ddd5; margin-bottom: 10px;
+  font-family: 'Lora', serif; font-size: 12px;
+  letter-spacing: 1px; color: #bbb;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .pd-inner { grid-template-columns: 1fr; gap: 0; }
+  .pd-img-wrap { position: static; margin-bottom: 0; }
+  .pd-body { padding: 0 0 60px; }
+  .pd-info { padding: 28px 24px; }
+  .pd-breadcrumb { padding: 14px 24px; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <nav aria-label="breadcrumb" class="mb-4">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'paginas:home' %}">Inicio</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'productos:catalogo' %}">Catálogo</a></li>
-      <li class="breadcrumb-item active">{{ producto.nombre }}</li>
-    </ol>
-  </nav>
 
-  <div class="row g-5">
+<!-- ── BREADCRUMB ─────────────────────────────────────────────── -->
+<div class="pd-breadcrumb">
+  <nav>
+    <a href="{% url 'paginas:home' %}">Inicio</a>
+    <span class="sep">/</span>
+    <a href="{% url 'productos:catalogo' %}">Catálogo</a>
+    {% if producto.categoria %}
+    <span class="sep">/</span>
+    <a href="{% url 'productos:catalogo' %}?categoria={{ producto.categoria.id }}">{{ producto.categoria }}</a>
+    {% endif %}
+    <span class="sep">/</span>
+    <span class="current">{{ producto.nombre }}</span>
+  </nav>
+</div>
+
+<!-- ── CUERPO ─────────────────────────────────────────────────── -->
+<div class="pd-body">
+  <div class="pd-inner">
+
     <!-- IMAGEN -->
-    <div class="col-lg-5">
-      {% if producto.imagen %}
-      <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-fluid rounded producto-detalle-img">
-      {% else %}
-      <div class="producto-img-placeholder-lg d-flex align-items-center justify-content-center rounded">
-        <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+    <div class="pd-img-wrap">
+      <div class="pd-img">
+        {% if producto.imagen %}
+          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+        {% else %}
+          🚬
+        {% endif %}
       </div>
-      {% endif %}
+      <div class="pd-img-warn">
+        ⚠️ El tabaco es perjudicial para la salud. Venta exclusiva a mayores de 18 años. Ley 20.660.
+      </div>
     </div>
 
-    <!-- INFO Y CARRITO -->
-    <div class="col-lg-7">
-      {% if producto.categoria %}
-      <span class="badge-categoria mb-2 d-inline-block">{{ producto.categoria }}</span>
-      {% endif %}
-      <h1 class="producto-nombre">{{ producto.nombre }}</h1>
-      <p class="text-muted mb-4">{{ producto.descripcion }}</p>
+    <!-- INFO ─────────────────────────────────────────────────── -->
+    <div class="pd-info">
 
-      <!-- PRECIO DINÁMICO -->
-      <div class="precio-box mb-4" id="precio-display">
-        <span class="precio-label">Precio:</span>
-        <span class="precio-grande" id="precio-actual">${{ producto.precio_unidad }}</span>
+      {% if producto.categoria %}
+      <div class="pd-cat">{{ producto.categoria }}</div>
+      {% endif %}
+
+      <h1 class="pd-nombre">{{ producto.nombre }}</h1>
+      {% if producto.marca %}
+      <div class="pd-marca">{{ producto.marca }}</div>
+      {% endif %}
+
+      <!-- Atributos -->
+      {% if producto.intensidad or producto.procedencia or producto.peso_gramos %}
+      <div class="pd-attrs">
+        {% if producto.intensidad %}
+        <span class="pd-attr">{{ producto.intensidad }}</span>
+        {% endif %}
+        {% if producto.procedencia %}
+        <span class="pd-attr">{{ producto.procedencia }}</span>
+        {% endif %}
+        {% if producto.peso_gramos %}
+        <span class="pd-attr">{{ producto.peso_gramos }}g</span>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if producto.descripcion %}
+      <div class="pd-divider"></div>
+      <p class="pd-desc">{{ producto.descripcion }}</p>
+      {% endif %}
+
+      <div class="pd-divider"></div>
+
+      <!-- PRECIOS ──────────────────────────────────────────── -->
+      <div class="pd-prices">
+
+        <label class="pd-price-row selected" id="row-unidad" onclick="seleccionarTipo('unidad')">
+          <div>
+            <div class="pd-price-row-title">Por unidad</div>
+            <div class="pd-price-row-sub">Sin mínimo de cantidad</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="pd-price-value highlight">{{ producto.precio_unidad|pesos }}</span>
+            <input type="radio" name="tipo_vis" value="unidad" checked class="pd-price-radio">
+          </div>
+        </label>
+
+        {% if producto.precio_mayor %}
+        <label class="pd-price-row" id="row-mayor" onclick="seleccionarTipo('mayor')">
+          <div>
+            <div class="pd-price-row-title">Precio mayorista</div>
+            <div class="pd-price-row-sub">Mínimo {{ producto.cantidad_minima_mayor }} unidades</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="pd-price-value">{{ producto.precio_mayor|pesos }}</span>
+            <input type="radio" name="tipo_vis" value="mayor" class="pd-price-radio">
+          </div>
+        </label>
+        {% endif %}
+
+        <div class="pd-price-total">
+          <span class="pd-price-total-label">Total estimado</span>
+          <span class="pd-price-total-value" id="precio-total">{{ producto.precio_unidad|pesos }}</span>
+        </div>
       </div>
 
-      <!-- FORMULARIO CARRITO -->
-      <div id="carrito-mensaje"></div>
+      <!-- CANTIDAD ──────────────────────────────────────────── -->
+      <div class="pd-qty-wrap">
+        <span class="pd-qty-label">Cantidad</span>
+        <div class="pd-qty">
+          <button type="button" class="pd-qty-btn" onclick="cambiarCant(-1)">−</button>
+          <input type="number" id="qty-input" value="1" min="1" max="999" class="pd-qty-input"
+                 oninput="actualizarTotal()">
+          <button type="button" class="pd-qty-btn" onclick="cambiarCant(1)">+</button>
+        </div>
+      </div>
 
-      <form hx-post="{% url 'carrito:agregar' producto.id %}"
-            hx-target="#carrito-mensaje"
+      {% if producto.precio_mayor %}
+      <div class="pd-mayor-hint" id="mayor-hint">
+        Precio mayorista disponible desde {{ producto.cantidad_minima_mayor }} unidades.
+      </div>
+      {% endif %}
+
+      <!-- FORMULARIO ────────────────────────────────────────── -->
+      <div id="carrito-msg"></div>
+
+      {% if producto.tiene_stock %}
+      <form id="form-carrito"
+            action="{% url 'carrito:agregar' producto.id %}"
+            hx-post="{% url 'carrito:agregar' producto.id %}"
+            hx-target="#carrito-msg"
             hx-swap="innerHTML"
             method="post">
         {% csrf_token %}
+        <input type="hidden" name="tipo_venta" id="tipo-venta-input" value="unidad">
+        <input type="hidden" name="cantidad" id="cantidad-input" value="1">
 
-        <!-- SELECTOR TIPO DE VENTA -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Presentación</label>
-          <div class="d-flex gap-3">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="tipo_venta" id="tipo_unidad"
-                     value="unidad" checked
-                     data-precio="{{ producto.precio_unidad }}"
-                     onchange="actualizarPrecio(this)">
-              <label class="form-check-label" for="tipo_unidad">
-                Unidad — ${{ producto.precio_unidad }}
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="tipo_venta" id="tipo_caja"
-                     value="caja"
-                     data-precio="{{ producto.precio_caja }}"
-                     onchange="actualizarPrecio(this)">
-              <label class="form-check-label" for="tipo_caja">
-                Caja ({{ producto.unidades_por_caja }} u.) — ${{ producto.precio_caja }}
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- CANTIDAD -->
-        <div class="mb-4">
-          <label class="form-label fw-semibold">Cantidad</label>
-          <div class="input-group" style="max-width: 140px;">
-            <button type="button" class="btn btn-outline-secondary" onclick="cambiarCantidad(-1)">−</button>
-            <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="99"
-                   class="form-control text-center">
-            <button type="button" class="btn btn-outline-secondary" onclick="cambiarCantidad(1)">+</button>
-          </div>
-        </div>
-
-        {% if producto.tiene_stock %}
-        <button type="submit" class="btn btn-gold btn-lg w-100">
-          <i class="bi bi-bag-plus me-2"></i>Agregar al carrito
+        <button type="submit" class="pd-btn-add">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          Agregar al carrito
         </button>
-        {% else %}
-        <button type="button" class="btn btn-secondary btn-lg w-100" disabled>Sin stock</button>
-        {% endif %}
       </form>
+      {% else %}
+      <div class="pd-sin-stock">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Producto sin stock disponible
+      </div>
+      {% endif %}
 
-      <p class="advertencia-sanitaria mt-4">
-        ⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.
-      </p>
-    </div>
+      <a href="{% url 'productos:catalogo' %}{% if producto.categoria %}?categoria={{ producto.categoria.id }}{% endif %}" class="pd-btn-cat">
+        ← Volver al catálogo
+      </a>
+
+    </div><!-- /pd-info -->
   </div>
 </div>
-
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  function actualizarPrecio(radio) {
-    document.getElementById('precio-actual').textContent = '$' + parseFloat(radio.dataset.precio).toFixed(2);
+(function () {
+  var precioUnidad = parseFloat('{{ producto.precio_unidad }}');
+  var precioMayor  = {% if producto.precio_mayor %}parseFloat('{{ producto.precio_mayor }}'){% else %}null{% endif %};
+  var minMayor     = parseInt('{{ producto.cantidad_minima_mayor|default:3 }}');
+  var tipoActual   = 'unidad';
+
+  function fmt(n) {
+    return '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
 
-  function cambiarCantidad(delta) {
-    const input = document.getElementById('cantidad');
-    const nueva = Math.max(1, parseInt(input.value) + delta);
-    input.value = nueva;
-  }
+  window.seleccionarTipo = function (tipo) {
+    tipoActual = tipo;
+    document.getElementById('tipo-venta-input').value = (tipo === 'mayor') ? 'caja' : 'unidad';
+    document.getElementById('row-unidad').classList.toggle('selected', tipo === 'unidad');
+    var rowMayor = document.getElementById('row-mayor');
+    if (rowMayor) rowMayor.classList.toggle('selected', tipo === 'mayor');
+    actualizarTotal();
+  };
+
+  window.cambiarCant = function (delta) {
+    var input = document.getElementById('qty-input');
+    var val = Math.max(1, parseInt(input.value || 1) + delta);
+    input.value = val;
+    actualizarTotal();
+  };
+
+  window.actualizarTotal = function () {
+    var qty = Math.max(1, parseInt(document.getElementById('qty-input').value || 1));
+    document.getElementById('cantidad-input').value = qty;
+
+    var precio = (tipoActual === 'mayor' && precioMayor) ? precioMayor : precioUnidad;
+    document.getElementById('precio-total').textContent = fmt(precio * qty);
+
+    // Mostrar hint mayorista si cantidad alcanza el minimo y no esta en modo mayor
+    var hint = document.getElementById('mayor-hint');
+    if (hint) {
+      hint.classList.toggle('visible', precioMayor !== null && tipoActual === 'unidad' && qty >= minMayor);
+    }
+  };
+
+  // Actualizar badge del carrito tras agregar
+  document.addEventListener('htmx:afterRequest', function (e) {
+    if (e.detail.successful) {
+      var badge = document.getElementById('carrito-contador');
+      if (badge) {
+        var count = parseInt(badge.textContent || '0') + parseInt(document.getElementById('qty-input').value || 1);
+        badge.textContent = count;
+        badge.classList.remove('d-none');
+      }
+    }
+  });
+})();
 </script>
 {% endblock %}
