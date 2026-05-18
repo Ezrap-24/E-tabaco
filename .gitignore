@@ -9,3 +9,20 @@ staticfiles/
 node_modules/
 .venv/
 venv/
+
+# Archivos de trabajo local
+*.docx
+*.xlsx
+Fotos E-tabaco/
+.testwrite
+test_write.txt
+
+# Scripts utilitarios
+crear_*.py
+export_desde_admin.py
+import_productos.py
+
+# HTML mockups/prototipos
+landing-*.html
+landing-polene-style.html
+renombrar-fotos.html
