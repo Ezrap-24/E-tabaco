@@ -11,19 +11,19 @@
 
         <!-- Cantidad -->
         <div style="display:flex; align-items:center; gap:8px;">
-          <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
-                hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+          <form action="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}" method="post"
+                hx-post="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}"
                 hx-target="#cart-drawer-body"
                 hx-swap="outerHTML">
             {% csrf_token %}
             <input type="hidden" name="cantidad" value="{{ item.cantidad|add:'-1' }}">
-            <button type="submit" style="width:24px;height:24px;border:1.5px solid var(--tan);background:none;cursor:pointer;font-size:14px;line-height:1;color:var(--bronze);display:flex;align-items:center;justify-content:center;">−</button>
+            <button type="submit" style="width:24px;height:24px;border:1.5px solid var(--tan);background:none;cursor:pointer;font-size:14px;line-height:1;color:var(--bronze);display:flex;align-items:center;justify-content:center;">&minus;</button>
           </form>
 
           <span style="font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--slate);min-width:20px;text-align:center;">{{ item.cantidad }}</span>
 
-          <form action="{% url 'carrito:actualizar' item.producto.id %}" method="post"
-                hx-post="{% url 'carrito:actualizar' item.producto.id %}"
+          <form action="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}" method="post"
+                hx-post="{% url 'carrito:actualizar' item.producto.id item.tipo_venta %}"
                 hx-target="#cart-drawer-body"
                 hx-swap="outerHTML">
             {% csrf_token %}
@@ -35,38 +35,38 @@
 
       <!-- Precio + eliminar -->
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
-        <form action="{% url 'carrito:eliminar' item.producto.id %}" method="post"
-              hx-post="{% url 'carrito:eliminar' item.producto.id %}"
+        <form action="{% url 'carrito:eliminar' item.producto.id item.tipo_venta %}" method="post"
+              hx-post="{% url 'carrito:eliminar' item.producto.id item.tipo_venta %}"
               hx-target="#cart-drawer-body"
               hx-swap="outerHTML">
           {% csrf_token %}
-          <button type="submit" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;line-height:1;transition:color .2s;padding:0;" title="Eliminar">×</button>
+          <button type="submit" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;line-height:1;transition:color .2s;padding:0;" title="Eliminar">&times;</button>
         </form>
-        <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--bronze);">${{ item.subtotal }}</span>
+        <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--bronze);">{{ item.subtotal|pesos }}</span>
       </div>
     </div>
     {% endfor %}
 
-    <!-- Total + nota envío -->
+    <!-- Total + nota envio -->
     <div style="padding:16px 0 8px;">
-      {% if carrito.total >= 50000 %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:#2a7a3b;background:rgba(42,122,59,0.07);border-left:2px solid #2a7a3b;padding:8px 10px;margin-bottom:12px;">🚚 ¡Tenés envío gratis!</div>
+      {% if carrito.califica_envio_gratis %}
+      <div style="font-family:'Lora',serif;font-size:11px;color:#2a7a3b;background:rgba(42,122,59,0.07);border-left:2px solid #2a7a3b;padding:8px 10px;margin-bottom:12px;">&#128666; Tienes envio gratis</div>
       {% else %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:var(--bronze);background:rgba(139,115,85,0.07);border-left:2px solid var(--tan);padding:8px 10px;margin-bottom:12px;">🚚 Agregá ${{ 50000|add:"-"|add:carrito.total }} más para envío gratis</div>
+      <div style="font-family:'Lora',serif;font-size:11px;color:var(--bronze);background:rgba(139,115,85,0.07);border-left:2px solid var(--tan);padding:8px 10px;margin-bottom:12px;">&#128666; Agrega {{ carrito.falta_envio_gratis|pesos }} mas para envio gratis</div>
       {% endif %}
 
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
         <span style="font-family:'Lora',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#aaa;">Subtotal</span>
-        <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);">${{ carrito.total }}</span>
+        <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);">{{ carrito.total|pesos }}</span>
       </div>
     </div>
 
   {% else %}
-    <!-- Vacío -->
+    <!-- Vacio -->
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;gap:12px;color:#bbb;">
-      <div style="font-size:40px;opacity:.35;">🛒</div>
-      <div style="font-family:'Lora',serif;font-size:13px;text-align:center;">Tu carrito está vacío.</div>
-      <div style="font-family:'Lora',serif;font-size:11px;color:#ddd;">Agrega productos desde el catálogo.</div>
+      <div style="font-size:40px;opacity:.35;">&#128722;</div>
+      <div style="font-family:'Lora',serif;font-size:13px;text-align:center;">Tu carrito esta vacio.</div>
+      <div style="font-family:'Lora',serif;font-size:11px;color:#ddd;">Agrega productos desde el catalogo.</div>
     </div>
   {% endif %}
 </div>

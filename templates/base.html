@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Puro Tabaco — Mayorista de Tabaco Premium{% endblock %}</title>
 
+  <!-- Favicon -->
+  {% load static %}
+  <link rel="icon" type="image/png" href="{% static 'img/Hoja Puro tabaco.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/Hoja Puro tabaco.png' %}">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -80,16 +85,81 @@
     }
   </style>
 
+  <style>
+    /* ── SEARCH DROPDOWN ─────────────────────────── */
+    #search-overlay {
+      position: fixed; inset: 0;
+      background: transparent;
+      z-index: 300;
+      opacity: 0; pointer-events: none;
+    }
+    #search-overlay.open { opacity: 1; pointer-events: all; }
+
+    #search-bar {
+      position: fixed;
+      top: 98px;        /* ticker 34px + nav 64px */
+      right: 48px;
+      z-index: 301;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      width: 280px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity .2s, transform .2s;
+    }
+    #search-bar.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    #search-bar form {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 10px;
+    }
+    #search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #333;
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      padding: 4px 0;
+      outline: none;
+    }
+    #search-input::placeholder { color: #bbb; }
+    #search-bar .search-submit {
+      background: none; border: none; cursor: pointer;
+      color: #999; padding: 0; line-height: 1;
+      transition: color .2s;
+    }
+    #search-bar .search-submit:hover { color: var(--green); }
+  </style>
+
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
-<!-- ── ANNOUNCEMENT BAR ────────────────────────────────── -->
+<!-- ── TICKER BAR ────────────────────────────────────── -->
 {% block announce_bar %}
-<div id="announce-bar">
-  <span>🚚</span>
-  <span>Compras por sobre <strong>$50.000</strong> — Envío gratis a todo Chile</span>
-  <button class="ann-close" onclick="document.getElementById('announce-bar').classList.add('hidden');document.body.classList.remove('has-bar');" aria-label="Cerrar">×</button>
+<div id="ticker-bar">
+  <div class="ticker-track">
+    <span class="ticker-item">ENVÍO GRATIS SOBRE $50.000</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">DESPACHO EN 24–48 HRS</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 3 UNIDADES</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">STOCK PERMANENTE</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">RETIRO EN TIENDA DISPONIBLE</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PAGO SEGURO CON TARJETA</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">ENVÍO GRATIS SOBRE $50.000</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">DESPACHO EN 24–48 HRS</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 3 UNIDADES</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">STOCK PERMANENTE</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">RETIRO EN TIENDA DISPONIBLE</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PAGO SEGURO CON TARJETA</span><span class="ticker-sep">/</span>
+  </div>
 </div>
 {% endblock %}
 
@@ -99,56 +169,58 @@
 
     <!-- Logo -->
     <a href="{% url 'paginas:home' %}" class="nav-logo">
-      <svg class="nav-logo-shield" viewBox="0 0 36 44" fill="none">
-        <path d="M18 2 L34 8 L34 24 C34 34 27 40 18 42 C9 40 2 34 2 24 L2 8 Z" stroke="#C8B08A" stroke-width="1.5" fill="none"/>
-        <text x="18" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">PURO</text>
-        <text x="18" y="30" text-anchor="middle" font-family="Playfair Display, serif" font-size="6" fill="#C8B08A" font-weight="700">TABACO</text>
-        <text x="18" y="37" text-anchor="middle" font-family="Lora, serif" font-size="3.5" fill="#8B7355">EST. 1902</text>
-      </svg>
+      <img class="nav-logo-shield" src="{% static 'img/Hoja Puro tabaco.png' %}" alt="Puro Tabaco Logo">
       <div class="nav-logo-text">
         <span class="nav-logo-name">PURO TABACO</span>
         <span class="nav-logo-sub">Mayorista de Tabaco Premium</span>
       </div>
     </a>
 
-    <!-- Links desktop -->
+    <!-- Links desktop — columna central -->
     <ul class="nav-links">
-      <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
-      <li><a href="{% url 'productos:catalogo' %}">Catálogo</a></li>
-      <li><a href="{% url 'paginas:faqs' %}">FAQ</a></li>
+      <li><a href="{% url 'productos:catalogo' %}">Todos los Productos</a></li>
+      <li><a href="{% url 'productos:catalogo' %}?categoria=tabaco">Tabacos</a></li>
+      <li><a href="{% url 'productos:catalogo' %}?categoria=accesorios">Accesorios</a></li>
+      <li><a href="{% url 'productos:catalogo' %}?oferta=true">Ofertas & Packs</a></li>
       <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
     </ul>
 
-    <!-- CTA desktop -->
-    <a href="{% url 'productos:catalogo' %}" class="nav-cta">Ver Catálogo</a>
+    <!-- Íconos — columna derecha -->
+    <div class="nav-icons">
 
-    <!-- Íconos: cuenta + carrito agrupados -->
-    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      <!-- Búsqueda -->
+      <button class="nav-icon-btn" onclick="toggleSearch()" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
 
+      <!-- Cuenta -->
       {% if user.is_authenticated %}
-      <a href="{% url 'cuenta:dashboard' %}" aria-label="Mi cuenta" title="{{ user.first_name|default:user.email }}" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
-        <span style="width:32px;height:32px;border-radius:50%;background:#8B7355;border:1.5px solid #C8B08A;color:#EFE6D6;font-family:'Playfair Display',serif;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}</span>
+      <a href="{% url 'cuenta:dashboard' %}" class="nav-icon-btn" aria-label="Mi cuenta" title="{{ user.first_name|default:user.email }}">
+        <span class="nav-account-initials">{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}</span>
       </a>
       {% else %}
-      <a href="{% url 'cuenta:login' %}" aria-label="Iniciar sesión" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(200,176,138,0.5);color:#C8B08A;text-decoration:none;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <a href="{% url 'cuenta:login' %}" class="nav-icon-btn" aria-label="Iniciar sesión">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
       </a>
       {% endif %}
 
-      <!-- Ícono carrito → abre el drawer -->
-      <button class="nav-cart-btn" onclick="openCartDrawer()" aria-label="Carrito" id="nav-cart-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 01-8 0"/>
-      </svg>
-      <span class="nav-cart-badge {% if not carrito|length %}d-none{% endif %}" id="carrito-contador">{{ carrito|length }}</span>
-    </button>
+      <!-- Carrito -->
+      <button class="nav-cart-btn nav-icon-btn" onclick="openCartDrawer()" aria-label="Carrito" id="nav-cart-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <span class="nav-cart-badge {% if not carrito|length %}d-none{% endif %}" id="carrito-contador">{{ carrito|length }}</span>
+      </button>
 
-    </div><!-- /íconos grupo -->
+    </div><!-- /nav-icons -->
 
     <!-- Hamburger -->
     <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menú">
@@ -160,10 +232,10 @@
 
 <!-- Menú mobile -->
 <div class="nav-mobile" id="nav-mobile">
-  <a href="{% url 'paginas:home' %}" onclick="closeNavMenu()">Inicio</a>
-  <a href="{% url 'paginas:sobre_nosotros' %}" onclick="closeNavMenu()">Sobre Nosotros</a>
-  <a href="{% url 'productos:catalogo' %}" onclick="closeNavMenu()">Catálogo</a>
-  <a href="{% url 'paginas:faqs' %}" onclick="closeNavMenu()">FAQ</a>
+  <a href="{% url 'productos:catalogo' %}" onclick="closeNavMenu()">Todos los Productos</a>
+  <a href="{% url 'productos:catalogo' %}?categoria=tabaco" onclick="closeNavMenu()">Tabacos</a>
+  <a href="{% url 'productos:catalogo' %}?categoria=accesorios" onclick="closeNavMenu()">Accesorios</a>
+  <a href="{% url 'productos:catalogo' %}?oferta=true" onclick="closeNavMenu()">Ofertas & Packs</a>
   <a href="{% url 'paginas:contacto' %}" onclick="closeNavMenu()">Contacto</a>
   {% if user.is_authenticated %}
   <a href="{% url 'cuenta:dashboard' %}" onclick="closeNavMenu()">Mi Cuenta</a>
@@ -213,8 +285,21 @@
   </div>
 </div>
 
+<!-- ── SEARCH DROPDOWN ──────────────────────────────────── -->
+<div id="search-overlay" onclick="closeSearch()"></div>
+<div id="search-bar">
+  <form action="{% url 'productos:catalogo' %}" method="get">
+    <input type="text" name="q" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+    <button type="submit" class="search-submit" aria-label="Buscar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </button>
+  </form>
+</div>
+
 <!-- ── CONTENIDO PRINCIPAL ──────────────────────────────── -->
-<main style="{% block main_padding %}padding-top: 110px;{% endblock %}">
+<main style="{% block main_padding %}padding-top: 98px;{% endblock %}">
   {% block content %}{% endblock %}
 </main>
 
@@ -223,139 +308,139 @@
 <footer class="pt-footer">
   <div class="footer-inner">
     <div class="footer-top">
+
+      <!-- Columna marca -->
       <div>
         <div class="footer-logo-name">PURO TABACO</div>
         <div class="footer-logo-sub">Mayorista de Tabaco Premium</div>
-        <p class="footer-about">Contamos con las mejores marcas de tabaco. Stock permanente, precios mayoristas y despacho rápido a todo Chile.</p>
+        <p class="footer-about">Stock permanente, precios mayoristas y despacho rápido a todo Chile.</p>
+        <!-- Redes sociales — reemplazar href con URLs reales (ver PENDIENTES.md) -->
         <div class="footer-social">
-          <span class="footer-soc">IG</span>
-          <span class="footer-soc">FB</span>
-          <span class="footer-soc">LI</span>
+          <a href="#" class="footer-soc-link" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" class="footer-soc-link" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
         </div>
       </div>
+
+      <!-- Columna contacto -->
       <div>
-        <div class="footer-col-title">Empresa</div>
+        <div class="footer-col-title">Contacto</div>
         <ul class="footer-links">
-          <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
-          <li><a href="{% url 'paginas:faqs' %}">Preguntas Frecuentes</a></li>
-          <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
+          <!-- TODO: reemplazar con datos reales (ver PENDIENTES.md) -->
+          <li><a href="tel:+5691234567">+56 9 XXXX XXXX</a></li>
+          <li><a href="mailto:contacto@purotabaco.cl">contacto@purotabaco.cl</a></li>
+          <li style="color:#555; font-size:12px; margin-top:4px;">Lun–Vie 9:00–18:00</li>
+          <li style="color:#555; font-size:12px;">Santiago, Chile</li>
         </ul>
       </div>
+
+      <!-- Columna tienda -->
       <div>
         <div class="footer-col-title">Tienda</div>
         <ul class="footer-links">
-          <li><a href="{% url 'productos:catalogo' %}">Ver Catálogo</a></li>
-          <li><a href="{% url 'carrito:ver' %}">Mi Carrito</a></li>
+          <li><a href="{% url 'productos:catalogo' %}">Todos los Productos</a></li>
+          <li><a href="{% url 'productos:catalogo' %}?categoria=tabaco">Tabacos</a></li>
+          <li><a href="{% url 'productos:catalogo' %}?categoria=accesorios">Accesorios</a></li>
+          <li><a href="{% url 'productos:catalogo' %}?oferta=true">Ofertas & Packs</a></li>
         </ul>
       </div>
-      <div>
-        <div class="footer-col-title">Legal</div>
+
+      <!-- Columna ayuda -->
+        <div class="footer-col-title">Ayuda</div>
         <ul class="footer-links">
-          <li><a href="{% url 'paginas:terminos' %}">Términos y Condiciones</a></li>
-          <li><a href="{% url 'paginas:privacidad' %}">Política de Privacidad</a></li>
+          <li><a href="{% url 'paginas:faqs' %}">Preguntas Frecuentes</a></li>
+          <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
+          <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
+          <li><a href="{% url 'paginas:terminos' %}">Terminos y Condiciones</a></li>
+          <li><a href="{% url 'paginas:privacidad' %}">Privacidad</a></li>
         </ul>
       </div>
-    </div>
-    <div class="footer-divider"></div>
+
+    </div><!-- /footer-top -->
+
+    <!-- Footer bottom -->
     <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Puro Tabaco — Mayorista de Tabaco. Solo para mayores de 18 años.</div>
-      <div class="footer-warning">⚠️ El tabaco es perjudicial para la salud.</div>
-      <div class="footer-legal">
-        <a href="{% url 'paginas:terminos' %}">Términos</a>
+      <div class="footer-bottom-left">
+        &copy; {% now "Y" %} Puro Tabaco. Todos los derechos reservados.
+      </div>
+      <div class="footer-bottom-right">
+        <a href="{% url 'paginas:terminos' %}">Terminos</a>
         <a href="{% url 'paginas:privacidad' %}">Privacidad</a>
+        <span style="color:#444;">Solo para mayores de 18 anos.</span>
       </div>
     </div>
-  </div>
+
+  </div><!-- /footer-inner -->
 </footer>
 {% endblock %}
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <!-- HTMX -->
-<script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
-<!-- CSRF para HTMX -->
-<script>
-  document.body.addEventListener('htmx:configRequest', function(e) {
-    e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-  });
-</script>
+<script src="https://unpkg.com/htmx.org@1.9.10/dist/htmx.min.js" crossorigin="anonymous"></script>
 
 <script>
-  // ── Announcement bar ─────────────────────────────────────
-  (function() {
-    const bar = document.getElementById('announce-bar');
-    if (bar && !bar.classList.contains('hidden')) {
-      document.body.classList.add('has-bar');
-    }
-  })();
+/* ── CART DRAWER ──────────────────────────────────────────── */
+function openCartDrawer() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCartDrawer() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
-  // ── Mobile menu ──────────────────────────────────────────
-  function toggleNavMenu() {
-    document.getElementById('nav-mobile').classList.toggle('open');
+/* ── SEARCH ───────────────────────────────────────────────── */
+function toggleSearch() {
+  var bar = document.getElementById('search-bar');
+  var overlay = document.getElementById('search-overlay');
+  var isOpen = bar.classList.contains('open');
+  if (isOpen) {
+    closeSearch();
+  } else {
+    bar.classList.add('open');
+    overlay.classList.add('open');
+    setTimeout(function() { document.getElementById('search-input').focus(); }, 50);
   }
-  function closeNavMenu() {
-    document.getElementById('nav-mobile').classList.remove('open');
-  }
+}
+function closeSearch() {
+  document.getElementById('search-bar').classList.remove('open');
+  document.getElementById('search-overlay').classList.remove('open');
+}
 
-  // ── Cart Drawer ──────────────────────────────────────────
-  function openCartDrawer() {
-    document.getElementById('cart-overlay').classList.add('open');
-    document.getElementById('cart-drawer').classList.add('open');
+/* ── NAV MOBILE ───────────────────────────────────────────── */
+function toggleNavMenu() {
+  var menu = document.getElementById('nav-mobile');
+  var burger = document.getElementById('nav-hamburger');
+  var isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    closeNavMenu();
+  } else {
+    menu.classList.add('open');
+    burger.classList.add('open');
     document.body.style.overflow = 'hidden';
-    // Refrescar ítems del drawer vía HTMX al abrir
-    htmx.ajax('GET', '{% url "carrito:drawer" %}', {
-      target: '#cart-drawer-body',
-      swap: 'outerHTML'
-    });
   }
+}
+function closeNavMenu() {
+  var menu = document.getElementById('nav-mobile');
+  var burger = document.getElementById('nav-hamburger');
+  menu.classList.remove('open');
+  burger.classList.remove('open');
+  document.body.style.overflow = '';
+}
 
-  function closeCartDrawer() {
-    document.getElementById('cart-overlay').classList.remove('open');
-    document.getElementById('cart-drawer').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  // Cerrar drawer con Escape
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeCartDrawer();
-  });
-
-  // ── Actualizar badge del carrito tras HTMX ───────────────
-  document.body.addEventListener('htmx:afterRequest', function(e) {
-    const url = e.detail.requestConfig?.path || '';
-    // Si fue una operación del carrito, refrescar el badge
-    if (url.includes('/carrito/')) {
-      fetch('{% url "carrito:drawer" %}')
-        .then(r => r.text())
-        .then(html => {
-          // Extraer cantidad del texto para el badge
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const items = doc.querySelectorAll('[style*="border-bottom"]');
-          const count = items.length;
-          const badge = document.getElementById('carrito-contador');
-          if (badge) {
-            badge.textContent = count;
-            badge.classList.toggle('d-none', count === 0);
-          }
-          // Actualizar el contador del drawer header
-          const countEl = document.getElementById('drawer-count');
-          if (countEl) {
-            countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
-          }
-        });
-    }
-  });
-
-  // ── Scroll fade-in ───────────────────────────────────────
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
+/* ── HTMX: actualizar contador del carrito tras agregar ───── */
+document.addEventListener('htmx:afterSwap', function(e) {
+  fetch('{% url "carrito:drawer" %}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      var body = document.querySelector('.cart-drawer-body');
+      if (body) body.innerHTML = html;
     });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+});
 </script>
 
 {% block extra_js %}{% endblock %}

@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ page_title|default:"Mi Cuenta" }} — Puro Tabaco{% endblock %}
-
+{% block title %}{{ page_title|default:"Mi Cuenta" }} &mdash; Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block extra_css %}
 <style>
-  /* ── CUENTA: Cabecera de sección ───────────────────────── */
+  /* ── CUENTA: Cabecera de seccion ───────────────────────── */
   .cuenta-header {
     background: var(--green);
-    padding: 64px 0 40px;
+    padding: 120px 0 40px; /* 98px nav+ticker + 22px visual */
   }
   .cuenta-header-inner {
     max-width: 1100px;
@@ -114,9 +114,7 @@
   .cuenta-nav .logout-link:hover { background: rgba(192,57,43,.06); color: #c0392b; }
 
   /* ── CUENTA: Contenido ──────────────────────────────────── */
-  .cuenta-content {
-    min-width: 0;
-  }
+  .cuenta-content { min-width: 0; }
   .cuenta-card {
     background: #fff;
     border: 1px solid var(--cream-d);
@@ -134,9 +132,7 @@
   }
 
   /* ── CUENTA: Formularios ────────────────────────────────── */
-  .ct-form-group {
-    margin-bottom: 20px;
-  }
+  .ct-form-group { margin-bottom: 20px; }
   .ct-label {
     display: block;
     font-family: 'Lora', serif;
@@ -181,10 +177,7 @@
     cursor: pointer;
     transition: background .2s, color .2s;
   }
-  .ct-btn-primary {
-    background: var(--green);
-    color: var(--cream);
-  }
+  .ct-btn-primary { background: var(--green); color: var(--cream); }
   .ct-btn-primary:hover { background: #253c2e; }
 
   /* ── Mensajes Django ────────────────────────────────────── */
@@ -202,6 +195,7 @@
 
   /* ── Responsive ─────────────────────────────────────────── */
   @media (max-width: 768px) {
+    .cuenta-header { padding: 110px 0 32px; }
     .cuenta-layout {
       grid-template-columns: 1fr;
       gap: 24px;
@@ -226,7 +220,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Cabecera -->
 <div class="cuenta-header">
   <div class="cuenta-header-inner">
     <div class="cuenta-header-label">Mi Cuenta</div>
@@ -234,12 +227,9 @@
   </div>
 </div>
 
-<!-- Layout sidebar + contenido -->
 <div class="cuenta-layout">
 
-  <!-- SIDEBAR -->
   <aside class="cuenta-sidebar">
-    <!-- Tarjeta usuario -->
     <div class="cuenta-user-card">
       <div class="cuenta-user-initials">
         {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
@@ -250,27 +240,25 @@
       <div class="cuenta-user-email">{{ request.user.email }}</div>
     </div>
 
-    <!-- Nav -->
     <nav class="cuenta-nav">
       <a href="{% url 'cuenta:dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">
-        <span class="nav-icon">⊞</span> Escritorio
+        <span class="nav-icon">&#8862;</span> Escritorio
       </a>
       <a href="{% url 'cuenta:mis_pedidos' %}" class="{% block nav_pedidos %}{% endblock %}">
-        <span class="nav-icon">📦</span> Mis Pedidos
+        <span class="nav-icon">&#128230;</span> Mis Pedidos
       </a>
       <a href="{% url 'cuenta:direccion' %}" class="{% block nav_direccion %}{% endblock %}">
-        <span class="nav-icon">📍</span> Dirección
+        <span class="nav-icon">&#128205;</span> Direcci&oacute;n
       </a>
       <a href="{% url 'cuenta:detalles' %}" class="{% block nav_detalles %}{% endblock %}">
-        <span class="nav-icon">⚙</span> Detalles
+        <span class="nav-icon">&#9881;</span> Detalles
       </a>
       <a href="{% url 'cuenta:logout' %}" class="logout-link">
-        <span class="nav-icon">↩</span> Salir
+        <span class="nav-icon">&#8617;</span> Salir
       </a>
     </nav>
   </aside>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="cuenta-content">
     {% if messages %}
     <div class="ct-messages">

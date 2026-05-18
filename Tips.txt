@@ -1,0 +1,88 @@
+--Para conocer la versión instalada de Python
+>>python --version
+
+--Crear carpeta para el/los ambientes
+>>mkdir nombreCarpeta
+
+--Crear ambientes virtual dentro depython la carpeta anteriormente creada
+>>python -m venv nombreAmbiente
+
+--Una vez creado el ambiente debemos activarlo para instalar las herramientas y paquetes necesarios
+--Debemos entrar a la carpeta Scripts dentro del ambiente creado y ejecutar el comando, este proceso debe
+--ser ejecutado paso a paso ingresando a cada carpeta mediante el comando cd (change directory)
+>>cd nombreCarpeta
+>>cd nombreAmbiente
+>>cd Scripts
+>>activate
+
+--La ruta debería quedarles de esta forma
+>>nombreCarpeta/nombreAmbiente/Scripts/activate
+
+--Para bajar el ambiente virtual deben ingresar a la misma carpeta y ejecutar
+>>deactivate
+
+*************************************************************
+--Para instalar django debebemos volver a la raíz de nuestro sistema (recomendado)
+>>cd\
+
+--Revisemos que herramientas tenemos instaladas en el entorno virtual
+>>pip list
+
+--Si el sistema nos sugiere actualizar el módulo pip lo podemos hacer de la siguiente forma...
+>>python -m pip install --upgrade pip
+
+--Para instalar instalar django
+>>pip install django (si se necesita versión especifica agregar ==X.X.X Ejemplo >>pip install django==4.0.5)
+
+--Conocer o verificar versión instalada de django
+python -m django --version
+
+--Herramientas que se irán utilizando...
+--Para que el editor nos corrija a nivel de código
+>>pip install pylint
+
+--Para trabajar con imágenes debemos instalar el paquete Pillow
+>>pip install Pillow
+
+--Para crear un fichero requirements.txt con todas las librerías que nuestro ambiente tendrá
+>>pip freeze > requirements.txt
+
+--Para instalar todas las librerías que necesita nuestro proyecto...
+--debemos estar ubicados en la carpeta del proyecto y con el ambiente virtual levantado...
+>>pip install -r requirements.txt
+
+*************************************************************
+--Una vez levantado el ambiente virtual, con las herramientas básicas necesarias podemos
+--crear el proyecto. Para ello debemos ubicarnos en la carpeta donde dejaremos el proyecto.
+--Luego ejecutar el siguiente comando
+>>django-admin startproject [nombreProyecto] (no usar espacios ni caracteres especiales, a lo más _ )
+
+--Confirmar la creación del directoria en la carpeta de trabajo.
+
+--Levantemos nuestro proyecto para ver que esta funcionando y listo para empezar a trabajar
+--Debes acceder a la carpeta de tu proyecto, verificar que en el fichero se encuentra el archivo manage.py
+--Luego ejecutar el siguite comando.
+>>python manage.py runserver
+
+--Si todo funciona bien, te aparecerá en pantalla una dirección IP
+--Ingresa a dicha dirección usando tu navegador favorito. (control + clic)
+
+--RECUERDA Para iniciar el proyecto
+python manage.py runserver
+
+--En este momento nuestra aplicación en Django esta funcionando pero no hace nada.
+--Debemos crear la estructura base de la aplicación en la base de datos de sqlite3
+>>python manage.py migrate
+
+--Para ingresar como Admin a la aplicación
+>>python manage.py createsuperuser (te solicitará 3 datos, username, email, password)
+
+--Luego a medida que necesitamos agregar apps a nuestra aplicación web, podemos ir creándolas...
+>>python manage.py startapp [nombreApp]
+
+--La primera app suele ser [core], esto es por convención no obligación
+
+--Ahora a crear un modelo...
+--Creado el modelo para generar las tablas en nuestro sistema debemos generar el script de migración y luego migrar
+>>python manage.py makemigrations nombreApp
+>>python manage.py migrate nombreApp

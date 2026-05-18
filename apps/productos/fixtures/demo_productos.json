@@ -24,99 +24,231 @@
     }
   },
   {
+    "model": "productos.categoria",
+    "pk": 4,
+    "fields": {
+      "nombre": "Mezclas & Blend",
+      "descripcion": "Mezclas exclusivas para perfiles de sabor complejos."
+    }
+  },
+  {
     "model": "productos.producto",
     "pk": 1,
     "fields": {
-      "nombre": "Virginia Gold",
-      "descripcion": "Tabaco rubio de hoja fina, origen Virginia. Sabor suave con notas dulces y aroma delicado. Ideal para fumadores que prefieren un perfil ligero.",
+      "nombre": "Virginia Gold 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-VG-050",
+      "categoria": 1,
+      "intensidad": "Suave",
+      "peso_gramos": 50,
+      "procedencia": "Virginia, USA",
+      "descripcion": "Tabaco rubio de hoja fina, origen Virginia. Sabor suave con notas dulces y aroma delicado. Ideal para fumadores que prefieren un perfil ligero y refinado.",
       "imagen": "",
-      "precio_unidad": "3500.00",
-      "precio_caja": "28000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "4900.00",
+      "precio_mayor": "3900.00",
+      "cantidad_minima_mayor": 3,
       "stock": 150,
       "activo": true,
-      "categoria": 1,
-      "creado": "2026-03-27T10:00:00Z"
+      "destacado": true,
+      "creado": "2026-04-01T10:00:00Z"
     }
   },
   {
     "model": "productos.producto",
     "pk": 2,
     "fields": {
-      "nombre": "Burley Clásico",
+      "nombre": "Burley Clasico 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-BC-050",
+      "categoria": 1,
+      "intensidad": "Medio",
+      "peso_gramos": 50,
+      "procedencia": "Kentucky, USA",
       "descripcion": "Tabaco rubio tipo Burley, curado al aire. Sabor equilibrado con notas de nuez y un toque de caramelo. Muy popular entre los liadores expertos.",
       "imagen": "",
-      "precio_unidad": "3800.00",
-      "precio_caja": "30000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "5200.00",
+      "precio_mayor": "4100.00",
+      "cantidad_minima_mayor": 3,
       "stock": 80,
       "activo": true,
-      "categoria": 1,
-      "creado": "2026-03-27T10:01:00Z"
+      "destacado": true,
+      "creado": "2026-04-01T10:01:00Z"
     }
   },
   {
     "model": "productos.producto",
     "pk": 3,
     "fields": {
-      "nombre": "Negro Intenso",
-      "descripcion": "Tabaco negro de cuerpo pleno y sabor pronunciado. Curado en barrica, con notas terrosas y un retrogusto persistente. Para los amantes del tabaco con carácter.",
+      "nombre": "Negro Intenso 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-NI-050",
+      "categoria": 2,
+      "intensidad": "Intenso",
+      "peso_gramos": 50,
+      "procedencia": "Brasil",
+      "descripcion": "Tabaco negro de cuerpo pleno y sabor pronunciado. Curado en barrica, con notas terrosas y un retrogusto persistente. Para los amantes del tabaco con caracter.",
       "imagen": "",
-      "precio_unidad": "4200.00",
-      "precio_caja": "35000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "5800.00",
+      "precio_mayor": "4600.00",
+      "cantidad_minima_mayor": 3,
       "stock": 60,
       "activo": true,
-      "categoria": 2,
-      "creado": "2026-03-27T10:02:00Z"
+      "destacado": true,
+      "creado": "2026-04-01T10:02:00Z"
     }
   },
   {
     "model": "productos.producto",
     "pk": 4,
     "fields": {
-      "nombre": "Latakia Premium",
-      "descripcion": "Tabaco negro oriental, curado al humo de leña de roble. Aroma intenso y complejo, con notas ahumadas características. Una experiencia única para el paladar.",
+      "nombre": "Latakia Premium 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-LP-050",
+      "categoria": 2,
+      "intensidad": "Intenso",
+      "peso_gramos": 50,
+      "procedencia": "Siria",
+      "descripcion": "Tabaco negro oriental, curado al humo de lena de roble. Aroma intenso y complejo, con notas ahumadas caracteristicas. Una experiencia unica para el paladar.",
       "imagen": "",
-      "precio_unidad": "5500.00",
-      "precio_caja": "45000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "7500.00",
+      "precio_mayor": "5900.00",
+      "cantidad_minima_mayor": 3,
       "stock": 40,
       "activo": true,
-      "categoria": 2,
-      "creado": "2026-03-27T10:03:00Z"
+      "destacado": true,
+      "creado": "2026-04-01T10:03:00Z"
     }
   },
   {
     "model": "productos.producto",
     "pk": 5,
     "fields": {
-      "nombre": "Natural Sin Aditivos",
+      "nombre": "Natural Sin Aditivos 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-NS-050",
+      "categoria": 3,
+      "intensidad": "Suave",
+      "peso_gramos": 50,
+      "procedencia": "Ecuador",
       "descripcion": "Tabaco 100% natural, sin conservantes ni aditivos. Curado de forma artesanal respetando el proceso tradicional. Sabor puro y limpio, tal como la hoja.",
       "imagen": "",
-      "precio_unidad": "4800.00",
-      "precio_caja": "40000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "6500.00",
+      "precio_mayor": "5100.00",
+      "cantidad_minima_mayor": 3,
       "stock": 90,
       "activo": true,
-      "categoria": 3,
-      "creado": "2026-03-27T10:04:00Z"
+      "destacado": false,
+      "creado": "2026-04-01T10:04:00Z"
     }
   },
   {
     "model": "productos.producto",
     "pk": 6,
     "fields": {
-      "nombre": "Orgánico Reserve",
-      "descripcion": "Tabaco orgánico certificado, cultivado sin pesticidas. Hoja seleccionada a mano, curado lentamente. El máximo estándar en pureza y sabor natural.",
+      "nombre": "Organico Reserve 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-OR-050",
+      "categoria": 3,
+      "intensidad": "Medio",
+      "peso_gramos": 50,
+      "procedencia": "Colombia",
+      "descripcion": "Tabaco organico certificado, cultivado sin pesticidas. Hoja seleccionada a mano, curado lentamente. El maximo estandar en pureza y sabor natural.",
       "imagen": "",
-      "precio_unidad": "6200.00",
-      "precio_caja": "52000.00",
-      "unidades_por_caja": 10,
+      "precio_unidad": "8500.00",
+      "precio_mayor": "6700.00",
+      "cantidad_minima_mayor": 3,
       "stock": 30,
       "activo": true,
-      "categoria": 3,
-      "creado": "2026-03-27T10:05:00Z"
+      "destacado": false,
+      "creado": "2026-04-01T10:05:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 7,
+    "fields": {
+      "nombre": "Virginia Gold 100g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-VG-100",
+      "categoria": 1,
+      "intensidad": "Suave",
+      "peso_gramos": 100,
+      "procedencia": "Virginia, USA",
+      "descripcion": "Nuestro Virginia Gold en formato de 100g. La misma hoja fina y suave, ahora en el formato preferido por los fumadores que consumen con regularidad.",
+      "imagen": "",
+      "precio_unidad": "8900.00",
+      "precio_mayor": "6900.00",
+      "cantidad_minima_mayor": 3,
+      "stock": 120,
+      "activo": true,
+      "destacado": false,
+      "creado": "2026-04-01T10:06:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 8,
+    "fields": {
+      "nombre": "Blend Mediterraneo 50g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-BM-050",
+      "categoria": 4,
+      "intensidad": "Medio",
+      "peso_gramos": 50,
+      "procedencia": "Chile",
+      "descripcion": "Mezcla exclusiva de tabacos orientales y rubios suaves. Perfil aromatico complejo con notas de miel, madera y especias suaves. Creacion propia de nuestro maestro tostador.",
+      "imagen": "",
+      "precio_unidad": "6200.00",
+      "precio_mayor": "4900.00",
+      "cantidad_minima_mayor": 3,
+      "stock": 55,
+      "activo": true,
+      "destacado": false,
+      "creado": "2026-04-01T10:07:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 9,
+    "fields": {
+      "nombre": "Negro Intenso 100g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-NI-100",
+      "categoria": 2,
+      "intensidad": "Intenso",
+      "peso_gramos": 100,
+      "procedencia": "Brasil",
+      "descripcion": "El clasico Negro Intenso en el formato grande de 100g. Ideal para distribuidores y fumadores habituales que buscan el mejor precio por gramo.",
+      "imagen": "",
+      "precio_unidad": "10500.00",
+      "precio_mayor": "8200.00",
+      "cantidad_minima_mayor": 3,
+      "stock": 45,
+      "activo": true,
+      "destacado": false,
+      "creado": "2026-04-01T10:08:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 10,
+    "fields": {
+      "nombre": "Burley Clasico 100g",
+      "marca": "Puro Tabaco",
+      "codigo": "PT-BC-100",
+      "categoria": 1,
+      "intensidad": "Medio",
+      "peso_gramos": 100,
+      "procedencia": "Kentucky, USA",
+      "descripcion": "El Burley Clasico en presentacion de 100g, pensado para el consumidor frecuente o el negocio que necesita un stock solido del blend mas popular del catalogo.",
+      "imagen": "",
+      "precio_unidad": "9500.00",
+      "precio_mayor": "7400.00",
+      "cantidad_minima_mayor": 3,
+      "stock": 70,
+      "activo": true,
+      "destacado": false,
+      "creado": "2026-04-01T10:09:00Z"
     }
   }
 ]

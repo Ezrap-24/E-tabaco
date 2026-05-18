@@ -6,26 +6,51 @@
 
 Stack: **Django + PostgreSQL + Bootstrap + JavaScript**
 
-## Estado actual (2026-03-31)
+## Estado actual (2026-04-27)
 
-- Estructura base de Django lista (apps, config, requirements)
-- Propuesta de dominio documentada (`docs/propuesta-nombres-dominio.md`)
-- Deck de presentación para el cliente listo (`propuesta-dominio-tabaqueria.pptx`)
-- **Próximo hito: sesión fotográfica en el local (2026-03-31)**
+**El MVP está prácticamente completo.** El proyecto evolucionó de 1 tienda a 3 marcas en monorepo.
 
-## Páginas planificadas
+- Apps Django implementadas: `productos`, `carrito`, `pedidos`, `paginas`, `cuenta`
+- Stripe integrado (PaymentIntent en CLP, webhook, email de confirmación)
+- Sistema de cuentas completo (registro, login, perfil, historial de pedidos)
+- Docker listo (`Dockerfile` + `docker-compose.yml`)
+- Brand Guide Puro Tabaco v2 completo (paleta verde tabaco + B2B mayorista)
+- Wireframes y mockups de diseño disponibles en `docs/design/`
+
+## Páginas
 
 | Sección | Estado |
 |---------|--------|
-| Inicio (landing) | Pendiente |
-| Catálogo | Pendiente |
-| Ficha de producto | Pendiente |
-| Carrito | Pendiente |
-| Checkout | Pendiente |
-| Sobre la empresa | Pendiente |
-| Contacto | Pendiente |
-| FAQ | Pendiente |
-| Gate de mayoría de edad | Pendiente |
+| Inicio (landing) | ✅ Implementado |
+| Catálogo | ✅ Implementado |
+| Ficha de producto | ✅ Implementado |
+| Carrito | ✅ Implementado (sesiones Django) |
+| Checkout + Pago Stripe | ✅ Implementado |
+| Confirmación de pedido | ✅ Implementado |
+| Sobre la empresa | ✅ Implementado |
+| Contacto | ✅ Implementado |
+| FAQ | ✅ Implementado |
+| Términos y Privacidad | ✅ Implementado |
+| Gate de mayoría de edad | ✅ Implementado (fecha nacimiento + cookie 30 días) |
+| Mi cuenta (dashboard, pedidos, dirección) | ✅ Implementado |
+
+## Arquitectura objetivo: Monorepo 3 marcas
+
+Ver `docs/PLAN-MIGRACION-MONOREPO.md`
+
+| Dominio | Marca | Estado |
+|---------|-------|--------|
+| purotabaco.cl | Puro Tabaco (Premium / B2B) | Brand guide listo, código base listo |
+| clubdeltabaco.cl | Club del Tabaco | Pendiente diferenciación |
+| zonatabaco.cl | Zona Tabaco | Pendiente diferenciación |
+
+## Próximos hitos
+
+1. Migración a monorepo (`shared/` + 3 instancias Django)
+2. CSS personalizado por marca (usar Brand Guide v2)
+3. Deploy en Railway
+4. Tests completos con pytest
+5. Fotos reales de productos
 
 ## Decisiones técnicas acordadas
 

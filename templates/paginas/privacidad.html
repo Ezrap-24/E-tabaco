@@ -1,20 +1,30 @@
-{% extends 'base.html' %}
-{% block title %}Política de Privacidad — e-Tabaco{% endblock %}
-{% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <h1 class="section-title mb-4">Política de Privacidad</h1>
-      <p class="text-muted">Tu privacidad es importante para nosotros. Esta política explica cómo tratamos tus datos personales.</p>
-      <h5 class="mt-4">Datos que recopilamos</h5>
-      <p class="text-muted">Recopilamos nombre, email, teléfono y dirección de envío únicamente para procesar tus pedidos. No compartimos tu información con terceros salvo los necesarios para el procesamiento del pago y envío.</p>
-      <h5 class="mt-4">Uso de los datos</h5>
-      <p class="text-muted">Tus datos se usan exclusivamente para: procesar y enviar tu pedido, enviarte la confirmación por email, y contactarte ante cualquier inconveniente con tu compra.</p>
-      <h5 class="mt-4">Cookies</h5>
-      <p class="text-muted">Usamos cookies de sesión para mantener tu carrito de compras activo durante tu visita. No usamos cookies de rastreo ni publicidad.</p>
-      <h5 class="mt-4">Contacto</h5>
-      <p class="text-muted">Para cualquier consulta sobre tus datos personales, escribinos a través de nuestra página de <a href="{% url 'paginas:contacto' %}">contacto</a>.</p>
-    </div>
-  </div>
-</div>
+{% extends 'paginas/_base_legal.html' %}
+{% block title %}Política de Privacidad — Puro Tabaco{% endblock %}
+
+{% block legal_eyebrow %}Legal{% endblock %}
+{% block legal_title %}Política de Privacidad{% endblock %}
+{% block legal_subtitle %}
+<p class="legal-subtitle">Tu privacidad es importante para nosotros. Aquí explicamos cómo tratamos tus datos personales.</p>
+{% endblock %}
+
+{% block legal_content %}
+<h2 class="legal-section-title">Datos que recopilamos</h2>
+<p class="legal-text">Recopilamos nombre, email, teléfono y dirección de envío únicamente para procesar tus pedidos. Estos datos son ingresados voluntariamente por ti al momento de realizar una compra o crear una cuenta.</p>
+
+<h2 class="legal-section-title">Uso de los datos</h2>
+<p class="legal-text">Tus datos se usan exclusivamente para procesar y enviar tu pedido, enviarte la confirmación por email, y contactarte ante cualquier inconveniente con tu compra. No vendemos ni compartimos tu información con terceros, salvo los estrictamente necesarios para el procesamiento del pago (Stripe) y el servicio de despacho.</p>
+
+<h2 class="legal-section-title">Verificación de edad</h2>
+<p class="legal-text">Almacenamos una cookie firmada en tu navegador por 30 días para recordar que verificaste tu mayoría de edad. Esta cookie no contiene datos personales identificables, solo una confirmación de acceso.</p>
+
+<h2 class="legal-section-title">Cookies de sesión</h2>
+<p class="legal-text">Usamos cookies de sesión para mantener tu carrito de compras activo durante tu visita. No usamos cookies de rastreo, publicidad ni analítica de terceros.</p>
+
+<h2 class="legal-section-title">Seguridad</h2>
+<p class="legal-text">Todos los datos transmitidos en el sitio van protegidos por HTTPS. Los pagos se procesan directamente por Stripe bajo sus propios estándares de seguridad PCI-DSS. No almacenamos números de tarjeta ni datos financieros.</p>
+
+<h2 class="legal-section-title">Tus derechos</h2>
+<p class="legal-text">Tienes derecho a solicitar la eliminación de tus datos personales en cualquier momento. Para hacerlo, escríbenos a través de nuestra <a href="{% url 'paginas:contacto' %}" style="color:var(--green);">página de contacto</a>. Responderemos en un plazo máximo de 10 días hábiles.</p>
+
+<div class="legal-warn">⚠️ Para cualquier consulta sobre privacidad o tratamiento de datos, contáctanos directamente.</div>
 {% endblock %}

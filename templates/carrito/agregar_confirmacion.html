@@ -1,10 +1,6 @@
-<div class="alert alert-success d-flex align-items-center justify-content-between mt-3" role="alert">
-  <div>
-    <i class="bi bi-check-circle-fill me-2"></i>
-    <strong>{{ producto.nombre }}</strong> agregado al carrito
-    <span class="text-muted">({{ cantidad }} {{ tipo_venta }}{{ cantidad|pluralize:"es" }})</span>
-  </div>
-  <a href="{% url 'carrito:ver' %}" class="btn btn-dark btn-sm ms-3">
-    <i class="bi bi-bag me-1"></i>Ver carrito ({{ carrito_total }})
+<div class="msg-ok">
+  ✅ <strong>{{ producto.nombre }}</strong> agregado al carrito
+  <a href="{% url 'carrito:ver' %}" style="float:right;text-decoration:underline;">
+    Ver carrito ({{ carrito_total }})
   </a>
 </div>

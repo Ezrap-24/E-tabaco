@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Checkout — Puro Tabaco{% endblock %}
+{% block title %}Checkout &mdash; Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block extra_css %}
@@ -40,7 +41,7 @@
   <div style="max-width:1100px; margin:0 auto;">
     <div style="font-family:'Lora',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,176,138,0.6); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
       <span style="display:inline-block; width:32px; height:1px; background:rgba(200,176,138,0.4);"></span>
-      Paso 1 de 2 — Datos de envío
+      Paso 1 de 2 &mdash; Datos de envio
     </div>
     <h1 style="font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,52px); font-weight:700; color:var(--cream); line-height:1.05;">Checkout</h1>
   </div>
@@ -53,7 +54,7 @@
     <!-- FORMULARIO -->
     <div style="background:#fff; border:1px solid var(--cream-d); padding:32px;">
       <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-bottom:20px; padding-bottom:14px; border-bottom:1.5px solid var(--cream-d);">
-        Datos de envío
+        Datos de envio
       </div>
 
       <form method="post" novalidate>
@@ -118,7 +119,7 @@
         <button type="submit"
                 style="width:100%; background:var(--green); color:var(--cream); border:none; padding:16px;
                        font-family:'Lora',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; margin-top:8px;">
-          Continuar al pago →
+          Continuar al pago &rarr;
         </button>
       </form>
     </div>
@@ -133,19 +134,25 @@
       <div style="display:flex; justify-content:space-between; padding:8px 0; font-family:'Lora',serif; font-size:13px; color:var(--slate);">
         <span style="flex:1; padding-right:12px;">
           {{ item.producto.nombre }}
-          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ item.tipo_venta }}) ×{{ item.cantidad }}</span>
+          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ item.tipo_venta }}) &times;{{ item.cantidad }}</span>
         </span>
-        <span style="font-family:'Playfair Display',serif; font-weight:600;">${{ item.subtotal|floatformat:0 }}</span>
+        <span style="font-family:'Playfair Display',serif; font-weight:600;">{{ item.subtotal|pesos }}</span>
       </div>
       {% endfor %}
 
       <div style="border-top:1.5px solid var(--cream-d); margin-top:12px; padding-top:14px; display:flex; justify-content:space-between; align-items:baseline;">
         <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total</span>
-        <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">${{ carrito.total|floatformat:0 }}</span>
+        <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">{{ carrito.total|pesos }}</span>
       </div>
 
-      <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:16px; padding-top:12px; border-top:1px dashed var(--cream-d);">
-        ⚠️ Solo para mayores de 18 años. El tabaco es perjudicial para la salud.
+      {% if carrito.califica_envio_gratis %}
+      <div style="font-family:'Lora',serif;font-size:11px;color:#2a7a3b;background:rgba(42,122,59,0.07);border-left:2px solid #2a7a3b;padding:8px 10px;margin-top:12px;">&#128666; Envio gratis incluido</div>
+      {% else %}
+      <div style="font-family:'Lora',serif;font-size:11px;color:var(--bronze);background:rgba(139,115,85,0.07);border-left:2px solid var(--tan);padding:8px 10px;margin-top:12px;">&#128666; Agrega {{ carrito.falta_envio_gratis|pesos }} mas para envio gratis</div>
+      {% endif %}
+
+      <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:12px; padding-top:12px; border-top:1px dashed var(--cream-d);">
+        Solo para mayores de 18 anos. El tabaco es perjudicial para la salud.
       </p>
     </aside>
   </div>
