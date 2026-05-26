@@ -462,11 +462,66 @@
 
 {% block extra_js %}
 <script>
+/* ── Selector de cantidad ─────────────────────────────── */
 function pcQty(btn, delta) {
-  const input = btn.parentElement.querySelector('input[type="number"]');
-  const val = parseInt(input.value) || 1;
+  var input = btn.parentElement.querySelector('input[type="number"]');
+  var val = parseInt(input.value) || 1;
   input.value = Math.max(1, Math.min(99, val + delta));
 }
+
+/* ── Agregar al carrito sin recargar página ──────────── */
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.pc form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var btn = form.querySelector('.pc-add-btn');
+      var originalText = btn.textContent;
+      var qty = parseInt(form.querySelector('input[name="cantidad"]').value) || 1;
+
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      var formData = new FormData(form);
+      formData.delete('next'); // no necesitamos redirección
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (res) {
+        if (res.ok) {
+          /* Actualizar badge del navbar */
+          var badge = document.getElementById('carrito-contador');
+          if (badge) {
+            var count = parseInt(badge.textContent) || 0;
+            badge.textContent = count + qty;
+            badge.classList.remove('d-none');
+          }
+          /* Feedback visual en el botón */
+          btn.textContent = '✓ Agregado';
+          btn.style.background = '#2a5c3f';
+          setTimeout(function () {
+            btn.textContent = originalText;
+            btn.style.background = '';
+            btn.disabled = false;
+            form.querySelector('input[name="cantidad"]').value = 1;
+          }, 2000);
+        } else {
+          btn.textContent = 'Error';
+          setTimeout(function () {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }, 1500);
+        }
+      })
+      .catch(function () {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      });
+    });
+  });
+});
 </script>
 {% endblock %}
-                                                                                  

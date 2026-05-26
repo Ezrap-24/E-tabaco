@@ -44,7 +44,7 @@ def home(request):
 @require_POST
 def sugerir_producto(request):
     if SugerenciaProducto.objects.filter(usuario=request.user).exists():
-        messages.info(request, '¡Ya estás participando en el concurso!')
+        messages.info(request, 'Ya estas participando en el concurso!')
         return redirect('paginas:home')
 
     categoria = request.POST.get('categoria', '').strip()
@@ -52,7 +52,7 @@ def sugerir_producto(request):
     categorias_validas = [c[0] for c in CATEGORIAS]
 
     if not categoria or categoria not in categorias_validas:
-        messages.error(request, 'Selecciona una categoría válida.')
+        messages.error(request, 'Selecciona una categoria valida.')
         return redirect('paginas:home')
 
     if not producto:
@@ -65,16 +65,15 @@ def sugerir_producto(request):
         producto=producto,
     )
 
-    messages.success(request, '¡Gracias por participar! Ya estás en el concurso.')
+    messages.success(request, 'Gracias por participar! Ya estas en el concurso.')
     return redirect('paginas:home')
 
 
-# ── Validación de edad ──────────────────────────────────────────────
+# ── Validacion de edad ──────────────────────────────────────────────
 
 def _calcular_edad(nacimiento: date) -> int:
     hoy = date.today()
     years = hoy.year - nacimiento.year
-    # Si aún no pasó el cumpleaños este año, restar 1
     if (hoy.month, hoy.day) < (nacimiento.month, nacimiento.day):
         years -= 1
     return years
@@ -82,18 +81,12 @@ def _calcular_edad(nacimiento: date) -> int:
 
 @require_http_methods(['GET', 'POST'])
 def verificar_edad(request):
-    """
-    Gate de mayoría de edad:
-      - Botón '+18' confirma acceso.
-      - Botón '-18' redirige a acceso denegado.
-    """
     ctx = {'edad_minima': settings.AGE_MINIMUM}
 
     if request.method == 'POST':
         if request.POST.get('edad') == 'menor':
             return redirect('paginas:acceso_denegado')
 
-        # Cualquier otro valor (o 'mayor') da acceso
         request.session['edad_verificada'] = True
         response = redirect('paginas:home')
         response.set_signed_cookie(
@@ -110,13 +103,12 @@ def verificar_edad(request):
 
 
 def acceso_denegado(request):
-    """Página informativa para quienes no cumplen la edad mínima."""
     return render(request, 'paginas/acceso_denegado.html', {
         'edad_minima': settings.AGE_MINIMUM,
     })
 
 
-# ── Páginas informativas ────────────────────────────────────────────
+# ── Paginas informativas ────────────────────────────────────────────
 
 def sobre_nosotros(request):
     return render(request, 'paginas/sobre_nosotros.html')
@@ -130,4 +122,35 @@ def contacto(request):
         mensaje = (request.POST.get('mensaje') or '').strip()
 
         if not (nombre and email and mensaje):
-            messages.error(request, 'Po
+            messages.error(request, 'Por favor completa todos los campos.')
+        else:
+            cuerpo = 'Nombre: {}\nEmail: {}\n\nMensaje:\n{}\n'.format(nombre, email, mensaje)
+            try:
+                send_mail(
+                    subject='[Contacto Puro Tabaco] {}'.format(nombre),
+                    message=cuerpo,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.CONTACT_EMAIL],
+                    fail_silently=False,
+                )
+                messages.success(
+                    request,
+                    'Recibimos tu mensaje. Te responderemos a la brevedad.',
+                )
+                return redirect('paginas:contacto')
+            except Exception:
+                messages.error(request, 'Hubo un error al enviar tu mensaje. Intenta nuevamente.')
+
+    return render(request, 'paginas/contacto.html')
+
+
+def faq(request):
+    return render(request, 'paginas/faq.html')
+
+
+def terminos(request):
+    return render(request, 'paginas/terminos.html')
+
+
+def privacidad(request):
+    return render(request, 'paginas/privacidad.html')

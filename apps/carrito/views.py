@@ -9,7 +9,6 @@ def ver_carrito(request):
 
 
 def ver_drawer(request):
-    """Devuelve solo el contenido del cart drawer (HTMX)."""
     return render(request, 'carrito/drawer_items.html', {'carrito': Carrito(request)})
 
 
@@ -61,8 +60,9 @@ def actualizar_carrito(request, producto_id, tipo_venta):
 
 
 def _respuesta_carrito(request, carrito):
-    """Selecciona el template parcial correcto según el origen del request HTMX."""
     if request.htmx:
         target = request.headers.get('HX-Target', '')
         if 'cart-drawer-body' in target:
-            return render(request, 'carrito/drawer_items.html', {'carrito': carrit
+            return render(request, 'carrito/drawer_items.html', {'carrito': carrito})
+        return render(request, 'carrito/carrito_fragment.html', {'carrito': carrito})
+    return redirect('carrito:ver')
