@@ -35,6 +35,10 @@ def agregar_al_carrito(request, producto_id):
             'carrito': carrito,
             'carrito_total': carrito.cantidad_total(),
         })
+
+    next_url = request.POST.get('next', '')
+    if next_url and next_url.startswith('/'):
+        return redirect(next_url)
     return redirect('carrito:ver')
 
 
@@ -61,6 +65,4 @@ def _respuesta_carrito(request, carrito):
     if request.htmx:
         target = request.headers.get('HX-Target', '')
         if 'cart-drawer-body' in target:
-            return render(request, 'carrito/drawer_items.html', {'carrito': carrito})
-        return render(request, 'carrito/carrito_fragment.html', {'carrito': carrito})
-    return redirect('carrito:ver')
+            return render(request, 'carrito/drawer_items.html', {'carrito': carrit

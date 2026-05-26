@@ -24,7 +24,7 @@
   justify-content: center;
   overflow: hidden;
   background: linear-gradient(135deg, #EFE6D6 0%, #ffffff 100%);
-  padding-bottom: 110px;          /* espacio para los banners superpuestos */
+  padding-bottom: 0;
 }
 
 .hero-bg {
@@ -149,84 +149,44 @@
 }
 
 /* ── BANNERS ACCESO RAPIDO ────────────────────────────────────── */
-#hero-banners {
-  position: relative;
-  z-index: 20;
-  margin-top: -80px;              /* se superpone al hero */
-  padding: 0 48px 0;
-}
-
-#hero-banners .inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-
-.hb-card {
-  display: block;
-  text-decoration: none;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-  overflow: hidden;
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-.hb-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 32px rgba(0,0,0,0.16);
-}
-
-.hb-card-img {
+/* ── CARRUSEL BANNERS ────────────────────────────────────────── */
+#carrusel-banners {
   width: 100%;
-  aspect-ratio: 4/3;
+  background: #000;
+}
+
+#carrusel-banners .carousel-item img {
+  width: 100%;
+  height: 500px;
   object-fit: cover;
-  display: block;
-  background: var(--green);       /* placeholder hasta tener imagen */
+  object-position: center;
+  opacity: 0.92;
 }
 
-/* Placeholders de color por categoría */
-.hb-card:nth-child(1) .hb-card-img { background: linear-gradient(135deg, #30483A 0%, #1a2f25 100%); }
-.hb-card:nth-child(2) .hb-card-img { background: linear-gradient(135deg, #5a7a62 0%, #30483A 100%); }
-.hb-card:nth-child(3) .hb-card-img { background: linear-gradient(135deg, #8B7355 0%, #6d5644 100%); }
-.hb-card:nth-child(4) .hb-card-img { background: linear-gradient(135deg, #3d5c46 0%, #243b2c 100%); }
-.hb-card:nth-child(5) .hb-card-img { background: linear-gradient(135deg, #C8808A 0%, #a05a65 100%); }
-
-.hb-card-body {
-  padding: 14px 16px 16px;
-  border-top: 2px solid var(--green);
+#carrusel-banners .carousel-control-prev-icon,
+#carrusel-banners .carousel-control-next-icon {
+  filter: invert(0);
+  width: 2rem;
+  height: 2rem;
 }
 
-.hb-card-label {
-  font-family: 'Lora', serif;
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--bronze);
-  margin-bottom: 4px;
+#carrusel-banners .carousel-indicators [data-bs-target] {
+  background-color: var(--bronze);
+  opacity: 0.6;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
 }
 
-.hb-card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--green);
-  line-height: 1.25;
+#carrusel-banners .carousel-indicators .active {
+  opacity: 1;
 }
 
-/* ── RESPONSIVE banners ──────────────────────────────────────── */
-@media (max-width: 1000px) {
-  #hero-banners .inner { grid-template-columns: repeat(3, 1fr); }
-  .hb-card:nth-child(4),
-  .hb-card:nth-child(5) { display: none; }
-}
-
-@media (max-width: 640px) {
-  #hero-banners { margin-top: -48px; padding: 0 20px; }
-  #hero-banners .inner { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .hb-card:nth-child(5) { display: none; }
-  .hb-card:nth-child(4) { display: block; }
+@media (max-width: 768px) {
+  #carrusel-banners .carousel-item img {
+    height: 260px;
+  }
 }
 
 /* ── SECCIONES LEGACY (ocultar — reemplazadas abajo) ─────────────── */
@@ -300,28 +260,122 @@
   margin-top: 3px; display: block;
 }
 
-/* ── BANNER MAYORISTA ────────────────────────────────── */
-#banner-mayorista { background: var(--green); padding: 48px; }
-#banner-mayorista .inner {
-  max-width: 1200px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+/* ── CONCURSO SUGERENCIA ─────────────────────────────── */
+#concurso {
+  background: var(--green);
+  padding: 64px 48px;
 }
-.bm-copy h3 {
+#concurso .inner {
+  max-width: 860px;
+  margin: 0 auto;
+  text-align: center;
+}
+#concurso .sec-label { color: var(--tan); }
+#concurso .concurso-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700;
-  color: var(--cream); margin-bottom: 6px; line-height: 1.2;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--cream);
+  margin: 8px 0 12px;
+  line-height: 1.2;
 }
-.bm-copy p {
-  font-family: 'Lora', serif; font-size: 13px;
-  color: rgba(239,230,214,0.7); max-width: 420px;
+#concurso .concurso-sub {
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: rgba(239,230,214,0.75);
+  margin-bottom: 36px;
+  line-height: 1.7;
 }
-.bm-cta {
-  flex-shrink: 0; font-family: 'Lora', serif; font-size: 10px;
-  letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--green); background: var(--cream);
-  padding: 14px 32px; text-decoration: none; transition: background .2s; white-space: nowrap;
+/* Categorías */
+.concurso-cats {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
-.bm-cta:hover { background: var(--tan); color: var(--green); }
+.concurso-cats input[type="radio"] { display: none; }
+.concurso-cats label {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cream);
+  border: 1.5px solid rgba(239,230,214,0.4);
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.concurso-cats input[type="radio"]:checked + label,
+.concurso-cats label:hover {
+  background: var(--tan);
+  border-color: var(--tan);
+  color: var(--green);
+}
+/* Campo producto */
+.concurso-input-row {
+  display: flex;
+  gap: 0;
+  max-width: 560px;
+  margin: 0 auto 0;
+}
+.concurso-input-row input[type="text"] {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  outline: none;
+  background: rgba(239,230,214,0.12);
+  color: var(--cream);
+  border: 1.5px solid rgba(239,230,214,0.3);
+  border-right: none;
+}
+.concurso-input-row input::placeholder { color: rgba(239,230,214,0.45); }
+.concurso-input-row button {
+  background: var(--bronze);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s;
+  white-space: nowrap;
+}
+.concurso-input-row button:hover { background: #6d5644; }
+/* Estado: no registrado */
+.concurso-login-cta {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: 'Lora', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: var(--cream);
+  padding: 14px 36px;
+  text-decoration: none;
+  transition: background .2s;
+}
+.concurso-login-cta:hover { background: var(--tan); color: var(--green); }
+/* Estado: ya participó */
+.concurso-ya {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  color: var(--tan);
+  padding: 20px;
+  border: 1.5px solid rgba(200,176,138,0.4);
+  display: inline-block;
+  margin-top: 4px;
+}
+@media (max-width: 640px) {
+  #concurso { padding: 48px 20px; }
+  .concurso-input-row { flex-direction: column; }
+  .concurso-input-row input[type="text"] { border-right: 1.5px solid rgba(239,230,214,0.3); border-bottom: none; }
+}
 
 /* ── DESTACADOS ──────────────────────────────────────── */
 #dest-section { padding: 72px 48px; background: #fafaf8; }
@@ -398,11 +452,10 @@
 @media (max-width: 900px) {
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .dest-grid { grid-template-columns: repeat(2, 1fr); }
-  #banner-mayorista .inner { flex-direction: column; align-items: flex-start; }
-  #categorias, #dest-section, #nl-section, #banner-mayorista { padding: 52px 32px; }
+  #categorias, #dest-section, #nl-section, #concurso { padding: 52px 32px; }
 }
 @media (max-width: 580px) {
-  #categorias, #dest-section, #nl-section, #banner-mayorista { padding: 40px 20px; }
+  #categorias, #dest-section, #nl-section, #concurso { padding: 40px 20px; }
   .cat-grid { gap: 10px; }
   .dest-grid { grid-template-columns: 1fr; }
   .nl-form { flex-direction: column; }
@@ -859,7 +912,7 @@
   <div class="hero-content">
     <h1 class="hero-title">El tabaco que<br><em>tu negocio necesita</em></h1>
     <p class="hero-sub">
-      Stock permanente, precios mayoristas y despacho en 24–48 hrs a todo Chile. Calidad garantizada en cada pedido.
+      Stock permanente, precios mayoristas y despacho a todo Chile. Calidad garantizada en cada pedido.
     </p>
     <div class="hero-actions">
       <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
@@ -868,54 +921,38 @@
   </div>
 </section>
 
-<!-- ── BANNERS ACCESO RÁPIDO ──────────────────────────────────────── -->
-<section id="hero-banners">
-  <div class="inner">
+<!-- ── CARRUSEL BANNERS ───────────────────────────────────────── -->
+<section id="carrusel-banners">
+  <div id="heroBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
-    <!-- Banner 1: Tabaco -->
-    <a href="{% url 'productos:catalogo' %}?categoria=tabaco" class="hb-card">
-      <div class="hb-card-img"></div>
-      <div class="hb-card-body">
-        <div class="hb-card-label">Categoría</div>
-        <div class="hb-card-title">Tabacos</div>
-      </div>
-    </a>
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="1"></button>
+      <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="2"></button>
+      <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="3"></button>
+    </div>
 
-    <!-- Banner 2: Rolling & Papelillos -->
-    <a href="{% url 'productos:catalogo' %}?categoria=rolling" class="hb-card">
-      <div class="hb-card-img"></div>
-      <div class="hb-card-body">
-        <div class="hb-card-label">Categoría</div>
-        <div class="hb-card-title">Rolling & Papelillos</div>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'img/banners/OCB1.png' %}" alt="Banner 1" style="object-position: center 69%;">
       </div>
-    </a>
+      <div class="carousel-item">
+        <img src="{% static 'img/banners/kuroko1.png' %}" alt="Banner 2">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'img/banners/kuroko2.png' %}" alt="Banner 3">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'img/banners/mantra1.png' %}" alt="Banner 4">
+      </div>
+    </div>
 
-    <!-- Banner 3: Filtros -->
-    <a href="{% url 'productos:catalogo' %}?categoria=filtros" class="hb-card">
-      <div class="hb-card-img"></div>
-      <div class="hb-card-body">
-        <div class="hb-card-label">Categoría</div>
-        <div class="hb-card-title">Filtros & Tips</div>
-      </div>
-    </a>
-
-    <!-- Banner 4: Accesorios -->
-    <a href="{% url 'productos:catalogo' %}?categoria=accesorios" class="hb-card">
-      <div class="hb-card-img"></div>
-      <div class="hb-card-body">
-        <div class="hb-card-label">Categoría</div>
-        <div class="hb-card-title">Accesorios</div>
-      </div>
-    </a>
-
-    <!-- Banner 5: Ofertas & Packs -->
-    <a href="{% url 'productos:catalogo' %}?oferta=true" class="hb-card">
-      <div class="hb-card-img"></div>
-      <div class="hb-card-body">
-        <div class="hb-card-label">Destacado</div>
-        <div class="hb-card-title">Ofertas & Packs</div>
-      </div>
-    </a>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroBannerCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroBannerCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
 
   </div>
 </section>
@@ -968,13 +1005,43 @@
 </section>
 
 <!-- ── BANNER MAYORISTA ────────────────────────────────────────── -->
-<section id="banner-mayorista" class="reveal">
+<!-- ── CONCURSO SUGERENCIA ────────────────────────────────────── -->
+<section id="concurso" class="reveal">
   <div class="inner">
-    <div class="bm-copy">
-      <h3>¿Buscas precios<br>mayoristas?</h3>
-      <p>Contamos con programas especiales para distribuidores y revendedores con stock permanente y despacho prioritario.</p>
-    </div>
-    <a href="{% url 'paginas:contacto' %}?ref=mayorista" class="bm-cta">Solicitar acceso →</a>
+    <span class="sec-label">Concurso</span>
+    <h2 class="concurso-title">¿Qué producto nos<br><em>recomiendas?</em></h2>
+    <p class="concurso-sub">
+      Cuéntanos qué producto te gustaría encontrar en nuestro catálogo.<br>
+      El producto más sugerido lo agregaremos — y se lo enviaremos de regalo al ganador.
+    </p>
+
+    {% if user.is_authenticated %}
+      {% if ya_participo %}
+        <div class="concurso-ya">
+          ✓ &nbsp;¡Ya estás participando! Te avisaremos si eres el ganador.
+        </div>
+      {% else %}
+        <form method="post" action="{% url 'paginas:sugerir_producto' %}">
+          {% csrf_token %}
+          <div class="concurso-cats">
+            {% for valor, etiqueta in categorias %}
+              <input type="radio" name="categoria" id="cat-{{ valor }}" value="{{ valor }}" {% if forloop.first %}checked{% endif %}>
+              <label for="cat-{{ valor }}">{{ etiqueta }}</label>
+            {% endfor %}
+          </div>
+          <div class="concurso-input-row">
+            <input type="text" name="producto" placeholder="Ej: OCB Virgin Slim, Rizla Silver..." maxlength="200" required>
+            <button type="submit">Participar →</button>
+          </div>
+        </form>
+      {% endif %}
+    {% else %}
+      <p class="concurso-sub" style="margin-bottom:20px; font-size:13px;">
+        Para participar necesitas una cuenta gratuita en nuestra tienda.
+      </p>
+      <a href="{% url 'cuenta:registro' %}?next=/" class="concurso-login-cta">Regístrate y participa</a>
+    {% endif %}
+
   </div>
 </section>
 
@@ -1010,56 +1077,4 @@
         </a>
         {% endfor %}
       {% else %}
-        <div style="grid-column:1/-1; padding: 48px; text-align:center; color:#bbb; font-family:'Lora',serif; font-size:13px; letter-spacing:1px;">
-          Pronto agregaremos nuestros productos destacados.
-        </div>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
-<!-- ── NEWSLETTER ────────────────────────────────────────────── -->
-<section id="nl-section" class="reveal">
-  <div class="inner">
-    <span class="sec-label">Mantente al dia</span>
-    <h2>Ofertas y novedades</h2>
-    <p>Recibe descuentos exclusivos y lanzamientos directamente en tu correo.</p>
-    <form class="nl-form" method="post" action="{% url 'paginas:contacto' %}">
-      {% csrf_token %}
-      <input type="email" name="email" placeholder="tu@correo.com" required>
-      <button type="submit">Suscribirse</button>
-    </form>
-  </div>
-</section>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-/* REVEAL ON SCROLL */
-(function () {
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-  document.querySelectorAll('.reveal, .reveal-children').forEach(function (el) {
-    io.observe(el);
-  });
-})();
-
-/* SMOOTH SCROLL para el boton del hero */
-document.querySelectorAll('.js-smooth-scroll').forEach(function (a) {
-  a.addEventListener('click', function (e) {
-    var target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
-</script>
-{% endblock %}
+        <div style="grid-column:1/-1; padding: 48px; text-align:center; color:#bbb; font-family

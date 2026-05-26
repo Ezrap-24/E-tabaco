@@ -2,25 +2,23 @@ from datetime import date
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.productos.models import Producto
+from .models import SugerenciaProducto, CATEGORIAS
 
 
 def home(request):
     try:
-        # Prioriza los marcados como destacados; si no hay, muestra los 4 más recientes
         destacados = list(Producto.objects.filter(activo=True, destacado=True)[:4])
         if not destacados:
             destacados = list(Producto.objects.filter(activo=True).order_by('-creado')[:4])
     except Exception:
         destacados = []
 
-    # ── Cifras del hero / stats ──
-    # TODO(cliente): confirmar estas cifras con el dueño antes de publicar.
-    # Se pueden sobreescribir en .env sin tocar el template.
     empresa_stats = {
         'anio_fundacion': getattr(settings, 'EMPRESA_ANIO_FUNDACION', None),
         'anios_herencia': getattr(settings, 'EMPRESA_ANIOS_HERENCIA', None),
@@ -28,10 +26,47 @@ def home(request):
         'despacho_horas': getattr(settings, 'EMPRESA_DESPACHO_HORAS', None),
     }
 
+    ya_participo = False
+    if request.user.is_authenticated:
+        ya_participo = SugerenciaProducto.objects.filter(usuario=request.user).exists()
+
     return render(request, 'paginas/home.html', {
-        'destacados': destacados,
-        'stats': empresa_stats,
+        'destacados':   destacados,
+        'stats':        empresa_stats,
+        'categorias':   CATEGORIAS,
+        'ya_participo': ya_participo,
     })
+
+
+# ── Concurso sugerencia de producto ────────────────────────────────
+
+@login_required
+@require_POST
+def sugerir_producto(request):
+    if SugerenciaProducto.objects.filter(usuario=request.user).exists():
+        messages.info(request, '¡Ya estás participando en el concurso!')
+        return redirect('paginas:home')
+
+    categoria = request.POST.get('categoria', '').strip()
+    producto  = request.POST.get('producto', '').strip()
+    categorias_validas = [c[0] for c in CATEGORIAS]
+
+    if not categoria or categoria not in categorias_validas:
+        messages.error(request, 'Selecciona una categoría válida.')
+        return redirect('paginas:home')
+
+    if not producto:
+        messages.error(request, 'Escribe el nombre del producto que sugieres.')
+        return redirect('paginas:home')
+
+    SugerenciaProducto.objects.create(
+        usuario=request.user,
+        categoria=categoria,
+        producto=producto,
+    )
+
+    messages.success(request, '¡Gracias por participar! Ya estás en el concurso.')
+    return redirect('paginas:home')
 
 
 # ── Validación de edad ──────────────────────────────────────────────
@@ -49,35 +84,16 @@ def _calcular_edad(nacimiento: date) -> int:
 def verificar_edad(request):
     """
     Gate de mayoría de edad:
-      - Pide fecha de nacimiento (día/mes/año).
-      - Calcula edad real. Si >= AGE_MINIMUM, marca sesión
-        y deposita una cookie firmada (30 días).
-      - Si no cumple, redirige a /acceso-denegado/.
+      - Botón '+18' confirma acceso.
+      - Botón '-18' redirige a acceso denegado.
     """
-    error = None
-
-    ctx = {'error': None, 'edad_minima': settings.AGE_MINIMUM}
+    ctx = {'edad_minima': settings.AGE_MINIMUM}
 
     if request.method == 'POST':
-        try:
-            dia = int(request.POST.get('dia', ''))
-            mes = int(request.POST.get('mes', ''))
-            anio = int(request.POST.get('anio', ''))
-            nacimiento = date(anio, mes, dia)
-        except (ValueError, TypeError):
-            ctx['error'] = 'Ingresa una fecha de nacimiento válida.'
-            return render(request, 'paginas/verificar_edad.html', ctx)
-
-        if nacimiento > date.today():
-            ctx['error'] = 'La fecha de nacimiento no puede ser futura.'
-            return render(request, 'paginas/verificar_edad.html', ctx)
-
-        edad = _calcular_edad(nacimiento)
-
-        if edad < settings.AGE_MINIMUM:
+        if request.POST.get('edad') == 'menor':
             return redirect('paginas:acceso_denegado')
 
-        # Verificación exitosa: sesión + cookie firmada persistente.
+        # Cualquier otro valor (o 'mayor') da acceso
         request.session['edad_verificada'] = True
         response = redirect('paginas:home')
         response.set_signed_cookie(
@@ -114,43 +130,4 @@ def contacto(request):
         mensaje = (request.POST.get('mensaje') or '').strip()
 
         if not (nombre and email and mensaje):
-            messages.error(request, 'Por favor completa todos los campos.')
-        else:
-            cuerpo = (
-                f'Nombre: {nombre}\n'
-                f'Email: {email}\n\n'
-                f'Mensaje:\n{mensaje}\n'
-            )
-            try:
-                send_mail(
-                    subject=f'[Contacto Puro Tabaco] {nombre}',
-                    message=cuerpo,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.CONTACT_EMAIL],
-                    fail_silently=False,
-                )
-                messages.success(
-                    request,
-                    'Recibimos tu mensaje. Te responderemos a la brevedad.',
-                )
-                return redirect('paginas:contacto')
-            except Exception:
-                messages.error(
-                    request,
-                    'No pudimos enviar el mensaje. Intenta nuevamente más tarde.',
-                )
-
-    return render(request, 'paginas/contacto.html')
-
-
-
-def faqs(request):
-    return render(request, 'paginas/faqs.html')
-
-
-def terminos(request):
-    return render(request, 'paginas/terminos.html')
-
-
-def privacidad(request):
-    return render(request, 'paginas/privacidad.html')
+            messages.error(request, 'Po

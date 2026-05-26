@@ -93,34 +93,13 @@
   color: #666; line-height: 1.75; margin-bottom: 24px;
 }
 
-/* ── PRECIOS ─────────────────────────────────────────────────── */
+/* ── PRECIO ──────────────────────────────────────────────────── */
 .pd-prices { margin-bottom: 24px; }
-.pd-price-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; background: #f8f7f4; margin-bottom: 2px;
-  border-left: 3px solid transparent; cursor: pointer;
-  transition: all .2s;
-}
-.pd-price-row.selected {
-  background: var(--cream); border-left-color: var(--green);
-}
-.pd-price-row label {
-  cursor: pointer; display: flex; flex-direction: column;
-}
-.pd-price-row-title {
-  font-family: 'Playfair Display', serif; font-size: 14px;
-  font-weight: 700; color: var(--green);
-}
-.pd-price-row-sub {
-  font-family: 'Lora', serif; font-size: 10px;
-  letter-spacing: 1px; color: #aaa; margin-top: 2px;
-}
-.pd-price-value {
+.pd-price-single {
   font-family: 'Playfair Display', serif;
-  font-size: 22px; font-weight: 700; color: var(--green);
+  font-size: 32px; font-weight: 700;
+  color: var(--bronze); margin-bottom: 8px;
 }
-.pd-price-value.highlight { color: var(--bronze); }
-.pd-price-radio { accent-color: var(--green); width: 16px; height: 16px; }
 
 /* Precio total dinámico */
 .pd-price-total {
@@ -292,33 +271,9 @@
 
       <div class="pd-divider"></div>
 
-      <!-- PRECIOS ──────────────────────────────────────────── -->
+      <!-- PRECIO ──────────────────────────────────────────── -->
       <div class="pd-prices">
-
-        <label class="pd-price-row selected" id="row-unidad" onclick="seleccionarTipo('unidad')">
-          <div>
-            <div class="pd-price-row-title">Por unidad</div>
-            <div class="pd-price-row-sub">Sin mínimo de cantidad</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="pd-price-value highlight">{{ producto.precio_unidad|pesos }}</span>
-            <input type="radio" name="tipo_vis" value="unidad" checked class="pd-price-radio">
-          </div>
-        </label>
-
-        {% if producto.precio_mayor %}
-        <label class="pd-price-row" id="row-mayor" onclick="seleccionarTipo('mayor')">
-          <div>
-            <div class="pd-price-row-title">Precio mayorista</div>
-            <div class="pd-price-row-sub">Mínimo {{ producto.cantidad_minima_mayor }} unidades</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="pd-price-value">{{ producto.precio_mayor|pesos }}</span>
-            <input type="radio" name="tipo_vis" value="mayor" class="pd-price-radio">
-          </div>
-        </label>
-        {% endif %}
-
+        <div class="pd-price-single">{{ producto.precio_unidad|pesos }}</div>
         <div class="pd-price-total">
           <span class="pd-price-total-label">Total estimado</span>
           <span class="pd-price-total-value" id="precio-total">{{ producto.precio_unidad|pesos }}</span>
@@ -336,11 +291,6 @@
         </div>
       </div>
 
-      {% if producto.precio_mayor %}
-      <div class="pd-mayor-hint" id="mayor-hint">
-        Precio mayorista disponible desde {{ producto.cantidad_minima_mayor }} unidades.
-      </div>
-      {% endif %}
 
       <!-- FORMULARIO ────────────────────────────────────────── -->
       <div id="carrito-msg"></div>
@@ -385,22 +335,10 @@
 <script>
 (function () {
   var precioUnidad = parseFloat('{{ producto.precio_unidad }}');
-  var precioMayor  = {% if producto.precio_mayor %}parseFloat('{{ producto.precio_mayor }}'){% else %}null{% endif %};
-  var minMayor     = parseInt('{{ producto.cantidad_minima_mayor|default:3 }}');
-  var tipoActual   = 'unidad';
 
   function fmt(n) {
     return '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
-
-  window.seleccionarTipo = function (tipo) {
-    tipoActual = tipo;
-    document.getElementById('tipo-venta-input').value = (tipo === 'mayor') ? 'caja' : 'unidad';
-    document.getElementById('row-unidad').classList.toggle('selected', tipo === 'unidad');
-    var rowMayor = document.getElementById('row-mayor');
-    if (rowMayor) rowMayor.classList.toggle('selected', tipo === 'mayor');
-    actualizarTotal();
-  };
 
   window.cambiarCant = function (delta) {
     var input = document.getElementById('qty-input');
@@ -412,15 +350,7 @@
   window.actualizarTotal = function () {
     var qty = Math.max(1, parseInt(document.getElementById('qty-input').value || 1));
     document.getElementById('cantidad-input').value = qty;
-
-    var precio = (tipoActual === 'mayor' && precioMayor) ? precioMayor : precioUnidad;
-    document.getElementById('precio-total').textContent = fmt(precio * qty);
-
-    // Mostrar hint mayorista si cantidad alcanza el minimo y no esta en modo mayor
-    var hint = document.getElementById('mayor-hint');
-    if (hint) {
-      hint.classList.toggle('visible', precioMayor !== null && tipoActual === 'unidad' && qty >= minMayor);
-    }
+    document.getElementById('precio-total').textContent = fmt(precioUnidad * qty);
   };
 
   // Actualizar badge del carrito tras agregar
@@ -437,3 +367,4 @@
 })();
 </script>
 {% endblock %}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
