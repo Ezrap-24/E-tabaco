@@ -145,7 +145,7 @@ def contacto(request):
 
 
 def faq(request):
-    return render(request, 'paginas/faq.html')
+    return render(request, 'paginas/faqs.html')
 
 
 def terminos(request):

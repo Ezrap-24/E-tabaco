@@ -13,8 +13,6 @@ def producto(db):
         marca='Stanley',
         descripcion='Descripción test',
         precio_unidad=Decimal('6.00'),
-        precio_mayor=Decimal('50.00'),
-        cantidad_minima_mayor=3,
         stock=50,
         activo=True,
     )

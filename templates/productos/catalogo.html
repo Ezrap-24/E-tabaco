@@ -162,7 +162,7 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 40px; position: relative;
 }
-.pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.pc-img img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
 
 .pc-badge {
   position: absolute; top: 10px; right: 10px;
@@ -283,6 +283,9 @@
 .cat-pagination a:hover { border-color: var(--green); background: var(--green); color: var(--cream); }
 .cat-pagination span { background: var(--green); color: var(--cream); border: 1.5px solid var(--green); }
 
+/* ── HOVER IMAGEN_2 ───────────────────────────────────────────── */
+.pc-img-hover img { transition: opacity .3s ease; }
+
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .cat-body .inner { grid-template-columns: 1fr; }
@@ -324,6 +327,8 @@
     <form class="cat-search-bar" method="get" action="">
       <input type="text" name="q" value="{{ q_actual }}" placeholder="Buscar productos...">
       {% if categoria_actual %}<input type="hidden" name="categoria" value="{{ categoria_actual }}">{% endif %}
+      {% if marca_actual %}<input type="hidden" name="marca" value="{{ marca_actual }}">{% endif %}
+      {% if peso_actual %}<input type="hidden" name="peso" value="{{ peso_actual }}">{% endif %}
       <button type="submit" aria-label="Buscar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -334,17 +339,27 @@
     <!-- Chips de filtros activos -->
     <div class="cat-chips">
       {% if categoria_nombre %}
-      <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}" class="cat-chip">
+      <a href="?{% if q_actual %}q={{ q_actual }}&{% endif %}{% if marca_actual %}marca={{ marca_actual }}&{% endif %}{% if peso_actual %}peso={{ peso_actual }}{% endif %}" class="cat-chip">
         {{ categoria_nombre }} <span class="cat-chip-x">×</span>
       </a>
       {% endif %}
+      {% if marca_actual %}
+      <a href="?{% if q_actual %}q={{ q_actual }}&{% endif %}{% if categoria_actual %}categoria={{ categoria_actual }}&{% endif %}{% if peso_actual %}peso={{ peso_actual }}{% endif %}" class="cat-chip">
+        {{ marca_actual }} <span class="cat-chip-x">×</span>
+      </a>
+      {% endif %}
+      {% if peso_actual %}
+      <a href="?{% if q_actual %}q={{ q_actual }}&{% endif %}{% if categoria_actual %}categoria={{ categoria_actual }}&{% endif %}{% if marca_actual %}marca={{ marca_actual }}{% endif %}" class="cat-chip">
+        {{ peso_actual }}g <span class="cat-chip-x">×</span>
+      </a>
+      {% endif %}
       {% if oferta_activa %}
-      <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}" class="cat-chip">
+      <a href="?{% if q_actual %}q={{ q_actual }}{% endif %}" class="cat-chip">
         Ofertas & Packs <span class="cat-chip-x">×</span>
       </a>
       {% endif %}
       {% if q_actual %}
-      <a href="{% url 'productos:catalogo' %}{% if categoria_actual %}?categoria={{ categoria_actual }}{% endif %}" class="cat-chip">
+      <a href="?{% if categoria_actual %}categoria={{ categoria_actual }}&{% endif %}{% if marca_actual %}marca={{ marca_actual }}&{% endif %}{% if peso_actual %}peso={{ peso_actual }}{% endif %}" class="cat-chip">
         "{{ q_actual }}" <span class="cat-chip-x">×</span>
       </a>
       {% endif %}
@@ -363,6 +378,8 @@
     </button>
 
     <aside class="cat-sidebar">
+
+      <!-- Categorías -->
       <div class="cat-sidebar-label">Categorías</div>
       <nav class="cat-nav">
         <a href="{% url 'productos:catalogo' %}{% if q_actual %}?q={{ q_actual }}{% endif %}"
@@ -371,14 +388,41 @@
           <span class="cat-nav-count">{{ page_obj.paginator.count }}</span>
         </a>
         {% for cat in categorias %}
-        <a href="?categoria={{ cat.id }}{% if q_actual %}&q={{ q_actual }}{% endif %}"
+        <a href="?categoria={{ cat.id }}{% if q_actual %}&q={{ q_actual }}{% endif %}{% if marca_actual %}&marca={{ marca_actual }}{% endif %}{% if intensidad_actual %}&intensidad={{ intensidad_actual }}{% endif %}{% if peso_actual %}&peso={{ peso_actual }}{% endif %}{% if procedencia_actual %}&procedencia={{ procedencia_actual }}{% endif %}"
            class="{% if categoria_actual == cat.id|stringformat:'s' or categoria_actual|lower == cat.nombre|lower %}active{% endif %}">
           {{ cat.nombre }}
         </a>
         {% endfor %}
       </nav>
 
-      {# Ofertas & Packs desactivado — reactivar cuando esté disponible #}
+      <!-- Marca -->
+      {% if marcas_disponibles and categoria_nombre|lower != "accesorios" %}
+      <div class="cat-sidebar-divider"></div>
+      <div class="cat-sidebar-label">Marca</div>
+      <nav class="cat-nav">
+        {% for m in marcas_disponibles %}
+        <a href="?marca={{ m }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if q_actual %}&q={{ q_actual }}{% endif %}{% if intensidad_actual %}&intensidad={{ intensidad_actual }}{% endif %}{% if peso_actual %}&peso={{ peso_actual }}{% endif %}{% if procedencia_actual %}&procedencia={{ procedencia_actual }}{% endif %}"
+           class="{% if marca_actual == m %}active{% endif %}">
+          {{ m }}
+        </a>
+        {% endfor %}
+      </nav>
+      {% endif %}
+
+      <!-- Gramaje -->
+      {% if pesos_disponibles and categoria_nombre|lower != "accesorios" %}
+      <div class="cat-sidebar-divider"></div>
+      <div class="cat-sidebar-label">Gramaje</div>
+      <nav class="cat-nav">
+        {% for p in pesos_disponibles %}
+        <a href="?peso={{ p }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if q_actual %}&q={{ q_actual }}{% endif %}{% if marca_actual %}&marca={{ marca_actual }}{% endif %}"
+           class="{% if peso_actual == p|stringformat:'s' %}active{% endif %}">
+          {{ p }}g
+        </a>
+        {% endfor %}
+      </nav>
+      {% endif %}
+
     </aside>
 
     <!-- GRID PRINCIPAL -->
@@ -397,9 +441,10 @@
       <div class="cat-grid">
         {% for producto in productos %}
         <div class="pc">
-          <a href="{{ producto.get_absolute_url }}" class="pc-img">
+          <a href="{{ producto.get_absolute_url }}" class="pc-img{% if producto.imagen_2 %} pc-img-hover{% endif %}">
             {% if producto.imagen %}
-              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}"
+                {% if producto.imagen_2 %}data-src-hover="{{ producto.imagen_2.url }}" data-src-base="{{ producto.imagen.url }}"{% endif %}>
             {% else %}
               🚬
             {% endif %}
@@ -469,6 +514,13 @@ function pcQty(btn, delta) {
   input.value = Math.max(1, Math.min(99, val + delta));
 }
 
+/* ── Hover imagen_2 ─────────────────────────────────── */
+document.querySelectorAll('.pc-img-hover img[data-src-hover]').forEach(function(img) {
+  var parent = img.closest('.pc-img-hover');
+  parent.addEventListener('mouseenter', function() { img.src = img.dataset.srcHover; });
+  parent.addEventListener('mouseleave', function() { img.src = img.dataset.srcBase; });
+});
+
 /* ── Agregar al carrito sin recargar página ──────────── */
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.pc form').forEach(function (form) {
@@ -492,13 +544,30 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (res) {
         if (res.ok) {
-          /* Actualizar badge del navbar */
-          var badge = document.getElementById('carrito-contador');
-          if (badge) {
-            var count = parseInt(badge.textContent) || 0;
-            badge.textContent = count + qty;
-            badge.classList.remove('d-none');
-          }
+          /* Refrescar drawer con datos reales del servidor */
+          fetch('{% url "carrito:drawer" %}')
+            .then(function(r) { return r.text(); })
+            .then(function(html) {
+              var body = document.querySelector('.cart-drawer-body');
+              if (body) {
+                body.innerHTML = html;
+                htmx.process(body);
+              }
+              /* Actualizar badge y contador del header con el total real */
+              var parser = new DOMParser();
+              var doc = parser.parseFromString(html, 'text/html');
+              var drawerBody = doc.getElementById('cart-drawer-body');
+              var count = drawerBody ? parseInt(drawerBody.dataset.count) || 0 : 0;
+              var badge = document.getElementById('carrito-contador');
+              if (badge) {
+                badge.textContent = count;
+                if (count > 0) badge.classList.remove('d-none');
+              }
+              var countEl = document.getElementById('drawer-count');
+              if (countEl) {
+                countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
+              }
+            });
           /* Feedback visual en el botón */
           btn.textContent = '✓ Agregado';
           btn.style.background = '#2a5c3f';

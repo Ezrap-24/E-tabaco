@@ -1,4 +1,4 @@
-<div id="cart-drawer-body">
+<div id="cart-drawer-body" data-count="{{ carrito|length }}">
   {% if carrito|length > 0 %}
 
     {% for item in carrito.items %}
@@ -49,11 +49,6 @@
 
     <!-- Total + nota envio -->
     <div style="padding:16px 0 8px;">
-      {% if carrito.califica_envio_gratis %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:#2a7a3b;background:rgba(42,122,59,0.07);border-left:2px solid #2a7a3b;padding:8px 10px;margin-bottom:12px;">&#128666; Tienes envio gratis</div>
-      {% else %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:var(--bronze);background:rgba(139,115,85,0.07);border-left:2px solid var(--tan);padding:8px 10px;margin-bottom:12px;">&#128666; Agrega {{ carrito.falta_envio_gratis|pesos }} mas para envio gratis</div>
-      {% endif %}
 
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
         <span style="font-family:'Lora',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#aaa;">Subtotal</span>

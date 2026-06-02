@@ -53,8 +53,6 @@ class Command(BaseCommand):
             "intensidad",
             "descripcion",
             "precio_unidad",
-            "precio_mayor",
-            "cantidad_minima_mayor",
             "stock",
             "activo",
             "imagen",
@@ -98,12 +96,10 @@ class Command(BaseCommand):
             ws.cell(row=row, column=7, value=prod.intensidad or "")
             ws.cell(row=row, column=8, value=prod.descripcion or "")
             ws.cell(row=row, column=9, value=float(prod.precio_unidad) if prod.precio_unidad else 0)
-            ws.cell(row=row, column=10, value=float(prod.precio_mayor) if prod.precio_mayor else "")
-            ws.cell(row=row, column=11, value=prod.cantidad_minima_mayor or 3)
-            ws.cell(row=row, column=12, value=prod.stock or 0)
-            ws.cell(row=row, column=13, value="SI" if prod.activo else "NO")
-            ws.cell(row=row, column=14, value=str(prod.imagen) if prod.imagen else "")
-            ws.cell(row=row, column=15, value=foto_disponible)
+            ws.cell(row=row, column=10, value=prod.stock or 0)
+            ws.cell(row=row, column=11, value="SI" if prod.activo else "NO")
+            ws.cell(row=row, column=12, value=str(prod.imagen).replace('products/', '') if prod.imagen else "")
+            ws.cell(row=row, column=13, value=foto_disponible)
 
             row += 1
 

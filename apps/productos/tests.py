@@ -15,8 +15,6 @@ def producto(db, categoria):
         marca='Stanley',
         descripcion='Tabaco rubio suave de alta calidad.',
         precio_unidad=5.50,
-        precio_mayor=4.50,
-        cantidad_minima_mayor=3,
         stock=100,
         activo=True,
         categoria=categoria,

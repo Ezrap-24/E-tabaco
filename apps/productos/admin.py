@@ -31,12 +31,17 @@ class CategoriaAdmin(admin.ModelAdmin):
 class ProductoAdmin(admin.ModelAdmin):
     list_display = [
         'nombre', 'marca', 'categoria',
-        'precio_unidad', 'precio_mayor',
+        'precio_unidad',
         'stock', 'activo', 'destacado', 'tiene_foto',
     ]
     list_filter = ['activo', 'destacado', ConFotoFilter, 'categoria', 'marca', 'intensidad']
     search_fields = ['nombre', 'marca', 'codigo', 'descripcion']
     list_editable = ['activo', 'stock', 'destacado']
+    fieldsets = (
+        (None, {'fields': ('nombre', 'marca', 'codigo', 'categoria', 'intensidad', 'peso_gramos', 'procedencia', 'descripcion')}),
+        ('Imágenes', {'fields': ('imagen', 'imagen_2', 'imagen_3')}),
+        ('Precio e inventario', {'fields': ('precio_unidad', 'stock', 'activo', 'destacado')}),
+    )
 
     @admin.display(description='Foto', boolean=True, ordering='imagen')
     def tiene_foto(self, obj):

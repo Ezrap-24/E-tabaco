@@ -58,12 +58,18 @@ def logout_view(request):
 
 # ── Área privada ──────────────────────────────────────────────────
 
+def _ordenes_usuario(user):
+    """Retorna QuerySet de órdenes del usuario, buscando por FK y por email."""
+    from django.db.models import Q
+    return Orden.objects.filter(
+        Q(usuario=user) | Q(cliente_email=user.email)
+    ).distinct()
+
+
 @login_required(login_url='cuenta:login')
 def dashboard(request):
     perfil = get_or_create_perfil(request.user)
-    ordenes_recientes = Orden.objects.filter(
-        cliente_email=request.user.email
-    ).order_by('-fecha_creacion')[:5]
+    ordenes_recientes = _ordenes_usuario(request.user).order_by('-fecha_creacion')[:5]
     return render(request, 'cuenta/dashboard.html', {
         'ordenes_recientes': ordenes_recientes,
         'perfil': perfil,
@@ -72,9 +78,7 @@ def dashboard(request):
 
 @login_required(login_url='cuenta:login')
 def mis_pedidos(request):
-    ordenes = Orden.objects.filter(
-        cliente_email=request.user.email
-    ).prefetch_related('detalles__producto')
+    ordenes = _ordenes_usuario(request.user).prefetch_related('detalles__producto').order_by('-fecha_creacion')
     return render(request, 'cuenta/mis_pedidos.html', {'ordenes': ordenes})
 
 

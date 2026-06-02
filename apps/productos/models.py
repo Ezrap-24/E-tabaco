@@ -27,6 +27,10 @@ class Producto(models.Model):
     marca = models.CharField(max_length=100, blank=True)
     codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
+    # Sección de navegación (Tabacos / Accesorios)
+    seccion = models.CharField(max_length=50, blank=True,
+                               help_text='Sección del nav: Tabacos, Accesorios, etc.')
+
     # Clasificación
     categoria = models.ForeignKey(
         Categoria,
@@ -43,22 +47,18 @@ class Producto(models.Model):
 
     # Características físicas
     peso_gramos = models.IntegerField(blank=True, null=True)
+    dimensiones = models.CharField(max_length=50, blank=True,
+                                   help_text='Ej: 6x15 cm. Usar para accesorios en lugar de peso.')
     procedencia = models.CharField(max_length=100, blank=True)
 
-    # Descripción e imagen
+    # Descripción e imágenes (principal + hasta 2 adicionales)
     descripcion = models.TextField(blank=True)
-    imagen = models.ImageField(upload_to='products/', blank=True, null=True)
+    imagen   = models.ImageField(upload_to='products/', blank=True, null=True)
+    imagen_2 = models.ImageField(upload_to='products/', blank=True, null=True)
+    imagen_3 = models.ImageField(upload_to='products/', blank=True, null=True)
 
     # Precios
     precio_unidad = models.DecimalField(max_digits=10, decimal_places=2)
-    precio_mayor = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True,
-        help_text='Precio por mayor (minimo cantidad_minima_mayor unidades)'
-    )
-    cantidad_minima_mayor = models.IntegerField(
-        default=3,
-        help_text='Cantidad minima para acceder al precio mayorista'
-    )
 
     # Inventario
     stock = models.IntegerField(default=0)
@@ -77,14 +77,55 @@ class Producto(models.Model):
     def __str__(self):
         return f'{self.marca} {self.nombre}' if self.marca else self.nombre
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        for campo in ('imagen', 'imagen_2', 'imagen_3'):
+            img_field = getattr(self, campo)
+            if img_field:
+                self._convertir_imagen_a_webp(campo, img_field)
+
+    def _convertir_imagen_a_webp(self, campo, img_field):
+        """Convierte una imagen a WebP, aplica sello y actualiza el campo."""
+        import os
+        from PIL import Image
+
+        ruta = img_field.path
+        if not os.path.exists(ruta) or ruta.lower().endswith('.webp'):
+            # Ya es webp — solo aplicar sello si no lo tiene
+            try:
+                from apps.productos.watermark import aplicar_sello
+                aplicar_sello(ruta)
+            except Exception:
+                pass
+            return
+        try:
+            ruta_webp = os.path.splitext(ruta)[0] + '.webp'
+            with Image.open(ruta) as img:
+                if img.mode in ('RGBA', 'LA', 'P'):
+                    fondo = Image.new('RGBA', img.size, (255, 255, 255, 255))
+                    fondo.paste(img.convert('RGBA'), mask=img.convert('RGBA').split()[3])
+                    img = fondo.convert('RGB')
+                elif img.mode != 'RGB':
+                    img = img.convert('RGB')
+                img.thumbnail((800, 800), Image.LANCZOS)
+                img.save(ruta_webp, 'WEBP', quality=82, method=6)
+            os.remove(ruta)
+            nombre_webp = 'products/' + os.path.basename(ruta_webp)
+            Producto.objects.filter(pk=self.pk).update(**{campo: nombre_webp})
+            img_field.name = nombre_webp
+            ruta_webp_final = ruta_webp
+        except Exception:
+            return
+
+        try:
+            from apps.productos.watermark import aplicar_sello
+            aplicar_sello(ruta_webp_final)
+        except Exception:
+            pass
+
     def get_absolute_url(self):
         return reverse('productos:detalle', kwargs={'pk': self.pk})
 
     def tiene_stock(self):
         return self.stock > 0
 
-    def precio_para(self, cantidad):
-        """Retorna el precio unitario según la cantidad (mayorista o minorista)."""
-        if self.precio_mayor and cantidad >= self.cantidad_minima_mayor:
-            return self.precio_mayor
-        return self.precio_unidad

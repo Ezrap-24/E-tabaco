@@ -398,7 +398,7 @@
   overflow: hidden; display: flex; align-items: center; justify-content: center;
   font-size: 52px; text-decoration: none;
 }
-.dest-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.dest-card-img img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
 .dest-card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
 .dest-card-cat {
   font-family: 'Lora', serif; font-size: 9px; letter-spacing: 2px;
@@ -988,51 +988,6 @@
 </section>
 
 <!-- ── CATEGORÍAS ──────────────────────────────────────────────── -->
-<section id="categorias" class="reveal">
-  <div class="inner">
-    <div class="cat-head">
-      <div>
-        <span class="sec-label">Nuestro Surtido</span>
-        <h2 class="sec-title">Explora por<br><em>Categoría</em></h2>
-      </div>
-      <a href="{% url 'productos:catalogo' %}" class="cat-ver-todo">Ver todo el catálogo →</a>
-    </div>
-    <div class="cat-grid reveal-children">
-      <a href="{% url 'productos:catalogo' %}?categoria=tabaco" class="cat-card">
-        <div class="cat-card-bg">🚬</div>
-        <div class="cat-card-overlay"></div>
-        <div class="cat-card-label">
-          <span>Tabaco</span>
-          <small>Virginia · Burley · Oriental</small>
-        </div>
-      </a>
-      <a href="{% url 'productos:catalogo' %}?categoria=rolling" class="cat-card">
-        <div class="cat-card-bg">📜</div>
-        <div class="cat-card-overlay"></div>
-        <div class="cat-card-label">
-          <span>Papelillos & Rolling</span>
-          <small>Clasico · Slim · Cónicos</small>
-        </div>
-      </a>
-      <a href="{% url 'productos:catalogo' %}?categoria=filtros" class="cat-card">
-        <div class="cat-card-bg">🌿</div>
-        <div class="cat-card-overlay"></div>
-        <div class="cat-card-label">
-          <span>Filtros & Tips</span>
-          <small>Regular · Slim · Carbón</small>
-        </div>
-      </a>
-      <a href="{% url 'productos:catalogo' %}?categoria=accesorios" class="cat-card">
-        <div class="cat-card-bg">⚙️</div>
-        <div class="cat-card-overlay"></div>
-        <div class="cat-card-label">
-          <span>Accesorios</span>
-          <small>Máquinas · Bolsas · Cajas</small>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
 
 <!-- ── BANNER MAYORISTA ────────────────────────────────────────── -->
 <!-- ── CONCURSO SUGERENCIA ────────────────────────────────────── -->

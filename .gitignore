@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *.sqlite3
-media/
+# media/ — incluida en repo para demo (solo 4.8MB de fotos WebP)
+# media/
 staticfiles/
 .DS_Store
 *.log

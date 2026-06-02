@@ -11,17 +11,24 @@
   {% if ordenes %}
     {% for orden in ordenes %}
     <div style="border:1px solid var(--cream-d); margin-bottom:16px; overflow:hidden;">
+
       <!-- Cabecera del pedido -->
       <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; background:var(--cream); padding:14px 18px;">
         <div>
-          <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--green);">{{ orden.numero_orden }}</span>
-          <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-left:12px;">{{ orden.fecha_creacion|date:"d \d\e F \d\e Y" }}</span>
+          <span style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--green);">{{ orden.folio }}</span>
+          <span style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-left:12px;">
+            {% if orden.fecha_pago %}
+              {{ orden.fecha_pago|date:"d \d\e F \d\e Y" }}
+            {% else %}
+              {{ orden.fecha_creacion|date:"d \d\e F \d\e Y" }}
+            {% endif %}
+          </span>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
           <span style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--bronze);">{{ orden.total|pesos }}</span>
           <span style="font-family:'Lora',serif; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 10px;
-            background:{% if orden.estado == 'entregado' %}rgba(42,122,59,.12){% elif orden.estado == 'enviado' %}rgba(41,128,185,.12){% elif orden.estado == 'pagado' %}rgba(200,176,138,.2){% else %}rgba(189,195,199,.25){% endif %};
-            color:{% if orden.estado == 'entregado' %}#2a7a3b{% elif orden.estado == 'enviado' %}#2980b9{% elif orden.estado == 'pagado' %}var(--bronze){% else %}#7f8c8d{% endif %};">
+            background:{% if orden.estado == 'entregado' %}rgba(42,122,59,.12){% elif orden.estado == 'enviado' %}rgba(41,128,185,.12){% elif orden.estado == 'pagado' or orden.estado == 'preparando' %}rgba(200,176,138,.2){% else %}rgba(189,195,199,.25){% endif %};
+            color:{% if orden.estado == 'entregado' %}#2a7a3b{% elif orden.estado == 'enviado' %}#2980b9{% elif orden.estado == 'pagado' or orden.estado == 'preparando' %}var(--bronze){% else %}#7f8c8d{% endif %};">
             {{ orden.get_estado_display }}
           </span>
         </div>
@@ -32,7 +39,9 @@
         {% for detalle in orden.detalles.all %}
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(200,176,138,.15);">
           <div>
-            <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:600; color:var(--green);">{{ detalle.producto.nombre }}</div>
+            <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:600; color:var(--green);">
+              {{ detalle.producto_nombre|default:detalle.producto.nombre }}
+            </div>
             <div style="font-family:'Lora',serif; font-size:11px; color:#aaa; text-transform:uppercase; letter-spacing:1px;">
               {{ detalle.cantidad }} × {{ detalle.tipo_venta }}
             </div>
@@ -49,12 +58,16 @@
         <div style="font-family:'Lora',serif; font-size:11px; color:#aaa;">
           📍 {{ orden.direccion_envio }}
         </div>
-        {% if orden.cliente_telefono %}
-        <div style="font-family:'Lora',serif; font-size:11px; color:#aaa;">
-          ☎ {{ orden.cliente_telefono }}
-        </div>
+        {% if orden.estado in 'pagado preparando enviado entregado' %}
+        <a href="{% url 'pedidos:comprobante_pdf' orden.numero_orden %}"
+           style="display:inline-flex; align-items:center; gap:6px; font-family:'Lora',serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--green); text-decoration:none; border:1px solid var(--green); padding:6px 14px; transition:all .2s;"
+           onmouseover="this.style.background='var(--green)';this.style.color='var(--cream)'"
+           onmouseout="this.style.background='';this.style.color='var(--green)'">
+          ↓ Comprobante PDF
+        </a>
         {% endif %}
       </div>
+
     </div>
     {% endfor %}
 

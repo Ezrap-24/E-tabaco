@@ -38,7 +38,7 @@ class Carrito:
     def agregar(self, producto, cantidad=1, tipo_venta='unidad'):
         """Agrega un producto al carrito. Unidad y caja son líneas separadas."""
         key = self._key(producto.id, tipo_venta)
-        precio = float(producto.precio_unidad if tipo_venta == 'unidad' else (producto.precio_mayor or producto.precio_unidad))
+        precio = float(producto.precio_unidad)
 
         if key not in self.carrito:
             self.carrito[key] = {

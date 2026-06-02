@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
 
 {% block extra_css %}
@@ -69,6 +70,20 @@
     color: var(--slate);
     opacity: .9;
     margin-bottom: 16px;
+    text-align: justify;
+  }
+  .legal-list {
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--slate);
+    opacity: .9;
+    margin: 0 0 16px 20px;
+    padding: 0;
+    text-align: justify;
+  }
+  .legal-list li {
+    margin-bottom: 6px;
   }
   .legal-warn {
     font-family: 'Lora', serif;

@@ -15,7 +15,7 @@
       Gracias por tu compra
     </h1>
     <p style="font-family:'Lora',serif; font-size:14px; color:rgba(239,230,214,0.7);">
-      Hola {{ orden.cliente_nombre }}, registramos tu pedido <strong style="color:var(--tan);">{{ orden.numero_orden }}</strong>.
+      Hola {{ orden.cliente_nombre }}, registramos tu pedido <strong style="color:var(--tan);">{{ orden.folio }}</strong>.
     </p>
   </div>
 </div>
@@ -35,7 +35,7 @@
       </p>
       {% else %}
       <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
-        Te enviamos la confirmacion a <strong>{{ orden.cliente_email }}</strong>.
+        Te enviamos la confirmaci&oacute;n a <strong>{{ orden.cliente_email }}</strong>.
       </p>
       {% endif %}
     </div>
@@ -65,7 +65,7 @@
     <!-- Envio -->
     <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:32px;">
       <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:10px;">
-        Envio a
+        Env&iacute;o a
       </div>
       <div style="font-family:'Lora',serif; font-size:13px; color:var(--slate); line-height:1.7;">
         {{ orden.direccion }}<br>
@@ -74,7 +74,13 @@
       </div>
     </div>
 
-    <div style="text-align:center;">
+    <div style="text-align:center; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+      {% if orden.estado in 'pagado preparando enviado entregado' %}
+      <a href="{% url 'pedidos:comprobante_pdf' orden.numero_orden %}"
+         style="display:inline-flex; align-items:center; gap:8px; background:var(--green); color:var(--cream); font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:14px 28px; text-decoration:none; transition:background .2s;">
+        ↓ Descargar comprobante PDF
+      </a>
+      {% endif %}
       <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt" style="font-size:11px; padding:14px 32px; letter-spacing:3px;">
         &larr; Seguir comprando
       </a>

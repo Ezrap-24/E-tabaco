@@ -1,10 +1,30 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 import uuid
 
 
 def generar_numero_orden():
     return f"ORD-{uuid.uuid4().hex[:8].upper()}"
+
+
+class ContadorOrden(models.Model):
+    """Contador global para correlativos de órdenes pagadas.
+    Siempre existe un único registro (pk=1). Se incrementa con select_for_update
+    para garantizar unicidad incluso bajo carga concurrente.
+    """
+    ultimo = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Contador de órdenes'
+
+    @classmethod
+    def siguiente(cls):
+        """Retorna el próximo correlativo de forma atómica."""
+        with transaction.atomic():
+            contador, _ = cls.objects.select_for_update().get_or_create(pk=1)
+            contador.ultimo += 1
+            contador.save(update_fields=['ultimo'])
+            return contador.ultimo
 
 
 class Orden(models.Model):
@@ -17,6 +37,9 @@ class Orden(models.Model):
         ('cancelado', 'Cancelado'),
     ]
     numero_orden = models.CharField(max_length=20, unique=True, default=generar_numero_orden)
+
+    # Correlativo secuencial asignado al confirmar el pago (PT-000001, PT-000002...)
+    correlativo = models.PositiveIntegerField(null=True, blank=True, unique=True, db_index=True)
 
     # Relación con la cuenta del cliente (opcional: las compras como invitado son válidas).
     usuario = models.ForeignKey(
@@ -50,7 +73,21 @@ class Orden(models.Model):
         ordering = ['-fecha_creacion']
 
     def __str__(self):
-        return f"{self.numero_orden} — {self.cliente_nombre}"
+        return f"{self.folio} — {self.cliente_nombre}"
+
+    @property
+    def folio(self):
+        """Número de folio legible: PT-000001 si tiene correlativo, número_orden si no."""
+        if self.correlativo:
+            return f"PT-{self.correlativo:06d}"
+        return self.numero_orden
+
+    @property
+    def codigo_barras(self):
+        """Valor a codificar en el barcode (folio sin guión para mejor lectura)."""
+        if self.correlativo:
+            return f"PT{self.correlativo:06d}"
+        return self.numero_orden
 
     @property
     def direccion_envio(self):

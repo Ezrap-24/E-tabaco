@@ -28,7 +28,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from apps.carrito.carrito import Carrito
 from .forms import CheckoutForm
-from .models import DetallePedido, Orden
+from .models import ContadorOrden, DetallePedido, Orden
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -161,7 +161,9 @@ def _marcar_orden_pagada(payment_intent):
 
     orden.estado = 'pagado'
     orden.fecha_pago = timezone.now()
-    orden.save(update_fields=['estado', 'fecha_pago'])
+    if not orden.correlativo:
+        orden.correlativo = ContadorOrden.siguiente()
+    orden.save(update_fields=['estado', 'fecha_pago', 'correlativo'])
     _enviar_email_confirmacion(orden)
 
 
@@ -199,3 +201,32 @@ def confirmacion(request):
         request.session.pop('orden_pendiente_id', None)
 
     return render(request, 'pedidos/confirmacion.html', {'orden': orden})
+
+
+def comprobante_pdf(request, numero_orden):
+    """Descarga el comprobante PDF de una orden. Solo accesible por el dueño o staff."""
+    from django.http import HttpResponse, Http404
+    from .comprobante import generar_comprobante
+
+    orden = get_object_or_404(Orden, numero_orden=numero_orden)
+
+    # Seguridad: solo el dueño de la orden o staff puede descargar
+    if not request.user.is_staff:
+        es_dueno = False
+        if request.user.is_authenticated:
+            # Usuario logueado: verificar por FK o por email
+            es_dueno = (orden.usuario == request.user) or (orden.cliente_email == request.user.email)
+        if not es_dueno:
+            # Compra como invitado: verificar por sesión
+            if request.session.get('orden_pendiente_id') != orden.id:
+                raise Http404
+
+    if orden.estado not in ('pagado', 'preparando', 'enviado', 'entregado'):
+        raise Http404
+
+    pdf_buf = generar_comprobante(orden)
+    nombre_archivo = f'comprobante-{orden.folio}.pdf'
+
+    response = HttpResponse(pdf_buf.read(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+    return response

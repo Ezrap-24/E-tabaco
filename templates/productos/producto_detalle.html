@@ -33,7 +33,7 @@
   gap: 60px; align-items: start;
 }
 
-/* ── IMAGEN ──────────────────────────────────────────────────── */
+/* ── IMAGEN / GALERÍA ────────────────────────────────────────── */
 .pd-img-wrap {
   position: sticky; top: 118px;
 }
@@ -43,7 +43,20 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 72px; overflow: hidden;
 }
-.pd-img img { width: 100%; height: 100%; object-fit: cover; }
+.pd-img img { width: 100%; height: 100%; object-fit: contain; padding: 12px; transition: opacity .2s; }
+.pd-thumbs {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+.pd-thumb {
+  width: 64px; height: 64px; flex-shrink: 0;
+  object-fit: contain; padding: 4px;
+  background: var(--cream);
+  border: 2px solid transparent; cursor: pointer;
+  opacity: .65; transition: opacity .2s, border-color .2s;
+}
+.pd-thumb.active, .pd-thumb:hover {
+  border-color: var(--green); opacity: 1;
+}
 .pd-img-warn {
   margin-top: 12px; padding: 10px 14px;
   background: white; border-left: 3px solid #e8e5de;
@@ -223,15 +236,33 @@
 <div class="pd-body">
   <div class="pd-inner">
 
-    <!-- IMAGEN -->
+    <!-- IMAGEN / GALERÍA -->
     <div class="pd-img-wrap">
       <div class="pd-img">
         {% if producto.imagen %}
-          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+          <img id="pd-main-img" src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
         {% else %}
           🚬
         {% endif %}
       </div>
+
+      {% if producto.imagen_2 or producto.imagen_3 %}
+      <div class="pd-thumbs">
+        {% if producto.imagen %}
+        <img class="pd-thumb active" src="{{ producto.imagen.url }}" alt="Vista 1"
+             onclick="pdSetImg(this, '{{ producto.imagen.url }}')">
+        {% endif %}
+        {% if producto.imagen_2 %}
+        <img class="pd-thumb" src="{{ producto.imagen_2.url }}" alt="Vista 2"
+             onclick="pdSetImg(this, '{{ producto.imagen_2.url }}')">
+        {% endif %}
+        {% if producto.imagen_3 %}
+        <img class="pd-thumb" src="{{ producto.imagen_3.url }}" alt="Vista 3"
+             onclick="pdSetImg(this, '{{ producto.imagen_3.url }}')">
+        {% endif %}
+      </div>
+      {% endif %}
+
       <div class="pd-img-warn">
         ⚠️ El tabaco es perjudicial para la salud. Venta exclusiva a mayores de 18 años. Ley 20.660.
       </div>
@@ -250,7 +281,7 @@
       {% endif %}
 
       <!-- Atributos -->
-      {% if producto.intensidad or producto.procedencia or producto.peso_gramos %}
+      {% if producto.intensidad or producto.procedencia or producto.peso_gramos or producto.dimensiones %}
       <div class="pd-attrs">
         {% if producto.intensidad %}
         <span class="pd-attr">{{ producto.intensidad }}</span>
@@ -258,7 +289,9 @@
         {% if producto.procedencia %}
         <span class="pd-attr">{{ producto.procedencia }}</span>
         {% endif %}
-        {% if producto.peso_gramos %}
+        {% if producto.dimensiones %}
+        <span class="pd-attr">{{ producto.dimensiones }}</span>
+        {% elif producto.peso_gramos %}
         <span class="pd-attr">{{ producto.peso_gramos }}g</span>
         {% endif %}
       </div>
@@ -333,6 +366,13 @@
 
 {% block extra_js %}
 <script>
+function pdSetImg(thumb, src) {
+  document.getElementById('pd-main-img').src = src;
+  document.querySelectorAll('.pd-thumb').forEach(function(t) { t.classList.remove('active'); });
+  thumb.classList.add('active');
+}
+</script>
+<script>
 (function () {
   var precioUnidad = parseFloat('{{ producto.precio_unidad }}');
 
@@ -353,18 +393,12 @@
     document.getElementById('precio-total').textContent = fmt(precioUnidad * qty);
   };
 
-  // Actualizar badge del carrito tras agregar
+  // Actualizar badge del carrito tras agregar (usa refreshDrawer definido en base.html)
   document.addEventListener('htmx:afterRequest', function (e) {
-    if (e.detail.successful) {
-      var badge = document.getElementById('carrito-contador');
-      if (badge) {
-        var count = parseInt(badge.textContent || '0') + parseInt(document.getElementById('qty-input').value || 1);
-        badge.textContent = count;
-        badge.classList.remove('d-none');
-      }
+    if (e.detail.successful && typeof refreshDrawer === 'function') {
+      refreshDrawer();
     }
   });
 })();
 </script>
 {% endblock %}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     

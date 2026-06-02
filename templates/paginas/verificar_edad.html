@@ -15,7 +15,6 @@
       --tan-l: rgba(200, 176, 138, 0.4);
       --cream: #EFE6D6;
       --cream-d: #D9CDB8;
-      --slate: #2B2B2B;
     }
     * { box-sizing: border-box; }
     body {
@@ -35,133 +34,115 @@
     .card {
       background: var(--green-d);
       border: 1px solid rgba(200,176,138,0.18);
-      max-width: 520px;
+      max-width: 480px;
       width: 100%;
-      padding: 48px 40px 36px;
+      padding: 52px 40px 40px;
+      text-align: center;
     }
     .eyebrow {
-      font-family: 'Lora', serif;
       font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: rgba(200,176,138,0.65);
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
-    .eyebrow::before {
+    .eyebrow::before, .eyebrow::after {
       content: '';
-      width: 32px;
+      width: 28px;
       height: 1px;
       background: var(--tan-l);
     }
     .brand {
       font-family: 'Playfair Display', serif;
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 700;
       color: var(--cream);
       line-height: 1;
-      margin: 0 0 6px;
+      margin: 0 0 24px;
     }
     .brand em {
       font-style: italic;
       color: var(--tan);
       font-weight: 400;
     }
-    .lead {
-      font-size: 13.5px;
-      line-height: 1.7;
-      color: rgba(239,230,214,0.75);
-      margin: 20px 0 28px;
-    }
     .sep {
       border: 0;
       border-top: 1px solid rgba(200,176,138,0.18);
       margin: 0 0 28px;
     }
-    label.legend {
-      display: block;
-      font-size: 11px;
+    .question {
+      font-size: 13px;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: rgba(200,176,138,0.7);
-      margin-bottom: 12px;
-    }
-    .dob-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.4fr 1.2fr;
-      gap: 10px;
       margin-bottom: 24px;
     }
-    .dob-grid select {
-      background: var(--green);
-      color: var(--cream);
-      border: 1px solid rgba(200,176,138,0.25);
-      padding: 12px 10px;
-      font-family: 'Lora', serif;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .2s;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image:
-        linear-gradient(45deg, transparent 50%, var(--tan) 50%),
-        linear-gradient(135deg, var(--tan) 50%, transparent 50%);
-      background-position:
-        calc(100% - 16px) 55%,
-        calc(100% - 11px) 55%;
-      background-size: 5px 5px, 5px 5px;
-      background-repeat: no-repeat;
-      padding-right: 28px;
+    .age-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
     }
-    .dob-grid select:focus { border-color: var(--tan); }
-    .btn-primary {
-      width: 100%;
+    .btn-yes {
       background: var(--tan);
       color: var(--green-d);
       border: none;
-      padding: 16px;
-      font-family: 'Lora', serif;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
+      padding: 22px 16px;
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
       cursor: pointer;
-      transition: background .2s;
+      transition: background .2s, transform .1s;
+      line-height: 1;
     }
-    .btn-primary:hover { background: #d9c09a; }
-    .btn-secondary {
+    .btn-yes:hover { background: #d9c09a; transform: translateY(-1px); }
+    .btn-yes span {
       display: block;
-      text-align: center;
-      color: rgba(200,176,138,0.55);
-      text-decoration: none;
-      font-size: 11px;
+      font-family: 'Lora', serif;
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-top: 14px;
-      padding: 10px;
-      transition: color .2s;
+      color: var(--green-d);
+      margin-top: 6px;
+      opacity: 0.75;
     }
-    .btn-secondary:hover { color: var(--tan); }
-    .error {
-      background: rgba(192, 57, 43, 0.12);
-      border-left: 2px solid #c0392b;
-      color: #f3b8b0;
-      font-size: 12.5px;
-      padding: 10px 14px;
-      margin-bottom: 20px;
+    .btn-no {
+      background: transparent;
+      color: rgba(239,230,214,0.55);
+      border: 1px solid rgba(200,176,138,0.2);
+      padding: 22px 16px;
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      line-height: 1;
+    }
+    .btn-no:hover { border-color: rgba(200,176,138,0.5); color: rgba(239,230,214,0.8); }
+    .btn-no span {
+      display: block;
+      font-family: 'Lora', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      opacity: 0.6;
     }
     .warn {
       font-size: 11px;
-      color: rgba(200,176,138,0.5);
+      color: rgba(200,176,138,0.45);
       line-height: 1.7;
-      margin-top: 28px;
       padding-top: 20px;
-      border-top: 1px solid rgba(200,176,138,0.15);
+      border-top: 1px solid rgba(200,176,138,0.12);
     }
     @media (max-width: 420px) {
       .card { padding: 36px 24px 28px; }
-      .brand { font-size: 26px; }
+      .brand { font-size: 28px; }
+      .btn-yes, .btn-no { font-size: 22px; padding: 18px 12px; }
     }
   </style>
 </head>
@@ -169,79 +150,28 @@
   <main class="card" role="main">
     <div class="eyebrow">Mayorista · Chile</div>
     <h1 class="brand">Puro <em>Tabaco</em></h1>
-
-    <p class="lead">
-      Este sitio comercializa productos de tabaco. El acceso está restringido
-      a personas mayores de <strong>{{ edad_minima }}</strong> años. Por favor
-      confirma tu fecha de nacimiento para continuar.
-    </p>
     <hr class="sep">
 
-    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <p class="question">¿Cuántos años tienes?</p>
 
-    <form method="post" novalidate autocomplete="off">
+    <form method="post" novalidate>
       {% csrf_token %}
-      <label class="legend" for="dia">Fecha de nacimiento</label>
-
-      <div class="dob-grid">
-        <select name="dia" id="dia" required aria-label="Día">
-          <option value="">Día</option>
-          {# opciones 1..31 generadas por JS al final #}
-        </select>
-
-        <select name="mes" id="mes" required aria-label="Mes">
-          <option value="">Mes</option>
-          <option value="1">Enero</option>
-          <option value="2">Febrero</option>
-          <option value="3">Marzo</option>
-          <option value="4">Abril</option>
-          <option value="5">Mayo</option>
-          <option value="6">Junio</option>
-          <option value="7">Julio</option>
-          <option value="8">Agosto</option>
-          <option value="9">Septiembre</option>
-          <option value="10">Octubre</option>
-          <option value="11">Noviembre</option>
-          <option value="12">Diciembre</option>
-        </select>
-
-        <select name="anio" id="anio" required aria-label="Año">
-          <option value="">Año</option>
-          {# Se rellena vía JS con los últimos 100 años #}
-        </select>
+      <div class="age-buttons">
+        <button type="submit" name="edad" value="mayor" class="btn-yes">
+          +18
+          <span>Soy mayor de edad</span>
+        </button>
+        <button type="submit" name="edad" value="menor" class="btn-no">
+          −18
+          <span>Soy menor de edad</span>
+        </button>
       </div>
-
-      <button type="submit" class="btn-primary">Ingresar al sitio</button>
     </form>
 
-    <a href="{% url 'paginas:acceso_denegado' %}" class="btn-secondary">
-      No soy mayor de edad
-    </a>
-
     <p class="warn">
-      Al ingresar, confirmas que la información entregada es verídica y que
-      cumples con la normativa vigente en Chile. <strong>El tabaco es perjudicial
-      para la salud.</strong>
+      Al ingresar confirmas que eres mayor de {{ edad_minima }} años y aceptas
+      los términos del sitio. <strong>El tabaco es perjudicial para la salud.</strong>
     </p>
   </main>
-
-  <script>
-    // Rellenar día (1..31) y año (hoy-18 … hoy-100)
-    (function () {
-      var diaSel = document.getElementById('dia');
-      for (var d = 1; d <= 31; d++) {
-        var o = document.createElement('option');
-        o.value = d; o.textContent = d;
-        diaSel.appendChild(o);
-      }
-      var anioSel = document.getElementById('anio');
-      var hoy = new Date().getFullYear();
-      for (var y = hoy - 18; y >= hoy - 100; y--) {
-        var o2 = document.createElement('option');
-        o2.value = y; o2.textContent = y;
-        anioSel.appendChild(o2);
-      }
-    })();
-  </script>
 </body>
 </html>

@@ -147,6 +147,7 @@
 {% block announce_bar %}
 <div id="ticker-bar">
   <div class="ticker-track">
+    <span class="ticker-item">TIENDA ONLINE</span><span class="ticker-sep">/</span>
     <span class="ticker-item">COMPRA MINIMA DESDE LOS $25.000</span><span class="ticker-sep">/</span>
     <span class="ticker-item">DESPACHO EN 24–48 HRS</span><span class="ticker-sep">/</span>
     <span class="ticker-item">PRECIOS MAYORISTAS DESDE 1 UNIDADES</span><span class="ticker-sep">/</span>
@@ -159,6 +160,7 @@
     <span class="ticker-item">STOCK PERMANENTE</span><span class="ticker-sep">/</span>
     <span class="ticker-item">RETIRO EN VARIOS PUNTOS DE LA CAPITAL</span><span class="ticker-sep">/</span>
     <span class="ticker-item">PAGO SEGURO CON TARJETA</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">TIENDA ONLINE</span><span class="ticker-sep">/</span>
   </div>
 </div>
 {% endblock %}
@@ -179,8 +181,8 @@
     <!-- Links desktop — columna central -->
     <ul class="nav-links">
       <li><a href="{% url 'productos:catalogo' %}">Todos los Productos</a></li>
-      <li><a href="{% url 'productos:catalogo' %}?categoria=tabaco">Tabacos</a></li>
-      <li><a href="{% url 'productos:catalogo' %}?categoria=accesorios">Accesorios</a></li>
+      <li><a href="{% url 'productos:catalogo' %}?seccion=Tabacos">Tabacos</a></li>
+      <li><a href="{% url 'productos:catalogo' %}?seccion=Accesorios">Accesorios</a></li>
       <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
     </ul>
 
@@ -232,8 +234,8 @@
 <!-- Menú mobile -->
 <div class="nav-mobile" id="nav-mobile">
   <a href="{% url 'productos:catalogo' %}" onclick="closeNavMenu()">Todos los Productos</a>
-  <a href="{% url 'productos:catalogo' %}?categoria=tabaco" onclick="closeNavMenu()">Tabacos</a>
-  <a href="{% url 'productos:catalogo' %}?categoria=accesorios" onclick="closeNavMenu()">Accesorios</a>
+  <a href="{% url 'productos:catalogo' %}?seccion=Tabacos" onclick="closeNavMenu()">Tabacos</a>
+  <a href="{% url 'productos:catalogo' %}?seccion=Accesorios" onclick="closeNavMenu()">Accesorios</a>
   <a href="{% url 'paginas:contacto' %}" onclick="closeNavMenu()">Contacto</a>
   {% if user.is_authenticated %}
   <a href="{% url 'cuenta:dashboard' %}" onclick="closeNavMenu()">Mi Cuenta</a>
@@ -340,8 +342,8 @@
         <div class="footer-col-title">Tienda</div>
         <ul class="footer-links">
           <li><a href="{% url 'productos:catalogo' %}">Todos los Productos</a></li>
-          <li><a href="{% url 'productos:catalogo' %}?categoria=tabaco">Tabacos</a></li>
-          <li><a href="{% url 'productos:catalogo' %}?categoria=accesorios">Accesorios</a></li>
+          <li><a href="{% url 'productos:catalogo' %}?seccion=Tabacos">Tabacos</a></li>
+          <li><a href="{% url 'productos:catalogo' %}?seccion=Accesorios">Accesorios</a></li>
         </ul>
       </div>
 
@@ -349,8 +351,8 @@
       <div>
         <div class="footer-col-title">Ayuda</div>
         <ul class="footer-links">
-          <li><a href="{% url 'paginas:faqs' %}">Preguntas Frecuentes</a></li>
           <li><a href="{% url 'paginas:sobre_nosotros' %}">Sobre Nosotros</a></li>
+          <li><a href="{% url 'paginas:faqs' %}">Preguntas Frecuentes</a></li>
           <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
           <li><a href="{% url 'paginas:terminos' %}">Términos y Condiciones</a></li>
           <li><a href="{% url 'paginas:privacidad' %}">Privacidad</a></li>
@@ -385,11 +387,15 @@ function openCartDrawer() {
   document.getElementById('cart-drawer').classList.add('open');
   document.getElementById('cart-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  var wsp = document.getElementById('wsp-btn');
+  if (wsp) wsp.style.display = 'none';
 }
 function closeCartDrawer() {
   document.getElementById('cart-drawer').classList.remove('open');
   document.getElementById('cart-overlay').classList.remove('open');
   document.body.style.overflow = '';
+  var wsp = document.getElementById('wsp-btn');
+  if (wsp) wsp.style.display = 'flex';
 }
 
 /* ── SEARCH ───────────────────────────────────────────────── */
@@ -431,9 +437,73 @@ function closeNavMenu() {
   document.body.style.overflow = '';
 }
 
-/* ── HTMX: actualizar contador del carrito tras agregar ───── */
-document.addEventListener('htmx:afterSwap', function(e) {
-  fetch('{% url "carrito:drawer" %}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+/* ── HTMX: actualizar drawer y badge tras agregar (solo fuera del drawer) ── */
+function refreshDrawer() {
+  fetch('{% url "carrito:drawer" %}')
     .then(function(r) { return r.text(); })
     .then(function(html) {
-      var body = document.querySelect
+      var body = document.querySelector('.cart-drawer-body');
+      if (body) {
+        body.innerHTML = html;
+        htmx.process(body); // re-procesar atributos hx-* en el nuevo contenido
+      }
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      var drawerBody = doc.getElementById('cart-drawer-body');
+      var count = drawerBody ? parseInt(drawerBody.dataset.count) || 0 : 0;
+      var badge = document.getElementById('carrito-contador');
+      if (badge) {
+        badge.textContent = count;
+        if (count > 0) badge.classList.remove('d-none');
+      }
+      var countEl = document.getElementById('drawer-count');
+      if (countEl) {
+        countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
+      }
+    });
+}
+
+document.addEventListener('htmx:afterSwap', function(e) {
+  // Si el swap ocurrió dentro del drawer, HTMX ya lo manejó — no interferir
+  var drawer = document.getElementById('cart-drawer');
+  if (drawer && drawer.contains(e.detail.target)) return;
+  refreshDrawer();
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+
+<!-- Botón flotante WhatsApp -->
+<style>
+  #wsp-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 402;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #25D366;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s, box-shadow .2s;
+    text-decoration: none;
+  }
+  #wsp-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+  }
+  @media (max-width: 576px) {
+    #wsp-btn { bottom: 20px; right: 16px; width: 46px; height: 46px; }
+  }
+</style>
+<a id="wsp-btn" href="https://wa.me/56948174370" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+</body>
+</html>
