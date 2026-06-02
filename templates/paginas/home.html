@@ -185,7 +185,13 @@
 
 @media (max-width: 768px) {
   #carrusel-banners .carousel-item img {
-    height: 260px;
+    height: 420px;
+    object-position: center center;
+  }
+}
+@media (max-width: 480px) {
+  #carrusel-banners .carousel-item img {
+    height: 360px;
   }
 }
 
@@ -890,8 +896,8 @@
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #hero { min-height: 80vh; }
-  .hero-content { padding: 40px 24px; }
+  #hero { min-height: 85svh; align-items: center; }
+  .hero-content { padding: 110px 24px 60px; }
   .hero-title { font-size: 2rem; }
   .hero-sub { font-size: 14px; }
 
@@ -1120,12 +1126,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (res) {
         if (res.ok) {
-          var badge = document.getElementById('carrito-contador');
-          if (badge) {
-            var count = parseInt(badge.textContent) || 0;
-            badge.textContent = count + qty;
-            badge.classList.remove('d-none');
-          }
+          if (typeof refreshDrawer === 'function') refreshDrawer();
           btn.textContent = '✓ Agregado';
           btn.style.background = '#2a5c3f';
           setTimeout(function () {

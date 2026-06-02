@@ -268,21 +268,8 @@
     {% include 'carrito/drawer_items.html' %}
   </div>
 
-  <!-- Footer con botones de acción -->
-  <div class="cart-drawer-foot">
-    {% if carrito|length > 0 %}
-    <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">
-      Ir al Checkout →
-    </a>
-    <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">
-      Ver carrito completo
-    </a>
-    {% else %}
-    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;" onclick="closeCartDrawer()">
-      Ver Catálogo
-    </a>
-    {% endif %}
-  </div>
+  <!-- Footer — contenido dinámico en drawer_items.html -->
+  <div class="cart-drawer-foot" id="cart-drawer-foot"></div>
 </div>
 
 <!-- ── SEARCH DROPDOWN ──────────────────────────────────── -->
