@@ -1227,6 +1227,13 @@ body.has-bar #hero { padding-top: 38px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
 }
 
+@media (max-width: 1024px) {
+  .nav-logo-shield { width: 32px; height: 38px; }
+  .nav-logo-name { font-size: 13px; letter-spacing: 1.5px; }
+  .nav-logo-sub { display: none; }
+  .nav-logo { gap: 7px; }
+}
+
 @media (max-width: 640px) {
   #pt-nav { padding: 0 20px; }
   .hero-content { padding: 0 20px 56px; }
@@ -1241,4 +1248,14 @@ body.has-bar #hero { padding-top: 38px; }
   .pt-footer { padding: 40px 20px 20px; }
   .footer-top { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
+  /* Ticker más compacto en móvil */
+  #ticker-bar { font-size: 9px; }
+  /* Cat grid home: 2 columnas en móvil */
+  .cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Dest grid home: 2 columnas en móvil */
+  .dest-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Checkout padding */
+  .ct-grid { padding: 0; }
+  /* Cart drawer ancho total en móvil */
+  #cart-drawer { width: 100vw; }
 }
