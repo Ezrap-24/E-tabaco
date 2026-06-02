@@ -2,8 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+
+def health(request):
+    return HttpResponse('ok')
 
 urlpatterns = [
+    path('health/', health),
     path('gestion-pt/', admin.site.urls),
     path('', include('apps.paginas.urls')),
     path('catalogo/', include('apps.productos.urls')),

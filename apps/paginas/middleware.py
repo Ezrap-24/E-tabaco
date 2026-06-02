@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 RUTAS_EXCLUIDAS = [
     '/verificar-edad/',
+    '/health/',
     '/admin/',
     '/pedidos/webhook/',
     '/static/',
