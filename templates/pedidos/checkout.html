@@ -151,11 +151,6 @@
         <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">{{ carrito.total|pesos }}</span>
       </div>
 
-      {% if carrito.califica_envio_gratis %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:#2a7a3b;background:rgba(42,122,59,0.07);border-left:2px solid #2a7a3b;padding:8px 10px;margin-top:12px;">&#128666; Envio gratis incluido</div>
-      {% else %}
-      <div style="font-family:'Lora',serif;font-size:11px;color:var(--bronze);background:rgba(139,115,85,0.07);border-left:2px solid var(--tan);padding:8px 10px;margin-top:12px;">&#128666; Agrega {{ carrito.falta_envio_gratis|pesos }} mas para envio gratis</div>
-      {% endif %}
 
       <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:12px; padding-top:12px; border-top:1px dashed var(--cream-d);">
         Solo para mayores de 18 a&ntilde;os. El tabaco es perjudicial para la salud.
