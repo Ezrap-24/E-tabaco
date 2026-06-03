@@ -133,9 +133,18 @@
   </div>
 
   <!-- Acciones -->
+  {% if not carrito.califica_compra_minima %}
+  <div style="font-family:'Lora',serif; font-size:13px; color:var(--bronze); background:rgba(139,115,85,0.08); border-left:3px solid var(--bronze); padding:12px 16px; margin-bottom:16px;">
+    Agrega <strong>{{ carrito.falta_compra_minima|pesos }}</strong> más para alcanzar el mínimo de compra de $25.000
+  </div>
+  {% endif %}
   <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
     <a href="{% url 'productos:catalogo' %}" class="btn-ghost-pt">&larr; Seguir comprando</a>
+    {% if carrito.califica_compra_minima %}
     <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt" style="font-size:12px; padding:18px 40px; letter-spacing:3px;">Ir al Checkout &rarr;</a>
+    {% else %}
+    <button disabled class="btn-primary-pt" style="font-size:12px; padding:18px 40px; letter-spacing:3px; opacity:0.4; cursor:not-allowed;">Ir al Checkout &rarr;</button>
+    {% endif %}
   </div>
 
   {% else %}
