@@ -548,30 +548,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (res) {
         if (res.ok) {
-          /* Refrescar drawer con datos reales del servidor */
-          fetch('{% url "carrito:drawer" %}')
-            .then(function(r) { return r.text(); })
-            .then(function(html) {
-              var body = document.querySelector('.cart-drawer-body');
-              if (body) {
-                body.innerHTML = html;
-                htmx.process(body);
-              }
-              /* Actualizar badge y contador del header con el total real */
-              var parser = new DOMParser();
-              var doc = parser.parseFromString(html, 'text/html');
-              var drawerBody = doc.getElementById('cart-drawer-body');
-              var count = drawerBody ? parseInt(drawerBody.dataset.count) || 0 : 0;
-              var badge = document.getElementById('carrito-contador');
-              if (badge) {
-                badge.textContent = count;
-                if (count > 0) badge.classList.remove('d-none');
-              }
-              var countEl = document.getElementById('drawer-count');
-              if (countEl) {
-                countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
-              }
-            });
+          if (typeof refreshDrawer === 'function') refreshDrawer();
           /* Feedback visual en el botón */
           btn.textContent = '✓ Agregado';
           btn.style.background = '#2a5c3f';

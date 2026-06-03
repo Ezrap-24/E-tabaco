@@ -108,6 +108,15 @@ class Carrito:
     def califica_envio_gratis(self):
         return self.total() >= Decimal(str(settings.ENVIO_GRATIS_DESDE))
 
+    COMPRA_MINIMA = Decimal('25000')
+
+    def califica_compra_minima(self):
+        return self.total() >= self.COMPRA_MINIMA
+
+    def falta_compra_minima(self):
+        falta = self.COMPRA_MINIMA - self.total()
+        return max(falta, Decimal('0'))
+
     # ── Iteración ──────────────────────────────────────────
     def items(self):
         """Devuelve los items del carrito con su Producto asociado.

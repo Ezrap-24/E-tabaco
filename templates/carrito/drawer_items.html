@@ -1,4 +1,4 @@
-<div id="cart-drawer-body" data-count="{{ carrito|length }}">
+<div id="cart-drawer-body" data-count="{{ carrito|length }}" data-total="{{ carrito.total }}">
   {% if carrito|length > 0 %}
 
     {% for item in carrito.items %}

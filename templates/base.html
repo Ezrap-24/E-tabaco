@@ -148,15 +148,15 @@
 <div id="ticker-bar">
   <div class="ticker-track">
     <span class="ticker-item">TIENDA ONLINE</span><span class="ticker-sep">/</span>
-    <span class="ticker-item">COMPRA MINIMA DESDE LOS $25.000</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">COMPRA MINIMA DE $25.000</span><span class="ticker-sep">/</span>
     <span class="ticker-item">DESPACHO EN 24–48 HRS</span><span class="ticker-sep">/</span>
-    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 1 UNIDADES</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 1 UNIDAD</span><span class="ticker-sep">/</span>
     <span class="ticker-item">STOCK PERMANENTE</span><span class="ticker-sep">/</span>
     <span class="ticker-item">RETIRO EN VARIOS PUNTOS DE LA CAPITAL</span><span class="ticker-sep">/</span>
     <span class="ticker-item">PAGO SEGURO CON TARJETA</span><span class="ticker-sep">/</span>
-    <span class="ticker-item">COMPRA MINIMA DESDE LOS $25.000</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">COMPRA MINIMA DE $25.000</span><span class="ticker-sep">/</span>
     <span class="ticker-item">DESPACHO EN 24–48 HRS</span><span class="ticker-sep">/</span>
-    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 1 UNIDADES</span><span class="ticker-sep">/</span>
+    <span class="ticker-item">PRECIOS MAYORISTAS DESDE 1 UNIDAD</span><span class="ticker-sep">/</span>
     <span class="ticker-item">STOCK PERMANENTE</span><span class="ticker-sep">/</span>
     <span class="ticker-item">RETIRO EN VARIOS PUNTOS DE LA CAPITAL</span><span class="ticker-sep">/</span>
     <span class="ticker-item">PAGO SEGURO CON TARJETA</span><span class="ticker-sep">/</span>
@@ -270,13 +270,19 @@
     {% include 'carrito/drawer_items.html' %}
   </div>
 
-  <!-- Footer -->
+  <!-- Footer con lógica de compra mínima $25.000 -->
   <div class="cart-drawer-foot" id="cart-drawer-foot">
-    {% if carrito|length > 0 %}
-    <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>
-    <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>
-    {% else %}
-    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>
+    {% if carrito|length == 0 %}
+      <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>
+    {% elif not carrito.califica_compra_minima %}
+      <div style="font-family:'Lora',serif;font-size:12px;color:var(--bronze);background:rgba(139,115,85,0.1);border-left:3px solid var(--bronze);padding:10px 14px;margin-bottom:12px;">
+        Agrega <strong>{{ carrito.falta_compra_minima|pesos }}</strong> más para el mínimo de compra
+      </div>
+      <button disabled class="btn-primary-pt w-100" style="display:block;width:100%;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;opacity:0.45;cursor:not-allowed;margin-bottom:10px;">Ir al Checkout →</button>
+      <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>
+    {% elif carrito.califica_compra_minima %}
+      <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>
+      <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>
     {% endif %}
   </div>
 </div>
@@ -459,13 +465,22 @@ function refreshDrawer() {
       }
       var foot = document.getElementById('cart-drawer-foot');
       if (foot) {
-        if (count > 0) {
+        var MINIMO = 25000;
+        var total = drawerBody ? parseFloat(drawerBody.dataset.total) || 0 : 0;
+        var falta = Math.max(0, MINIMO - total);
+        if (count === 0) {
           foot.innerHTML =
-            '<a href="{% url "pedidos:checkout" %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>' +
+            '<a href="{% url "productos:catalogo" %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>';
+        } else if (falta > 0) {
+          var faltaFmt = '$' + falta.toLocaleString('es-CL');
+          foot.innerHTML =
+            '<div style="font-family:\'Lora\',serif;font-size:12px;color:var(--bronze);background:rgba(139,115,85,0.1);border-left:3px solid var(--bronze);padding:10px 14px;margin-bottom:12px;">Agrega <strong>' + faltaFmt + '</strong> más para el mínimo de compra</div>' +
+            '<button disabled class="btn-primary-pt w-100" style="display:block;width:100%;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;opacity:0.45;cursor:not-allowed;margin-bottom:10px;">Ir al Checkout →</button>' +
             '<a href="{% url "carrito:ver" %}" style="display:block;text-align:center;font-family:\'Lora\',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>';
         } else {
           foot.innerHTML =
-            '<a href="{% url "productos:catalogo" %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>';
+            '<a href="{% url "pedidos:checkout" %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>' +
+            '<a href="{% url "carrito:ver" %}" style="display:block;text-align:center;font-family:\'Lora\',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>';
         }
       }
     });

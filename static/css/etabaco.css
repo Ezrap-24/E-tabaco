@@ -1208,6 +1208,9 @@ body.has-bar #hero { padding-top: 38px; }
   #pt-nav { padding: 0 32px; }
   .nav-links, .nav-cta { display: none; }
   .nav-hamburger { display: flex; }
+  /* En móvil: logo izquierda, íconos derecha — sin columna central vacía */
+  .nav-inner { grid-template-columns: 1fr auto; }
+  .nav-icons { justify-self: end; }
   #hero { height: 100svh; }
   .hero-content { padding: 0 32px 64px; }
   .hero-scroll { display: none; }
