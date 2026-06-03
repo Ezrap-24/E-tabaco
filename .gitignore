@@ -11,6 +11,9 @@ node_modules/
 .venv/
 venv/
 
+# Fotos originales (fuente) — no van en git, solo los WebP de media/
+static/img/Fotos Productos/
+
 # Archivos de trabajo local
 *.docx
 *.xlsx
