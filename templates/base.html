@@ -233,16 +233,18 @@
 
 <!-- Menú mobile -->
 <div class="nav-mobile" id="nav-mobile">
+  <button onclick="closeNavMenu()" style="align-self:flex-end;background:none;border:none;color:var(--tan);font-size:28px;cursor:pointer;padding:0 4px;line-height:1;margin-bottom:8px;">&times;</button>
   <a href="{% url 'productos:catalogo' %}" onclick="closeNavMenu()">Todos los Productos</a>
   <a href="{% url 'productos:catalogo' %}?seccion=Tabacos" onclick="closeNavMenu()">Tabacos</a>
   <a href="{% url 'productos:catalogo' %}?seccion=Accesorios" onclick="closeNavMenu()">Accesorios</a>
+  <a href="{% url 'paginas:faqs' %}" onclick="closeNavMenu()">Preguntas Frecuentes</a>
   <a href="{% url 'paginas:contacto' %}" onclick="closeNavMenu()">Contacto</a>
   {% if user.is_authenticated %}
   <a href="{% url 'cuenta:dashboard' %}" onclick="closeNavMenu()">Mi Cuenta</a>
   {% else %}
   <a href="{% url 'cuenta:login' %}" onclick="closeNavMenu()">Iniciar Sesión</a>
   {% endif %}
-  <button onclick="closeNavMenu(); openCartDrawer();" style="font-family:'Lora',serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--tan);background:none;border:none;cursor:pointer;padding:8px 0;border-bottom:1px solid rgba(200,176,138,0.15);text-align:left;">
+  <button onclick="closeNavMenu(); openCartDrawer();" style="font-family:'Lora',serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--tan);background:none;border:none;cursor:pointer;padding:12px 0;border-bottom:1px solid rgba(200,176,138,0.15);text-align:left;min-height:44px;">
     🛒 Mi Carrito {% if carrito|length > 0 %}({{ carrito|length }}){% endif %}
   </button>
 </div>
@@ -268,8 +270,15 @@
     {% include 'carrito/drawer_items.html' %}
   </div>
 
-  <!-- Footer — contenido dinámico en drawer_items.html -->
-  <div class="cart-drawer-foot" id="cart-drawer-foot"></div>
+  <!-- Footer -->
+  <div class="cart-drawer-foot" id="cart-drawer-foot">
+    {% if carrito|length > 0 %}
+    <a href="{% url 'pedidos:checkout' %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>
+    <a href="{% url 'carrito:ver' %}" style="display:block;text-align:center;font-family:'Lora',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>
+    {% else %}
+    <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>
+    {% endif %}
+  </div>
 </div>
 
 <!-- ── SEARCH DROPDOWN ──────────────────────────────────── -->
@@ -442,10 +451,22 @@ function refreshDrawer() {
       if (badge) {
         badge.textContent = count;
         if (count > 0) badge.classList.remove('d-none');
+        else badge.classList.add('d-none');
       }
       var countEl = document.getElementById('drawer-count');
       if (countEl) {
         countEl.textContent = count > 0 ? count + ' producto' + (count !== 1 ? 's' : '') : 'vacío';
+      }
+      var foot = document.getElementById('cart-drawer-foot');
+      if (foot) {
+        if (count > 0) {
+          foot.innerHTML =
+            '<a href="{% url "pedidos:checkout" %}" class="btn-primary-pt w-100" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;margin-bottom:10px;">Ir al Checkout →</a>' +
+            '<a href="{% url "carrito:ver" %}" style="display:block;text-align:center;font-family:\'Lora\',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#aaa;text-decoration:none;padding:8px 0;">Ver carrito completo</a>';
+        } else {
+          foot.innerHTML =
+            '<a href="{% url "productos:catalogo" %}" class="btn-primary-pt w-100" onclick="closeCartDrawer()" style="display:block;text-align:center;font-size:12px;padding:16px;letter-spacing:3px;">Ver Catálogo</a>';
+        }
       }
     });
 }

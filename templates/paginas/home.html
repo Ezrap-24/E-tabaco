@@ -428,13 +428,13 @@
   display: flex; align-items: center; border: 1.5px solid #e0dbd4; border-right: none; flex-shrink: 0;
 }
 .dest-qty button {
-  background: none; border: none; width: 28px; height: 36px;
-  font-size: 15px; color: var(--green); cursor: pointer; transition: background .15s;
+  background: none; border: none; width: 44px; height: 44px;
+  font-size: 18px; color: var(--green); cursor: pointer; transition: background .15s;
 }
 .dest-qty button:hover { background: #f5f1eb; }
 .dest-qty input {
-  width: 28px; border: none; text-align: center;
-  font-family: 'Lora', serif; font-size: 13px;
+  width: 32px; border: none; text-align: center;
+  font-family: 'Lora', serif; font-size: 14px;
   color: var(--green); background: transparent;
   -moz-appearance: textfield;
 }
@@ -442,10 +442,10 @@
 .dest-qty input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .dest-add-btn {
   flex: 1; background: var(--green); color: var(--cream);
-  border: none; font-family: 'Lora', serif; font-size: 9px;
+  border: none; font-family: 'Lora', serif; font-size: 11px;
   letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: background .2s; padding: 0 10px;
-  height: 36px; white-space: nowrap;
+  height: 44px; white-space: nowrap;
 }
 .dest-add-btn:hover { background: #1a2f25; }
 .dest-warn {
@@ -493,9 +493,13 @@
 @media (max-width: 580px) {
   #categorias, #dest-section, #nl-section, #concurso { padding: 40px 20px; }
   .cat-grid { gap: 10px; }
-  .dest-grid { grid-template-columns: 1fr; }
+  .dest-grid { grid-template-columns: repeat(2, 1fr); }
   .nl-form { flex-direction: column; }
   .nl-form button { padding: 12px; }
+}
+@media (max-width: 400px) {
+  .dest-grid { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: 1fr; }
 }
 
 /* ── REVEAL ON SCROLL ────────────────────────────────── */
@@ -940,7 +944,8 @@
 <!-- ── HERO ─────────────────────────────────────────────────────── -->
 <section id="hero">
   <div class="hero-bg">
-    <video autoplay muted loop playsinline class="hero-video">
+    <video autoplay muted loop playsinline class="hero-video"
+      poster="{% load static %}{% static 'img/banners/kuroko2.png' %}">
       <source src="{{ MEDIA_URL }}hero/Video_Generado_Listo_Para_Ver.mp4" type="video/mp4">
     </video>
     <div class="hero-gradient"></div>

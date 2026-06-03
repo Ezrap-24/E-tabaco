@@ -175,18 +175,18 @@
 
 .pc-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
 .pc-cat {
-  font-family: 'Lora', serif; font-size: 9px;
+  font-family: 'Lora', serif; font-size: 11px;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--bronze); margin-bottom: 5px;
 }
 .pc-name {
   font-family: 'Playfair Display', serif;
-  font-size: 14px; font-weight: 700;
+  font-size: 15px; font-weight: 700;
   color: var(--green); margin-bottom: 6px;
   line-height: 1.25; flex: 1;
 }
 .pc-desc {
-  font-family: 'Lora', serif; font-size: 12px;
+  font-family: 'Lora', serif; font-size: 14px;
   color: #999; line-height: 1.5; margin-bottom: 12px;
 }
 /* precio único */
@@ -205,8 +205,8 @@
   border-right: none; flex-shrink: 0;
 }
 .pc-qty button {
-  background: none; border: none; width: 30px; height: 38px;
-  font-size: 16px; color: var(--green); cursor: pointer;
+  background: none; border: none; width: 44px; height: 44px;
+  font-size: 18px; color: var(--green); cursor: pointer;
   transition: background .15s; line-height: 1;
 }
 .pc-qty button:hover { background: #f5f1eb; }
@@ -220,10 +220,10 @@
 .pc-qty input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .pc-add-btn {
   flex: 1; background: var(--green); color: var(--cream);
-  border: none; font-family: 'Lora', serif; font-size: 9px;
+  border: none; font-family: 'Lora', serif; font-size: 11px;
   letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: background .2s; padding: 0 12px;
-  height: 38px; white-space: nowrap;
+  height: 44px; white-space: nowrap;
 }
 .pc-add-btn:hover { background: #1a2f25; }
 .pc-add-btn:disabled {
@@ -297,6 +297,10 @@
 }
 @media (max-width: 560px) {
   .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .cat-body { padding: 24px 14px 60px; }
+}
+@media (max-width: 400px) {
+  .cat-grid { grid-template-columns: 1fr; gap: 12px; }
 }
 </style>
 {% endblock %}

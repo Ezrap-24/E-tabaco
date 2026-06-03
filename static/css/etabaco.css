@@ -132,7 +132,7 @@ body.has-bar #pt-nav { top: 34px; }
 }
 .nav-links a {
   font-family: 'Lora', serif;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(239,230,214,0.72);
@@ -272,12 +272,15 @@ body.has-bar .nav-mobile { top: 98px; }
 .nav-mobile.open { display: flex; }
 .nav-mobile a {
   font-family: 'Lora', serif;
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--cream);
-  padding: 8px 0;
+  padding: 12px 0;
   border-bottom: 1px solid rgba(200,176,138,0.15);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 /* ── HERO ───────────────────────────────────────────────── */
@@ -986,7 +989,7 @@ body.has-bar #hero { padding-top: 38px; }
 }
 .footer-about {
   font-family: 'Lora', serif;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
   color: #555;
   max-width: 260px;
@@ -1018,7 +1021,7 @@ body.has-bar #hero { padding-top: 38px; }
 .footer-soc:hover { border-color: var(--tan); color: var(--tan); }
 .footer-col-title {
   font-family: 'Lora', serif;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
   color: rgba(200,176,138,0.5);
@@ -1033,7 +1036,7 @@ body.has-bar #hero { padding-top: 38px; }
 }
 .footer-links a {
   font-family: 'Lora', serif;
-  font-size: 12px;
+  font-size: 13px;
   color: #555;
   transition: color .2s;
 }
@@ -1046,7 +1049,7 @@ body.has-bar #hero { padding-top: 38px; }
   flex-wrap: wrap;
   gap: 12px;
 }
-.footer-copy { font-family: 'Lora', serif; font-size: 11px; color: #444; }
+.footer-copy { font-family: 'Lora', serif; font-size: 13px; color: #444; }
 .footer-legal { display: flex; gap: 20px; }
 .footer-legal a {
   font-family: 'Lora', serif;
@@ -1249,13 +1252,25 @@ body.has-bar #hero { padding-top: 38px; }
   .footer-top { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
   /* Ticker más compacto en móvil */
-  #ticker-bar { font-size: 9px; }
+  #ticker-bar { font-size: 10px; }
   /* Cat grid home: 2 columnas en móvil */
   .cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
   /* Dest grid home: 2 columnas en móvil */
   .dest-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  /* Checkout padding */
-  .ct-grid { padding: 0; }
   /* Cart drawer ancho total en móvil */
   #cart-drawer { width: 100vw; }
+  /* Checkout padding reducido */
+  .ct-grid { padding: 0; }
+  /* Botones principales más grandes en táctil */
+  .btn-primary-pt, .btn-ghost-pt { min-height: 48px; font-size: 12px; }
+  /* Carrito qty botones táctiles */
+  .cart-qty-btn { width: 44px !important; height: 44px !important; font-size: 18px !important; }
+}
+
+/* ── AJUSTES ADICIONALES PANTALLAS MUY PEQUEÑAS ── */
+@media (max-width: 380px) {
+  .nav-logo-name { font-size: 11px; }
+  .dest-grid { grid-template-columns: 1fr !important; }
+  .cat-grid { grid-template-columns: 1fr !important; }
+  #pt-nav { padding: 0 14px; }
 }
