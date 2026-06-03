@@ -492,15 +492,12 @@
   #categorias, #dest-section, #nl-section, #concurso { padding: 52px 32px; }
 }
 @media (max-width: 580px) {
-  #categorias, #dest-section, #nl-section, #concurso { padding: 40px 20px; }
-  .cat-grid { gap: 10px; }
-  .dest-grid { grid-template-columns: repeat(2, 1fr); }
+  #categorias, #dest-section, #nl-section, #concurso { padding: 40px 16px; }
+  .cat-grid { gap: 10px; grid-template-columns: 1fr; }
+  .dest-grid { grid-template-columns: 1fr; }
   .nl-form { flex-direction: column; }
   .nl-form button { padding: 12px; }
-}
-@media (max-width: 400px) {
-  .dest-grid { grid-template-columns: 1fr; }
-  .cat-grid { grid-template-columns: 1fr; }
+  .dest-add-btn { font-size: 12px; letter-spacing: 1.5px; }
 }
 
 /* ── REVEAL ON SCROLL ────────────────────────────────── */
@@ -901,10 +898,12 @@
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #hero { min-height: 85svh; align-items: center; }
-  .hero-content { padding: 110px 24px 60px; }
-  .hero-title { font-size: 2rem; }
-  .hero-sub { font-size: 14px; }
+  #hero { min-height: 55vh; align-items: flex-start; }
+  .hero-content { padding: 110px 24px 40px; max-width: 100%; }
+  .hero-title { font-size: 1.9rem; margin-bottom: 16px; }
+  .hero-sub { font-size: 14px; margin-bottom: 28px; }
+  .hero-actions { flex-direction: column; gap: 10px; }
+  .hero-actions a { min-width: unset; width: 100%; max-width: 280px; }
 
   #story .container {
     grid-template-columns: 1fr;
@@ -954,7 +953,7 @@
   <div class="hero-content">
     <h1 class="hero-title">El tabaco que<br><em>tu necesitas</em></h1>
     <p class="hero-sub">
-      Stock permanente, precios mayoristas y despacho a todo Chile. Reparto en toda R.M a $2500. si es antes de las 12:01 Pm</p>
+      Stock permanente, precios mayoristas y despacho a todo Chile. Reparto en toda R.M a $2500, si es antes de las 12:01 Pm</p>
     <div class="hero-actions">
       <a href="{% url 'productos:catalogo' %}" class="btn-primary-pt">Ver Catálogo</a>
       <a href="#dest-section" class="btn-ghost-pt js-smooth-scroll">Productos Destacados</a>

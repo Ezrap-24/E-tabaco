@@ -186,7 +186,7 @@
       <li><a href="{% url 'paginas:contacto' %}">Contacto</a></li>
     </ul>
 
-    <!-- Íconos — columna derecha -->
+    <!-- Íconos + Hamburger — columna derecha -->
     <div class="nav-icons">
 
       <!-- Búsqueda -->
@@ -221,12 +221,12 @@
         <span class="nav-cart-badge {% if not carrito|length %}d-none{% endif %}" id="carrito-contador">{{ carrito|length }}</span>
       </button>
 
-    </div><!-- /nav-icons -->
+      <!-- Hamburger — dentro de nav-icons para quedar en la misma fila -->
+      <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
 
-    <!-- Hamburger -->
-    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </button>
+    </div><!-- /nav-icons -->
 
   </div>
 </nav>

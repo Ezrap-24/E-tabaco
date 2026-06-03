@@ -1208,9 +1208,9 @@ body.has-bar #hero { padding-top: 38px; }
   #pt-nav { padding: 0 32px; }
   .nav-links, .nav-cta { display: none; }
   .nav-hamburger { display: flex; }
-  /* En móvil: logo izquierda, íconos derecha — sin columna central vacía */
-  .nav-inner { grid-template-columns: 1fr auto; }
-  .nav-icons { justify-self: end; }
+  /* En móvil: logo izquierda | íconos+hamburger derecha */
+  .nav-inner { grid-template-columns: 1fr auto; align-items: center; }
+  .nav-icons { justify-self: end; display: flex; align-items: center; gap: 2px; }
   #hero { height: 100svh; }
   .hero-content { padding: 0 32px 64px; }
   .hero-scroll { display: none; }
@@ -1256,10 +1256,9 @@ body.has-bar #hero { padding-top: 38px; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
   /* Ticker más compacto en móvil */
   #ticker-bar { font-size: 10px; }
-  /* Cat grid home: 2 columnas en móvil */
-  .cat-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  /* Dest grid home: 2 columnas en móvil */
-  .dest-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Cat y dest grid: 1 columna en móvil para que todo quepa */
+  .cat-grid { grid-template-columns: 1fr !important; }
+  .dest-grid { grid-template-columns: 1fr !important; }
   /* Cart drawer ancho total en móvil */
   #cart-drawer { width: 100vw; }
   /* Checkout padding reducido */
