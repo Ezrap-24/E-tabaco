@@ -32,6 +32,7 @@
   inset: 0;
   overflow: hidden;
   z-index: 1;
+  background: #1a2f25; /* fondo verde oscuro mientras carga el video */
 }
 
 .hero-video {
@@ -279,7 +280,7 @@
 #concurso .sec-label { color: var(--tan); }
 #concurso .concurso-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 700;
   color: var(--cream);
   margin: 8px 0 12px;
@@ -287,7 +288,7 @@
 }
 #concurso .concurso-sub {
   font-family: 'Lora', serif;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(239,230,214,0.75);
   margin-bottom: 36px;
   line-height: 1.7;
@@ -945,7 +946,7 @@
 <section id="hero">
   <div class="hero-bg">
     <video autoplay muted loop playsinline class="hero-video"
-      poster="{% load static %}{% static 'img/banners/kuroko2.png' %}">
+      poster="{% static 'img/banners/kuroko2.png' %}">
       <source src="{{ MEDIA_URL }}hero/Video_Generado_Listo_Para_Ver.mp4" type="video/mp4">
     </video>
     <div class="hero-gradient"></div>
