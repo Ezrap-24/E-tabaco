@@ -1268,5 +1268,28 @@ document.querySelectorAll('.js-smooth-scroll').forEach(function (a) {
     }
   });
 });
+
+/* hero-video autoplay (iOS WebKit / Modo Bajo Consumo) */
+(function () {
+  var v = document.querySelector('.hero-video');
+  if (!v) return;
+  v.muted = true;
+  v.defaultMuted = true;
+  v.setAttribute('muted', '');
+  v.playsInline = true;
+  v.setAttribute('playsinline', '');
+  function tryPlay() {
+    var p = v.play();
+    if (p && typeof p.catch === 'function') { p.catch(function () {}); }
+  }
+  tryPlay();
+  var evs = ['touchstart', 'click', 'scroll'];
+  function onGesture() {
+    tryPlay();
+    evs.forEach(function (e) { document.removeEventListener(e, onGesture); });
+  }
+  evs.forEach(function (e) { document.addEventListener(e, onGesture, { once: true, passive: true }); });
+})();
+
 </script>
 {% endblock %}
