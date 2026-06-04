@@ -149,6 +149,45 @@
   border-color: var(--cream);
 }
 
+/* ── TRUST BADGES ────────────────────────────────────────────── */
+#trust-badges {
+  background: #fff;
+  padding: 48px 48px;
+  border-bottom: 1px solid #f0ede8;
+}
+.trust-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.trust-item {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center; gap: 14px;
+}
+.trust-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--green); flex-shrink: 0;
+}
+.trust-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--green); line-height: 1.2;
+}
+.trust-desc {
+  font-family: 'Lora', serif;
+  font-size: 13px; color: #888;
+  line-height: 1.65;
+}
+@media (max-width: 768px) {
+  #trust-badges { padding: 36px 24px; }
+  .trust-inner { grid-template-columns: repeat(2, 1fr); gap: 28px 16px; }
+}
+@media (max-width: 420px) {
+  .trust-inner { grid-template-columns: 1fr; gap: 24px; }
+}
+
 /* ── BANNERS ACCESO RAPIDO ────────────────────────────────────── */
 /* ── CARRUSEL BANNERS ────────────────────────────────────────── */
 #carrusel-banners {
@@ -962,6 +1001,48 @@
 </section>
 
 <!-- ── CARRUSEL BANNERS ───────────────────────────────────────── -->
+<!-- ── TRUST BADGES ──────────────────────────────────────────── -->
+<section id="trust-badges">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <div class="trust-title">Pago Seguro</div>
+      <div class="trust-desc">Tarjeta de crédito y débito.<br>Transacción 100% segura.</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="trust-title">Despacho Rápido</div>
+      <div class="trust-desc">Pedidos antes de las 12:00<br>salen el mismo día hábil.</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="trust-title">Envíos a Todo Chile</div>
+      <div class="trust-desc">Cobertura nacional.<br>Entrega en 24–48 hrs hábiles.</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="trust-title">Calidad Garantizada</div>
+      <div class="trust-desc">Productos originales de<br>distribuidores autorizados.</div>
+    </div>
+  </div>
+</section>
+
 <section id="carrusel-banners">
   <div id="heroBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
