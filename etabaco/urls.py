@@ -11,7 +11,12 @@ def health(request):
 
 def serve_media(request, path):
     """Sirve archivos de media con soporte de HTTP Range Requests (requerido por iOS Safari para video)."""
-    full_path = os.path.join(str(settings.MEDIA_ROOT), path)
+    # Protección contra path traversal: verificar que la ruta resuelta
+    # esté dentro de MEDIA_ROOT antes de servir cualquier archivo.
+    media_root = os.path.realpath(str(settings.MEDIA_ROOT))
+    full_path = os.path.realpath(os.path.join(media_root, path))
+    if not full_path.startswith(media_root + os.sep) and full_path != media_root:
+        raise Http404
     if not os.path.exists(full_path):
         raise Http404
 

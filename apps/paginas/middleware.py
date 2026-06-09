@@ -5,6 +5,7 @@ RUTAS_EXCLUIDAS = [
     '/verificar-edad/',
     '/health/',
     '/admin/',
+    '/gestion-pt/',   # URL real del admin de Django
     '/pedidos/webhook/',
     '/static/',
     '/media/',
