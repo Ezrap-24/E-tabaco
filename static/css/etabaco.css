@@ -284,8 +284,13 @@ body.has-bar #pt-nav { top: 34px; }
   inset: 0;
   background: rgba(0,0,0,0.5);
   z-index: 199;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.nav-mobile-overlay.open { display: block; }
+.nav-mobile-overlay.open {
+  display: block;
+  pointer-events: all;
+}
 .nav-mobile a {
   font-family: 'Lora', serif;
   font-size: 15px;
