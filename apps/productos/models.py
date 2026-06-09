@@ -23,8 +23,8 @@ class Producto(models.Model):
     ]
 
     # Identificación
-    nombre = models.CharField(max_length=200)
-    marca = models.CharField(max_length=100, blank=True)
+    nombre = models.CharField(max_length=200, db_index=True)
+    marca = models.CharField(max_length=100, blank=True, db_index=True)
     codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
     # Sección de navegación (Tabacos / Accesorios)

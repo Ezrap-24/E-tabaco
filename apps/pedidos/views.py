@@ -79,8 +79,11 @@ def checkout(request):
                 messages.error(request, 'No se pudo iniciar el pago. Intenta nuevamente más tarde.')
                 return redirect('carrito:ver')
 
-            orden.stripe_payment_intent = intent.id
-            orden.save(update_fields=['stripe_payment_intent'])
+            # Guardar el payment_intent ANTES de mostrar la página de pago,
+            # así el webhook siempre encuentra la orden aunque llegue muy rápido.
+            with transaction.atomic():
+                orden.stripe_payment_intent = intent.id
+                orden.save(update_fields=['stripe_payment_intent'])
 
             request.session['orden_pendiente_id'] = orden.id
             return render(request, 'pedidos/checkout_pago.html', {
@@ -177,14 +180,17 @@ def _marcar_orden_fallida(payment_intent):
 def _enviar_email_confirmacion(orden):
     asunto = f'Confirmación de pedido {orden.numero_orden} — Puro Tabaco'
     mensaje_html = render_to_string('email/confirmacion_pedido.html', {'orden': orden})
-    send_mail(
-        subject=asunto,
-        message=f'Tu pedido {orden.numero_orden} fue confirmado. Total: ${orden.total}.',
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[orden.cliente_email],
-        html_message=mensaje_html,
-        fail_silently=True,
-    )
+    try:
+        send_mail(
+            subject=asunto,
+            message=f'Tu pedido {orden.numero_orden} fue confirmado. Total: ${orden.total}.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[orden.cliente_email],
+            html_message=mensaje_html,
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception('Error enviando email de confirmación para orden %s', orden.numero_orden)
 
 
 def confirmacion(request):
