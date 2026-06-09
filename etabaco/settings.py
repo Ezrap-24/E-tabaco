@@ -184,9 +184,9 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-    # Forzar HTTPS (Railway termina TLS en su proxy)
+    # Railway termina TLS en su proxy — el redirect HTTPS lo maneja Railway/Cloudflare.
+    # SECURE_SSL_REDIRECT queda desactivado para que el healthcheck interno (HTTP) no falle.
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
     # HSTS: el navegador exige HTTPS por 1 año
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
