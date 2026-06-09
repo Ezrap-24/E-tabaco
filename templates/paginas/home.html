@@ -200,7 +200,7 @@
   width: 100%;
   height: clamp(320px, 32vw, 680px);
   object-fit: cover;
-  object-position: center 25%;
+  object-position: center bottom;
   opacity: 0.92;
 }
 
@@ -227,12 +227,13 @@
 @media (max-width: 768px) {
   #carrusel-banners .carousel-item img {
     height: clamp(200px, 52vw, 420px);
-    object-position: center center;
+    object-position: center bottom;
   }
 }
 @media (max-width: 480px) {
   #carrusel-banners .carousel-item img {
     height: clamp(160px, 55vw, 300px);
+    object-position: center bottom;
   }
 }
 
