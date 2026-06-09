@@ -231,6 +231,8 @@
   </div>
 </nav>
 
+<!-- Overlay menú mobile -->
+<div class="nav-mobile-overlay" id="nav-mobile-overlay" onclick="closeNavMenu()"></div>
 <!-- Menú mobile -->
 <div class="nav-mobile" id="nav-mobile">
   <button onclick="closeNavMenu()" style="align-self:flex-end;background:none;border:none;color:var(--tan);font-size:28px;cursor:pointer;padding:0 4px;line-height:1;margin-bottom:8px;">&times;</button>
@@ -422,20 +424,24 @@ function closeSearch() {
 function toggleNavMenu() {
   var menu = document.getElementById('nav-mobile');
   var burger = document.getElementById('nav-hamburger');
+  var overlay = document.getElementById('nav-mobile-overlay');
   var isOpen = menu.classList.contains('open');
   if (isOpen) {
     closeNavMenu();
   } else {
     menu.classList.add('open');
     burger.classList.add('open');
+    overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 }
 function closeNavMenu() {
   var menu = document.getElementById('nav-mobile');
   var burger = document.getElementById('nav-hamburger');
+  var overlay = document.getElementById('nav-mobile-overlay');
   menu.classList.remove('open');
   burger.classList.remove('open');
+  overlay.classList.remove('open');
   document.body.style.overflow = '';
 }
 
