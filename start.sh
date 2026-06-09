@@ -4,8 +4,8 @@ set -e
 echo ">>> Migraciones..."
 python manage.py migrate --noinput
 
-echo ">>> Cargando catálogo desde Excel..."
-python manage.py cargar_catalogo || echo "Catálogo no cargado, se omite."
+echo ">>> Cargando datos iniciales..."
+python manage.py loaddata fixtures/productos.json || echo "Fixture no encontrado, se omite."
 
 echo ">>> Colectando estáticos..."
 python manage.py collectstatic --noinput
