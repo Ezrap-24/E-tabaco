@@ -261,17 +261,31 @@ body.has-bar #pt-nav { top: 34px; }
 
 /* Mobile menu */
 .nav-mobile {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(260px, 75vw);
+  background: var(--green-x);
+  padding: 20px 24px;
+  gap: 0;
+  z-index: 200;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.35);
+}
+.nav-mobile.open { transform: translateX(0); }
+
+/* Overlay oscuro detrás del menú */
+.nav-mobile-overlay {
   display: none;
   position: fixed;
-  top: 64px; left: 0; right: 0;
-  background: var(--green-x);
-  padding: 24px 32px;
-  flex-direction: column;
-  gap: 20px;
-  z-index: 99;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 199;
 }
-body.has-bar .nav-mobile { top: 98px; }
-.nav-mobile.open { display: flex; }
+.nav-mobile-overlay.open { display: block; }
 .nav-mobile a {
   font-family: 'Lora', serif;
   font-size: 15px;
