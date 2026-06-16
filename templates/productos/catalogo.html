@@ -448,7 +448,7 @@
         <div class="pc">
           <a href="{{ producto.get_absolute_url }}" class="pc-img{% if producto.imagen_2 %} pc-img-hover{% endif %}">
             {% if producto.imagen %}
-              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}"
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="eager"
                 {% if producto.imagen_2 %}data-src-hover="{{ producto.imagen_2.url }}" data-src-base="{{ producto.imagen.url }}"{% endif %}>
             {% else %}
               🚬
@@ -512,6 +512,16 @@
 
 {% block extra_js %}
 <script>
+/* ── Fix bfcache: restaurar imágenes al volver atrás ──── */
+window.addEventListener('pageshow', function (e) {
+  if (e.persisted) {
+    document.querySelectorAll('.pc-img img').forEach(function (img) {
+      var src = img.dataset.srcBase || img.src;
+      if (src) { img.src = ''; img.src = src; }
+    });
+  }
+});
+
 /* ── Selector de cantidad ─────────────────────────────── */
 function pcQty(btn, delta) {
   var input = btn.parentElement.querySelector('input[type="number"]');
