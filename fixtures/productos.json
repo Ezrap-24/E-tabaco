@@ -3790,5 +3790,102 @@
     "destacado": false,
     "creado": "2026-06-02T06:02:34.453Z"
   }
+},
+{
+  "model": "productos.producto",
+  "pk": 1200,
+  "fields": {
+    "nombre": "BRISTOL Original 20g",
+    "marca": "Bristol",
+    "codigo": "TAB-BRI-ORI20",
+    "seccion": "Tabacos",
+    "categoria": 22,
+    "intensidad": "Medio",
+    "peso_gramos": 20,
+    "dimensiones": "",
+    "procedencia": "Brasil",
+    "descripcion": "Tabaco Bristol sabor Original, paquete de 20g. Elaborado en Brasil con selección de tabacos de calidad. Hebra fina ideal para enrolar.",
+    "imagen": "products/bristol-original-20g.webp",
+    "imagen_2": "",
+    "imagen_3": "",
+    "precio_unidad": "2390.00",
+    "stock": 100,
+    "activo": true,
+    "destacado": false,
+    "creado": "2026-06-16T01:00:00.000Z"
+  }
+},
+{
+  "model": "productos.producto",
+  "pk": 1201,
+  "fields": {
+    "nombre": "Flandria Virginia Yellow 50g",
+    "marca": "Flandria",
+    "codigo": "TAB-FLA-VIRGY",
+    "seccion": "Tabacos",
+    "categoria": 22,
+    "intensidad": "Suave",
+    "peso_gramos": 50,
+    "dimensiones": "",
+    "procedencia": "Bélgica",
+    "descripcion": "Tabaco Flandria Virginia Yellow 50g, paquete de 50g. Elaborado en Bélgica. Sabor limpio y equilibrado.",
+    "imagen": "products/flandria-virginia-golden-blend-50g.webp",
+    "imagen_2": "",
+    "imagen_3": "",
+    "precio_unidad": "6900.00",
+    "stock": 100,
+    "activo": true,
+    "destacado": false,
+    "creado": "2026-06-16T01:00:01.000Z"
+  }
+},
+{
+  "model": "productos.producto",
+  "pk": 1202,
+  "fields": {
+    "nombre": "Flandria Virginia 50g",
+    "marca": "Flandria",
+    "codigo": "TAB-FLA-VIRG2",
+    "seccion": "Tabacos",
+    "categoria": 22,
+    "intensidad": "Suave",
+    "peso_gramos": 50,
+    "dimensiones": "",
+    "procedencia": "Bélgica",
+    "descripcion": "Tabaco Flandria Virginia 50g, paquete de 50g. Elaborado en Bélgica. Sabor limpio y equilibrado.",
+    "imagen": "products/flandria-virginia-50g.webp",
+    "imagen_2": "",
+    "imagen_3": "",
+    "precio_unidad": "6900.00",
+    "stock": 100,
+    "activo": true,
+    "destacado": false,
+    "creado": "2026-06-16T01:00:02.000Z"
+  }
+},
+{
+  "model": "productos.producto",
+  "pk": 1203,
+  "fields": {
+    "nombre": "Golden Slim Extra Long x 200",
+    "marca": "Golden Filter",
+    "codigo": "FIL-GOL-SLI-ELON",
+    "seccion": "Accesorios",
+    "categoria": 23,
+    "intensidad": "",
+    "peso_gramos": null,
+    "dimensiones": "",
+    "procedencia": "",
+    "descripcion": "Filtros slim de longitud extra que ofrecen una experiencia más cómoda y un armado elegante. Perfectos para quienes prefieren formatos largos y delgados.",
+    "imagen": "products/golden-filtro-slim-extra-long-200.webp",
+    "imagen_2": "",
+    "imagen_3": "",
+    "precio_unidad": "900.00",
+    "stock": 100,
+    "activo": true,
+    "destacado": false,
+    "creado": "2026-06-16T01:00:03.000Z"
+  }
 }
 ]
+
