@@ -14,8 +14,8 @@ class DetallePedidoInline(admin.TabularInline):
 class OrdenAdmin(admin.ModelAdmin):
     list_display = ['folio_display', 'cliente_nombre', 'cliente_email', 'total', 'estado', 'fecha_creacion', 'descargar_link']
     list_filter = ['estado', 'fecha_creacion', 'region']
-    search_fields = ['numero_orden', 'cliente_nombre', 'cliente_email', 'stripe_payment_intent']
-    readonly_fields = ['folio_display', 'numero_orden', 'correlativo', 'stripe_payment_intent',
+    search_fields = ['numero_orden', 'cliente_nombre', 'cliente_email', 'mp_payment_id', 'mp_preference_id']
+    readonly_fields = ['folio_display', 'numero_orden', 'correlativo', 'mp_preference_id', 'mp_payment_id',
                        'fecha_creacion', 'fecha_actualizacion', 'fecha_pago', 'descargar_link']
     inlines = [DetallePedidoInline]
 
@@ -42,7 +42,7 @@ class OrdenAdmin(admin.ModelAdmin):
             'fields': ('direccion', 'ciudad', 'region', 'codigo_postal', 'notas'),
         }),
         ('Pago', {
-            'fields': ('total', 'stripe_payment_intent', 'fecha_pago'),
+            'fields': ('total', 'mp_preference_id', 'mp_payment_id', 'fecha_pago'),
         }),
         ('Fechas', {
             'fields': ('fecha_creacion', 'fecha_actualizacion'),

@@ -121,11 +121,16 @@ LOGIN_URL = 'cuenta:login'
 LOGIN_REDIRECT_URL = 'cuenta:dashboard'
 LOGOUT_REDIRECT_URL = 'paginas:home'
 
-# ── Stripe (moneda Chile: CLP) ──────────────────────────────
-STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
-STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
-STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
-STRIPE_CURRENCY = config('STRIPE_CURRENCY', default='clp')
+# ── Mercado Pago (moneda Chile: CLP) ────────────────────────
+# Checkout Pro: el cliente paga en la página segura de Mercado Pago y vuelve.
+# MP_ACCESS_TOKEN es la llave privada (servidor). Empieza con TEST- en pruebas.
+MP_ACCESS_TOKEN = config('MP_ACCESS_TOKEN', default='')
+MP_PUBLIC_KEY = config('MP_PUBLIC_KEY', default='')
+MP_CURRENCY = config('MP_CURRENCY', default='CLP')
+
+# URL pública del sitio, usada para construir back_urls y notification_url
+# del checkout. En local apunta a tu túnel (ngrok) para que MP pueda avisar.
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
 # ── Email ───────────────────────────────────────────────────
 # En desarrollo se imprime en consola; en producción usa SMTP.

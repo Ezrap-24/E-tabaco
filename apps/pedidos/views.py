@@ -1,21 +1,22 @@
-"""Flujo de checkout y pago.
+"""Flujo de checkout y pago con Mercado Pago (Checkout Pro).
 
-Diseño:
-1. POST /pedidos/checkout/      → valida el formulario, crea una `Orden` en
-   estado `pendiente_pago` con sus `DetallePedido`, crea el PaymentIntent de
-   Stripe pasándole `metadata={'orden_id': str(orden.id)}`, y muestra la
-   página de pago con el `client_secret`.
-2. POST /pedidos/webhook/       → al recibir `payment_intent.succeeded`,
-   busca la orden por el `orden_id` del metadata y la marca como `pagado`.
-   Esta vista NO necesita acceso a la sesión del cliente, lo cual es lo
-   correcto porque el webhook lo invoca Stripe.
-3. GET  /pedidos/confirmacion/  → muestra al cliente la última orden creada
-   (referenciada por sesión).
+Diseno:
+1. POST /pedidos/checkout/      -> valida el formulario, crea una `Orden` en
+   estado `pendiente_pago` con sus `DetallePedido`, crea una *preferencia* de
+   Mercado Pago con `external_reference=str(orden.id)` y redirige al cliente al
+   `init_point` (la pagina segura de pago de Mercado Pago).
+2. POST /pedidos/webhook/       -> Mercado Pago avisa aca cuando cambia el estado
+   de un pago. Buscamos el pago por su id, leemos el `external_reference` para
+   ubicar la orden y, si el pago esta `approved`, la marcamos como `pagado`.
+   Esta vista NO necesita sesion del cliente: la invoca Mercado Pago.
+3. GET  /pedidos/confirmacion/  -> el cliente vuelve aca tras pagar. Muestra la
+   orden (por sesion o por `external_reference` que anade Mercado Pago a la URL).
 """
 from decimal import Decimal
+import json
 import logging
 
-import stripe
+import mercadopago
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -23,6 +24,7 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
@@ -31,11 +33,14 @@ from .forms import CheckoutForm
 from .models import ContadorOrden, DetallePedido, Orden
 
 logger = logging.getLogger(__name__)
-stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def _sdk():
+    return mercadopago.SDK(settings.MP_ACCESS_TOKEN)
 
 
 def _datos_iniciales_checkout(request):
-    """Pre-llena el form si el usuario está autenticado y tiene perfil con dirección."""
+    """Pre-llena el form si el usuario esta autenticado y tiene perfil con direccion."""
     if not request.user.is_authenticated:
         return {}
     user = request.user
@@ -58,7 +63,7 @@ def _datos_iniciales_checkout(request):
 def checkout(request):
     carrito = Carrito(request)
     if len(carrito) == 0:
-        messages.warning(request, 'Tu carrito está vacío.')
+        messages.warning(request, 'Tu carrito esta vacio.')
         return redirect('carrito:ver')
 
     if request.method == 'POST':
@@ -66,35 +71,71 @@ def checkout(request):
         if form.is_valid():
             orden = _crear_orden_pendiente(request, form, carrito)
             try:
-                intent = stripe.PaymentIntent.create(
-                    amount=int(orden.total),  # CLP no tiene centavos
-                    currency=settings.STRIPE_CURRENCY,
-                    metadata={'orden_id': str(orden.id), 'numero_orden': orden.numero_orden},
-                    receipt_email=orden.cliente_email,
-                )
-            except stripe.error.StripeError as e:
-                logger.exception('Stripe falló al crear PaymentIntent')
+                preferencia = _crear_preferencia_mp(request, orden, carrito)
+            except Exception:
+                logger.exception('Mercado Pago fallo al crear la preferencia')
                 orden.estado = 'cancelado'
                 orden.save(update_fields=['estado'])
-                messages.error(request, 'No se pudo iniciar el pago. Intenta nuevamente más tarde.')
+                messages.error(request, 'No se pudo iniciar el pago. Intenta nuevamente mas tarde.')
                 return redirect('carrito:ver')
 
-            # Guardar el payment_intent ANTES de mostrar la página de pago,
-            # así el webhook siempre encuentra la orden aunque llegue muy rápido.
+            # Guardamos el preference_id ANTES de redirigir, asi el webhook
+            # siempre puede correlacionar el pago con la orden.
             with transaction.atomic():
-                orden.stripe_payment_intent = intent.id
-                orden.save(update_fields=['stripe_payment_intent'])
+                orden.mp_preference_id = preferencia['id']
+                orden.save(update_fields=['mp_preference_id'])
 
             request.session['orden_pendiente_id'] = orden.id
-            return render(request, 'pedidos/checkout_pago.html', {
-                'orden': orden,
-                'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
-                'client_secret': intent.client_secret,
-            })
+            # Redirige a la pagina de pago segura de Mercado Pago.
+            return redirect(preferencia['init_point'])
     else:
         form = CheckoutForm(initial=_datos_iniciales_checkout(request))
 
     return render(request, 'pedidos/checkout.html', {'form': form, 'carrito': carrito})
+
+
+def _crear_preferencia_mp(request, orden, carrito):
+    """Crea una preferencia de Checkout Pro y devuelve el dict de respuesta de MP."""
+    items = [
+        {
+            'title': (item['nombre'] or item['producto'].nombre)[:250],
+            'quantity': int(item['cantidad']),
+            'unit_price': float(item['precio']),
+            'currency_id': settings.MP_CURRENCY,
+        }
+        for item in carrito.items()
+    ]
+
+    confirmacion_url = settings.SITE_URL + reverse('pedidos:confirmacion')
+    preference_data = {
+        'items': items,
+        'external_reference': str(orden.id),
+        'payer': {
+            'name': orden.cliente_nombre,
+            'email': orden.cliente_email,
+        },
+        'back_urls': {
+            'success': confirmacion_url,
+            'pending': confirmacion_url,
+            'failure': settings.SITE_URL + reverse('pedidos:checkout'),
+        },
+        'statement_descriptor': 'PURO TABACO',
+        'metadata': {'orden_id': str(orden.id), 'numero_orden': orden.numero_orden},
+    }
+
+    # auto_return y notification_url exigen URLs publicas (https). En local sin
+    # tunel (localhost) se omiten para que la preferencia se cree igual; el
+    # webhook se puede configurar tambien desde el panel de Mercado Pago.
+    es_publica = settings.SITE_URL.startswith('https://')
+    if es_publica:
+        preference_data['auto_return'] = 'approved'
+        preference_data['notification_url'] = settings.SITE_URL + reverse('pedidos:mp_webhook')
+
+    resultado = _sdk().preference().create(preference_data)
+    if resultado.get('status') not in (200, 201):
+        logger.error('Respuesta inesperada de MP al crear preferencia: %s', resultado)
+        raise RuntimeError('Mercado Pago no creo la preferencia')
+    return resultado['response']
 
 
 @transaction.atomic
@@ -127,36 +168,56 @@ def _crear_orden_pendiente(request, form, carrito):
 
 
 @csrf_exempt
-def stripe_webhook(request):
-    """Stripe llama acá tras un evento de pago. Sin sesión de cliente disponible."""
-    payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', '')
+def mp_webhook(request):
+    """Mercado Pago llama aca cuando cambia el estado de un pago.
+
+    Acepta el formato nuevo (Webhooks: ?type=payment&data.id=...) y el legacy
+    (IPN: ?topic=payment&id=...). Respondemos 200 siempre que el aviso sea
+    valido para que Mercado Pago no siga reintentando.
+    """
+    tipo = request.GET.get('type') or request.GET.get('topic')
+    payment_id = request.GET.get('data.id') or request.GET.get('id')
+
+    # Algunos avisos traen los datos en el cuerpo JSON en vez de la query.
+    if not payment_id and request.body:
+        try:
+            cuerpo = json.loads(request.body)
+            tipo = tipo or cuerpo.get('type')
+            payment_id = payment_id or (cuerpo.get('data') or {}).get('id')
+        except (ValueError, AttributeError):
+            pass
+
+    if tipo and tipo != 'payment':
+        return HttpResponse(status=200)  # ignoramos merchant_order, etc.
+    if not payment_id:
+        return HttpResponse(status=200)
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET,
-        )
-    except (ValueError, stripe.error.SignatureVerificationError):
-        logger.warning('Webhook Stripe con firma inválida')
-        return HttpResponse(status=400)
+        resultado = _sdk().payment().get(payment_id)
+    except Exception:
+        logger.exception('Error consultando el pago %s en Mercado Pago', payment_id)
+        return HttpResponse(status=200)
 
-    if event['type'] == 'payment_intent.succeeded':
-        _marcar_orden_pagada(event['data']['object'])
-    elif event['type'] == 'payment_intent.payment_failed':
-        _marcar_orden_fallida(event['data']['object'])
+    pago = resultado.get('response') or {}
+    estado_pago = pago.get('status')
+    orden_id = pago.get('external_reference')
+
+    if estado_pago == 'approved':
+        _marcar_orden_pagada(orden_id, str(payment_id))
+    elif estado_pago in ('rejected', 'cancelled'):
+        _marcar_orden_fallida(orden_id)
 
     return HttpResponse(status=200)
 
 
-def _marcar_orden_pagada(payment_intent):
-    orden_id = (payment_intent.get('metadata') or {}).get('orden_id')
+def _marcar_orden_pagada(orden_id, mp_payment_id=''):
     if not orden_id:
-        logger.error('PaymentIntent sin orden_id en metadata: %s', payment_intent.get('id'))
+        logger.error('Pago aprobado sin external_reference (orden_id)')
         return
     try:
         orden = Orden.objects.get(id=orden_id)
-    except Orden.DoesNotExist:
-        logger.error('Orden %s no encontrada para PaymentIntent %s', orden_id, payment_intent.get('id'))
+    except (Orden.DoesNotExist, ValueError):
+        logger.error('Orden %s no encontrada para el pago %s', orden_id, mp_payment_id)
         return
 
     if orden.estado == 'pagado':
@@ -164,44 +225,55 @@ def _marcar_orden_pagada(payment_intent):
 
     orden.estado = 'pagado'
     orden.fecha_pago = timezone.now()
+    orden.mp_payment_id = mp_payment_id
     if not orden.correlativo:
         orden.correlativo = ContadorOrden.siguiente()
-    orden.save(update_fields=['estado', 'fecha_pago', 'correlativo'])
+    orden.save(update_fields=['estado', 'fecha_pago', 'mp_payment_id', 'correlativo'])
     _enviar_email_confirmacion(orden)
 
 
-def _marcar_orden_fallida(payment_intent):
-    orden_id = (payment_intent.get('metadata') or {}).get('orden_id')
+def _marcar_orden_fallida(orden_id):
     if not orden_id:
         return
     Orden.objects.filter(id=orden_id, estado='pendiente_pago').update(estado='cancelado')
 
 
 def _enviar_email_confirmacion(orden):
-    asunto = f'Confirmación de pedido {orden.numero_orden} — Puro Tabaco'
+    asunto = 'Confirmacion de pedido {} - Puro Tabaco'.format(orden.numero_orden)
     mensaje_html = render_to_string('email/confirmacion_pedido.html', {'orden': orden})
     try:
         send_mail(
             subject=asunto,
-            message=f'Tu pedido {orden.numero_orden} fue confirmado. Total: ${orden.total}.',
+            message='Tu pedido {} fue confirmado. Total: ${}.'.format(orden.numero_orden, orden.total),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[orden.cliente_email],
             html_message=mensaje_html,
             fail_silently=False,
         )
     except Exception:
-        logger.exception('Error enviando email de confirmación para orden %s', orden.numero_orden)
+        logger.exception('Error enviando email de confirmacion para orden %s', orden.numero_orden)
 
 
 def confirmacion(request):
-    """Página post-checkout: limpia el carrito y muestra la última orden."""
-    orden_id = request.session.get('orden_pendiente_id')
+    """Pagina post-checkout: muestra la orden y limpia el carrito si ya esta paga.
+
+    Mercado Pago devuelve al cliente con ?external_reference=<orden_id> en la URL,
+    que usamos como respaldo si la sesion se perdio.
+    """
+    orden_id = request.session.get('orden_pendiente_id') or request.GET.get('external_reference')
     if not orden_id:
         return redirect('paginas:home')
 
     orden = get_object_or_404(Orden, id=orden_id)
 
-    # Limpiamos el carrito y la sesión solo cuando el pago ya está confirmado.
+    # Si el cliente volvio como aprobado pero el webhook aun no llega (comun en
+    # local sin tunel), confirmamos consultando el pago directamente a MP.
+    payment_id = request.GET.get('payment_id') or request.GET.get('collection_id')
+    if orden.estado == 'pendiente_pago' and payment_id:
+        _confirmar_por_retorno(orden, payment_id)
+        orden.refresh_from_db()
+
+    # Limpiamos el carrito y la sesion solo cuando el pago ya esta confirmado.
     if orden.estado in ('pagado', 'preparando', 'enviado', 'entregado'):
         Carrito(request).limpiar()
         request.session.pop('orden_pendiente_id', None)
@@ -209,21 +281,33 @@ def confirmacion(request):
     return render(request, 'pedidos/confirmacion.html', {'orden': orden})
 
 
+def _confirmar_por_retorno(orden, payment_id):
+    """Verifica un pago contra la API de MP al volver el cliente (respaldo del webhook)."""
+    try:
+        resultado = _sdk().payment().get(payment_id)
+    except Exception:
+        logger.exception('Error verificando el pago %s al volver del checkout', payment_id)
+        return
+    pago = resultado.get('response') or {}
+    if pago.get('status') == 'approved' and str(pago.get('external_reference')) == str(orden.id):
+        _marcar_orden_pagada(str(orden.id), str(payment_id))
+
+
 def comprobante_pdf(request, numero_orden):
-    """Descarga el comprobante PDF de una orden. Solo accesible por el dueño o staff."""
+    """Descarga el comprobante PDF de una orden. Solo accesible por el dueno o staff."""
     from django.http import HttpResponse, Http404
     from .comprobante import generar_comprobante
 
     orden = get_object_or_404(Orden, numero_orden=numero_orden)
 
-    # Seguridad: solo el dueño de la orden o staff puede descargar
+    # Seguridad: solo el dueno de la orden o staff puede descargar
     if not request.user.is_staff:
         es_dueno = False
         if request.user.is_authenticated:
             # Usuario logueado: verificar por FK o por email
             es_dueno = (orden.usuario == request.user) or (orden.cliente_email == request.user.email)
         if not es_dueno:
-            # Compra como invitado: verificar por sesión
+            # Compra como invitado: verificar por sesion
             if request.session.get('orden_pendiente_id') != orden.id:
                 raise Http404
 
@@ -231,8 +315,8 @@ def comprobante_pdf(request, numero_orden):
         raise Http404
 
     pdf_buf = generar_comprobante(orden)
-    nombre_archivo = f'comprobante-{orden.folio}.pdf'
+    nombre_archivo = 'comprobante-{}.pdf'.format(orden.folio)
 
     response = HttpResponse(pdf_buf.read(), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(nombre_archivo)
     return response

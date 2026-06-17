@@ -61,7 +61,9 @@ class Orden(models.Model):
 
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente_pago')
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    stripe_payment_intent = models.CharField(max_length=200, blank=True, db_index=True)
+    # Mercado Pago (Checkout Pro): id de la preferencia creada y del pago aprobado.
+    mp_preference_id = models.CharField(max_length=200, blank=True, db_index=True)
+    mp_payment_id = models.CharField(max_length=200, blank=True, db_index=True)
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
