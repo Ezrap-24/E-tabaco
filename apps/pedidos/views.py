@@ -230,6 +230,7 @@ def _marcar_orden_pagada(orden_id, mp_payment_id=''):
         orden.correlativo = ContadorOrden.siguiente()
     orden.save(update_fields=['estado', 'fecha_pago', 'mp_payment_id', 'correlativo'])
     _enviar_email_confirmacion(orden)
+    _notificar_venta_admin(orden)
 
 
 def _marcar_orden_fallida(orden_id):
@@ -252,6 +253,35 @@ def _enviar_email_confirmacion(orden):
         )
     except Exception:
         logger.exception('Error enviando email de confirmacion para orden %s', orden.numero_orden)
+
+
+def _notificar_venta_admin(orden):
+    """Avisa al correo del negocio cuando se concreta una venta."""
+    destino = getattr(settings, 'VENTAS_NOTIFY_EMAIL', '') or settings.CONTACT_EMAIL
+    if not destino:
+        return
+    lineas = [
+        'Nueva venta confirmada: {}'.format(orden.folio),
+        'Cliente: {} <{}>'.format(orden.cliente_nombre, orden.cliente_email),
+        'Telefono: {}'.format(orden.cliente_telefono or '-'),
+        'Direccion: {}'.format(orden.direccion_envio),
+        'Total: ${}'.format(orden.total),
+        '',
+        'Detalle:',
+    ]
+    for d in orden.detalles.all():
+        lineas.append('  - {}x {} ({}) = ${}'.format(
+            d.cantidad, d.producto_nombre or d.producto.nombre, d.tipo_venta, d.subtotal()))
+    try:
+        send_mail(
+            subject='Nueva venta {} - ${} - Puro Tabaco'.format(orden.folio, orden.total),
+            message='\n'.join(lineas),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[destino],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception('Error enviando aviso de venta al negocio para orden %s', orden.numero_orden)
 
 
 def confirmacion(request):

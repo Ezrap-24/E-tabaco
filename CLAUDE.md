@@ -11,7 +11,7 @@ Stack: **Django + PostgreSQL + Bootstrap + JavaScript**
 **El MVP está prácticamente completo.** El proyecto evolucionó de 1 tienda a 3 marcas en monorepo.
 
 - Apps Django implementadas: `productos`, `carrito`, `pedidos`, `paginas`, `cuenta`
-- Stripe integrado (PaymentIntent en CLP, webhook, email de confirmación)
+- Mercado Pago (Checkout Pro) integrado (preferencia en CLP, webhook, email de confirmación)
 - Sistema de cuentas completo (registro, login, perfil, historial de pedidos)
 - Docker listo (`Dockerfile` + `docker-compose.yml`)
 - Brand Guide Puro Tabaco v2 completo (paleta verde tabaco + B2B mayorista)
@@ -25,7 +25,7 @@ Stack: **Django + PostgreSQL + Bootstrap + JavaScript**
 | Catálogo | ✅ Implementado |
 | Ficha de producto | ✅ Implementado |
 | Carrito | ✅ Implementado (sesiones Django) |
-| Checkout + Pago Stripe | ✅ Implementado |
+| Checkout + Pago Mercado Pago | ✅ Implementado |
 | Confirmación de pedido | ✅ Implementado |
 | Sobre la empresa | ✅ Implementado |
 | Contacto | ✅ Implementado |

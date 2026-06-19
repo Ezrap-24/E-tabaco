@@ -150,6 +150,9 @@ DEFAULT_FROM_EMAIL = config(
 )
 CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@purotabaco.cl')
 
+# Correo del negocio que recibe un aviso por cada venta concretada.
+VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gmail.com')
+
 # ── Empresa (datos visibles en el sitio) ────────────────────
 EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
 EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
