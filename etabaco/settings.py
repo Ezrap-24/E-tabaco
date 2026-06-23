@@ -79,6 +79,21 @@ else:
         }
     }
 
+# ── Caché (memoria local del proceso) ───────────────────────
+# Sin Redis disponible en el plan Hobby de Railway: usamos locmem.
+# Reduce las consultas a Postgres por sesión en cada request.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'etabaco-cache',
+    }
+}
+
+# Sesiones: lee/escribe en caché primero, cae a la base de datos solo
+# si hay miss o restart del proceso. Evita el roundtrip a Postgres
+# en cada visita (antes: backend 'db' puro, query en cada request).
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
