@@ -9,6 +9,55 @@ def health(request):
     return HttpResponse('ok')
 
 
+def favicon_ico(request):
+    from django.shortcuts import redirect
+    from django.templatetags.static import static
+    return redirect(static('img/favicon.png'), permanent=True)
+
+
+def robots_txt(request):
+    host = request.get_host()
+    scheme = request.scheme
+    lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /carrito/',
+        'Disallow: /cuenta/',
+        'Disallow: /gestion-pt/',
+        'Disallow: /verificar-edad/',
+        f'Sitemap: {scheme}://{host}/sitemap.xml',
+    ]
+    return HttpResponse('\n'.join(lines), content_type='text/plain')
+
+
+def sitemap_xml(request):
+    from django.urls import reverse
+    base = f'{request.scheme}://{request.get_host()}'
+    paths = [
+        reverse('paginas:home'),
+        reverse('productos:catalogo'),
+        reverse('paginas:sobre_nosotros'),
+        reverse('paginas:contacto'),
+        reverse('paginas:faqs'),
+        reverse('paginas:terminos'),
+        reverse('paginas:privacidad'),
+    ]
+    try:
+        from apps.productos.models import Producto
+        for pk in Producto.objects.filter(activo=True).values_list('pk', flat=True):
+            paths.append(reverse('productos:detalle', args=[pk]))
+    except Exception:
+        pass
+
+    urls = ''.join(f'<url><loc>{base}{p}</loc></url>' for p in paths)
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        f'{urls}</urlset>'
+    )
+    return HttpResponse(xml, content_type='application/xml')
+
+
 def serve_media(request, path):
     """Sirve archivos de media con soporte de HTTP Range Requests (requerido por iOS Safari para video)."""
     # Protección contra path traversal: verificar que la ruta resuelta
@@ -60,6 +109,9 @@ def serve_media(request, path):
 
 urlpatterns = [
     path('health/', health),
+    path('favicon.ico', favicon_ico),
+    path('robots.txt', robots_txt),
+    path('sitemap.xml', sitemap_xml),
     path('gestion-pt/', admin.site.urls),
     path('', include('apps.paginas.urls')),
     path('catalogo/', include('apps.productos.urls')),

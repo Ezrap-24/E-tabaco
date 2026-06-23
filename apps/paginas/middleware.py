@@ -13,7 +13,24 @@ RUTAS_EXCLUIDAS = [
     '/cuenta/registro/',
     '/cuenta/password-reset/',
     '/acceso-denegado/',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/favicon.ico',
 ]
+
+# Crawlers de buscadores: deben ver el contenido real (no el muro de edad)
+# para poder indexar el sitio correctamente. Se les sirve el mismo contenido
+# que ve un humano tras pasar el gate (no es cloaking penalizable).
+BOTS_BUSCADORES = (
+    'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+    'yandex', 'applebot', 'facebookexternalhit', 'twitterbot',
+    'linkedinbot', 'whatsapp', 'google-inspectiontool',
+)
+
+
+def es_crawler(request):
+    ua = request.META.get('HTTP_USER_AGENT', '').lower()
+    return any(bot in ua for bot in BOTS_BUSCADORES)
 
 
 class AgeVerificationMiddleware:
@@ -35,6 +52,10 @@ class AgeVerificationMiddleware:
         for ruta in RUTAS_EXCLUIDAS:
             if request.path.startswith(ruta):
                 return self.get_response(request)
+
+        # Dejar pasar a los crawlers de buscadores para que indexen el sitio.
+        if es_crawler(request):
+            return self.get_response(request)
 
         if request.session.get('edad_verificada'):
             return self.get_response(request)
