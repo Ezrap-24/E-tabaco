@@ -26,7 +26,13 @@ def agregar_al_carrito(request, producto_id):
 
     carrito.agregar(producto, cantidad=cantidad, tipo_venta=tipo_venta)
 
-    if request.htmx:
+    # El JS de home.html/catalogo.html llama por fetch() con este header
+    # (no usa htmx ahí), así que tambien cuenta como peticion AJAX.
+    # Sin esto, la vista hacia un redirect que el fetch() seguia solo,
+    # gastando una request completa de mas (GET /carrito/) por cada "Agregar".
+    es_ajax = request.htmx or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    if es_ajax:
         return render(request, 'carrito/agregar_confirmacion.html', {
             'producto': producto,
             'cantidad': cantidad,
