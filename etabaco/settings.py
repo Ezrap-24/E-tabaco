@@ -159,11 +159,12 @@ EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=10, cast=int)
 DEFAULT_FROM_EMAIL = config(
     'DEFAULT_FROM_EMAIL',
     default='Puro Tabaco <noreply@purotabaco.cl>',
 )
-CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@purotabaco.cl')
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='purotabacochile@gmail.com')
 
 # Correo del negocio que recibe un aviso por cada venta concretada.
 VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gmail.com')
@@ -171,7 +172,7 @@ VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gma
 # ── Empresa (datos visibles en el sitio) ────────────────────
 EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
 EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
-EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='contacto@purotabaco.cl')
+EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='purotabacochile@gmail.com')
 ENVIO_GRATIS_DESDE = config('ENVIO_GRATIS_DESDE', default=50000, cast=int)
 
 # ── Cifras del home (pendientes de validación con cliente) ──
