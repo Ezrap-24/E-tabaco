@@ -1,9 +1,10 @@
-"""Cálculo del costo de despacho. El envío NUNCA es gratis.
+"""Cálculo del costo de despacho.
 
 - Región Metropolitana de Santiago: $2.500 fijo, se cobra dentro del pedido
   (se agrega al total y se incluye como ítem en la preferencia de Mercado Pago).
-- Cualquier otra región: se despacha por Starken "por pagar" — el cliente
-  paga directamente al courier al recibir. No se cobra nada por el sitio.
+- Cualquier otra región: se despacha por Starken o a convenir con el cliente,
+  y es "por pagar" — el cliente paga directamente al courier al recibir.
+  No se cobra nada por el sitio.
 """
 from decimal import Decimal
 
@@ -45,4 +46,4 @@ def descripcion_envio(region: str) -> str:
     """Texto explicando cómo se despacha, para mostrar al cliente."""
     if es_rm(region):
         return f'Despacho Región Metropolitana: ${COSTO_ENVIO_RM:,.0f}'.replace(',', '.')
-    return 'Despacho por Starken, por pagar: el courier cobra el envío al recibir el pedido.'
+    return 'Despacho por Starken o a convenir con el cliente, por pagar: el courier cobra el envío al recibir el pedido.'
