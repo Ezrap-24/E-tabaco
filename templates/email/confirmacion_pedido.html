@@ -32,9 +32,22 @@
       <span>{{ detalle.subtotal|pesos }}</span>
     </div>
     {% endfor %}
+    <div class="item" style="border-bottom: none;">
+      <span>Subtotal productos</span>
+      <span>{{ orden.subtotal_productos|pesos }}</span>
+    </div>
+    <div class="item" style="border-bottom: none;">
+      <span>Despacho</span>
+      <span>{% if orden.costo_envio %}{{ orden.costo_envio|pesos }}{% else %}Por pagar (Starken){% endif %}</span>
+    </div>
     <div class="total" style="text-align: right;">Total: {{ orden.total|pesos }}</div>
 
     <p style="margin-top: 24px;"><strong>Envío a:</strong><br>{{ orden.direccion_envio }}</p>
+    {% if orden.costo_envio %}
+    <p style="color:#888; font-size:13px;">Despacho a domicilio en la Región Metropolitana, ya incluido en el total.</p>
+    {% else %}
+    <p style="color:#888; font-size:13px;">Tu pedido se despacha por Starken, por pagar: el courier cobra el envío directamente al recibirlo.</p>
+    {% endif %}
 
     <div class="footer">
       <p>⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>

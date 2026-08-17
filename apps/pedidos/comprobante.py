@@ -127,12 +127,28 @@ def generar_comprobante(orden) -> io.BytesIO:
         c.drawRightString(ancho - 20*mm, fila_y + 1.5*mm, f'${detalle.subtotal():,.0f}')
         y -= 6*mm
 
-    # ── TOTAL ─────────────────────────────────────────────────────
+    # ── DESPACHO Y TOTAL ─────────────────────────────────────────
     y -= 4*mm
     c.setStrokeColor(VERDE)
     c.setLineWidth(0.5)
     c.line(20*mm, y, ancho - 20*mm, y)
     y -= 6*mm
+
+    if orden.costo_envio and orden.costo_envio > 0:
+        c.setFont('Helvetica', 9)
+        c.setFillColor(colors.black)
+        c.drawString(20*mm, y, 'Subtotal productos')
+        c.drawRightString(ancho - 20*mm, y, f'${orden.subtotal_productos:,.0f}')
+        y -= 5.5*mm
+        c.drawString(20*mm, y, 'Despacho (Región Metropolitana)')
+        c.drawRightString(ancho - 20*mm, y, f'${orden.costo_envio:,.0f}')
+        y -= 6.5*mm
+    else:
+        c.setFont('Helvetica', 8)
+        c.setFillColor(GRIS)
+        c.drawString(20*mm, y, 'Despacho por Starken, por pagar al recibir')
+        y -= 6.5*mm
+
     c.setFont('Helvetica-Bold', 11)
     c.setFillColor(VERDE)
     c.drawString(20*mm, y, 'TOTAL')

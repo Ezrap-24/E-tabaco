@@ -56,6 +56,15 @@
       </div>
       {% endfor %}
 
+      <div style="display:flex; justify-content:space-between; padding:10px 0; font-family:'Lora',serif; font-size:13px; color:var(--slate);">
+        <span>Subtotal productos</span>
+        <span>{{ orden.subtotal_productos|pesos }}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(200,176,138,.15); font-family:'Lora',serif; font-size:13px; color:var(--slate);">
+        <span>Despacho</span>
+        <span>{% if orden.costo_envio %}{{ orden.costo_envio|pesos }}{% else %}Por pagar (Starken){% endif %}</span>
+      </div>
+
       <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:14px; margin-top:8px;">
         <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total</span>
         <span style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">{{ orden.total|pesos }}</span>
@@ -72,6 +81,15 @@
         {{ orden.ciudad }}, {{ orden.region }}{% if orden.codigo_postal %} &mdash; {{ orden.codigo_postal }}{% endif %}<br>
         {% if orden.cliente_telefono %}<span style="color:#aaa;">{{ orden.cliente_telefono }}</span>{% endif %}
       </div>
+      {% if orden.costo_envio %}
+      <p style="font-family:'Lora',serif; font-size:12px; color:#888; margin-top:12px;">
+        Despacho a domicilio en la Regi&oacute;n Metropolitana: {{ orden.costo_envio|pesos }} (incluido en el total).
+      </p>
+      {% else %}
+      <p style="font-family:'Lora',serif; font-size:12px; color:#888; margin-top:12px;">
+        Tu pedido se despacha por Starken, por pagar: el courier cobra el env&iacute;o directamente al recibirlo.
+      </p>
+      {% endif %}
     </div>
 
     <div style="text-align:center; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">

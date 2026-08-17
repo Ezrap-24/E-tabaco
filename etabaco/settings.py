@@ -147,18 +147,16 @@ MP_CURRENCY = config('MP_CURRENCY', default='CLP')
 # del checkout. En local apunta a tu túnel (ngrok) para que MP pueda avisar.
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
-# ── Email ───────────────────────────────────────────────────
-# En desarrollo se imprime en consola; en producción usa SMTP.
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# ── Email (API HTTP de Resend) ──────────────────────────────
+# Antes se mandaba por SMTP (smtp.resend.com:587), pero Railway bloquea las
+# conexiones salientes por ese puerto — todo envío fallaba en silencio
+# (TimeoutError atrapado por el try/except). La API HTTP (puerto 443) sí
+# funciona. Dominio purotabaco.cl ya verificado en Resend (cuenta
+# purotabacochile@gmail.com). Ver apps.pedidos.emailing.
+#
+# EMAIL_HOST_PASSWORD queda como fallback porque ahí ya estaba guardada la
+# API key de Resend (variable histórica de la config SMTP anterior).
+RESEND_API_KEY = config('RESEND_API_KEY', default=config('EMAIL_HOST_PASSWORD', default=''))
 DEFAULT_FROM_EMAIL = config(
     'DEFAULT_FROM_EMAIL',
     default='Puro Tabaco <noreply@purotabaco.cl>',
@@ -172,7 +170,11 @@ VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gma
 EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
 EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
 EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='contacto@purotabaco.cl')
-ENVIO_GRATIS_DESDE = config('ENVIO_GRATIS_DESDE', default=50000, cast=int)
+
+# ── Despacho (nunca es gratis) ──────────────────────────────
+# Región Metropolitana: $2.500 fijo, se cobra dentro del pedido (Mercado Pago).
+# Otras regiones: se despacha por Starken "por pagar" — el cliente paga al
+# recibir, no se cobra nada por el sitio. Ver apps.pedidos.envio.
 
 # ── Cifras del home (pendientes de validación con cliente) ──
 # Dejar vacío/None mientras no estén confirmadas: el template las oculta.

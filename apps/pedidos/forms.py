@@ -1,5 +1,7 @@
 from django import forms
 
+from .envio import REGIONES_CHILE
+
 
 class CheckoutForm(forms.Form):
     nombre = forms.CharField(
@@ -26,10 +28,10 @@ class CheckoutForm(forms.Form):
         max_length=100,
         widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': 'Santiago'}),
     )
-    region = forms.CharField(
+    region = forms.ChoiceField(
         label='Región',
-        max_length=100,
-        widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': 'Región Metropolitana'}),
+        choices=[('', 'Selecciona tu región')] + REGIONES_CHILE,
+        widget=forms.Select(attrs={'class': 'ct-input'}),
     )
     codigo_postal = forms.CharField(
         label='Código postal',

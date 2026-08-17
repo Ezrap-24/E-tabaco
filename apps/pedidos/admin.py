@@ -42,7 +42,7 @@ class OrdenAdmin(admin.ModelAdmin):
             'fields': ('direccion', 'ciudad', 'region', 'codigo_postal', 'notas'),
         }),
         ('Pago', {
-            'fields': ('total', 'mp_preference_id', 'mp_payment_id', 'fecha_pago'),
+            'fields': ('costo_envio', 'total', 'mp_preference_id', 'mp_payment_id', 'fecha_pago'),
         }),
         ('Fechas', {
             'fields': ('fecha_creacion', 'fecha_actualizacion'),

@@ -60,6 +60,9 @@ class Orden(models.Model):
     notas = models.TextField(blank=True)
 
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente_pago')
+    # Costo de despacho cobrado en el sitio (0 si se despacha por Starken "por
+    # pagar" fuera de la RM). Incluido dentro de `total`.
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     # Mercado Pago (Checkout Pro): id de la preferencia creada y del pago aprobado.
     mp_preference_id = models.CharField(max_length=200, blank=True, db_index=True)
@@ -90,6 +93,11 @@ class Orden(models.Model):
         if self.correlativo:
             return f"PT{self.correlativo:06d}"
         return self.numero_orden
+
+    @property
+    def subtotal_productos(self):
+        """Total de productos sin el despacho."""
+        return self.total - self.costo_envio
 
     @property
     def direccion_envio(self):

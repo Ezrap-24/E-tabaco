@@ -68,14 +68,3 @@ def test_carrito_vacio_tiene_total_cero(request_con_sesion):
     carrito = Carrito(request_con_sesion)
     assert carrito.total() == Decimal('0')
     assert len(carrito) == 0
-
-
-def test_falta_envio_gratis(request_con_sesion, producto, settings):
-    settings.ENVIO_GRATIS_DESDE = 100
-    carrito = Carrito(request_con_sesion)
-    carrito.agregar(producto, cantidad=5, tipo_venta='unidad')  # 5*6 = 30
-    assert carrito.falta_envio_gratis() == Decimal('70')
-    assert not carrito.califica_envio_gratis()
-    carrito.agregar(producto, cantidad=2, tipo_venta='mayor')  # +2*50 = 100
-    assert carrito.falta_envio_gratis() == Decimal('0')
-    assert carrito.califica_envio_gratis()

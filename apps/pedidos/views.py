@@ -19,7 +19,6 @@ import logging
 import mercadopago
 from django.conf import settings
 from django.contrib import messages
-from django.core.mail import send_mail
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -29,6 +28,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.carrito.carrito import Carrito
+from .emailing import enviar_correo
+from .envio import calcular_envio, descripcion_envio
 from .forms import CheckoutForm
 from .models import ContadorOrden, DetallePedido, Orden
 
@@ -105,6 +106,13 @@ def _crear_preferencia_mp(request, orden, carrito):
         }
         for item in carrito.items()
     ]
+    if orden.costo_envio and orden.costo_envio > 0:
+        items.append({
+            'title': 'Despacho Región Metropolitana',
+            'quantity': 1,
+            'unit_price': float(orden.costo_envio),
+            'currency_id': settings.MP_CURRENCY,
+        })
 
     confirmacion_url = settings.SITE_URL + reverse('pedidos:confirmacion')
     preference_data = {
@@ -142,6 +150,7 @@ def _crear_preferencia_mp(request, orden, carrito):
 def _crear_orden_pendiente(request, form, carrito):
     """Crea la Orden y sus DetallePedido en estado pendiente_pago."""
     cd = form.cleaned_data
+    envio = calcular_envio(cd['region'])
     orden = Orden.objects.create(
         usuario=request.user if request.user.is_authenticated else None,
         cliente_nombre=cd['nombre'],
@@ -152,7 +161,8 @@ def _crear_orden_pendiente(request, form, carrito):
         region=cd['region'],
         codigo_postal=cd.get('codigo_postal', ''),
         notas=cd.get('notas', ''),
-        total=carrito.total(),
+        costo_envio=envio,
+        total=carrito.total() + envio,
         estado='pendiente_pago',
     )
     for item in carrito.items():
@@ -243,13 +253,11 @@ def _enviar_email_confirmacion(orden):
     asunto = 'Confirmacion de pedido {} - Puro Tabaco'.format(orden.numero_orden)
     mensaje_html = render_to_string('email/confirmacion_pedido.html', {'orden': orden})
     try:
-        send_mail(
-            subject=asunto,
-            message='Tu pedido {} fue confirmado. Total: ${}.'.format(orden.numero_orden, orden.total),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[orden.cliente_email],
-            html_message=mensaje_html,
-            fail_silently=False,
+        enviar_correo(
+            destinatarios=[orden.cliente_email],
+            asunto=asunto,
+            texto='Tu pedido {} fue confirmado. Total: ${}.'.format(orden.numero_orden, orden.total),
+            html=mensaje_html,
         )
     except Exception:
         logger.exception('Error enviando email de confirmacion para orden %s', orden.numero_orden)
@@ -265,6 +273,8 @@ def _notificar_venta_admin(orden):
         'Cliente: {} <{}>'.format(orden.cliente_nombre, orden.cliente_email),
         'Telefono: {}'.format(orden.cliente_telefono or '-'),
         'Direccion: {}'.format(orden.direccion_envio),
+        'Subtotal productos: ${}'.format(orden.subtotal_productos),
+        'Despacho: ${} ({})'.format(orden.costo_envio, descripcion_envio(orden.region)),
         'Total: ${}'.format(orden.total),
         '',
         'Detalle:',
@@ -273,12 +283,10 @@ def _notificar_venta_admin(orden):
         lineas.append('  - {}x {} ({}) = ${}'.format(
             d.cantidad, d.producto_nombre or d.producto.nombre, d.tipo_venta, d.subtotal()))
     try:
-        send_mail(
-            subject='Nueva venta {} - ${} - Puro Tabaco'.format(orden.folio, orden.total),
-            message='\n'.join(lineas),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[destino],
-            fail_silently=False,
+        enviar_correo(
+            destinatarios=[destino],
+            asunto='Nueva venta {} - ${} - Puro Tabaco'.format(orden.folio, orden.total),
+            texto='\n'.join(lineas),
         )
     except Exception:
         logger.exception('Error enviando aviso de venta al negocio para orden %s', orden.numero_orden)

@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.conf import settings
 from apps.productos.models import Producto
 
 
@@ -99,14 +98,8 @@ class Carrito:
         """Número de líneas distintas (ej. para 'X productos')."""
         return len(self.carrito)
 
-    def falta_envio_gratis(self):
-        """Cuánto falta en pesos para alcanzar el envío gratis. 0 si ya califica."""
-        umbral = Decimal(str(settings.ENVIO_GRATIS_DESDE))
-        falta = umbral - self.total()
-        return max(falta, Decimal('0'))
-
-    def califica_envio_gratis(self):
-        return self.total() >= Decimal(str(settings.ENVIO_GRATIS_DESDE))
+    # El despacho NUNCA es gratis: RM cobra $2.500 (ver pedidos.envio.calcular_envio),
+    # fuera de la RM se despacha por Starken "por pagar" (el cliente paga al recibir).
 
     COMPRA_MINIMA = Decimal('25000')
 
