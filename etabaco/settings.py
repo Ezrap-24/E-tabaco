@@ -81,7 +81,10 @@ else:
 
 # ── Caché (memoria local del proceso) ───────────────────────
 # Sin Redis disponible en el plan Hobby de Railway: usamos locmem.
-# Reduce las consultas a Postgres por sesión en cada request.
+# OJO: locmem NO se comparte entre workers de gunicorn (cada proceso tiene
+# su propia memoria). Sirve para cachear cosas que no dependen de qué
+# worker responde (ej. querysets de catálogo), pero NO para datos que deben
+# ser consistentes request a request para un mismo usuario.
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -89,10 +92,15 @@ CACHES = {
     }
 }
 
-# Sesiones: lee/escribe en caché primero, cae a la base de datos solo
-# si hay miss o restart del proceso. Evita el roundtrip a Postgres
-# en cada visita (antes: backend 'db' puro, query en cada request).
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# Sesiones: backend 'db' puro (sin caché intermedio). Antes usaba
+# 'cached_db' para evitar el roundtrip a Postgres en cada request, pero con
+# gunicorn corriendo con --workers > 1 eso rompía el carrito: cada worker
+# tiene su propio locmem, así que un request podía leer/guardar una versión
+# vieja del carrito cacheada por OTRO worker, pisando cambios recientes
+# (ej. el cliente hace click en "-" y desaparecen productos que no tocó).
+# El costo de una query extra a Postgres por request es aceptable frente a
+# tener el carrito consistente siempre.
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
