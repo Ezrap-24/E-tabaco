@@ -161,7 +161,7 @@ DEFAULT_FROM_EMAIL = config(
     'DEFAULT_FROM_EMAIL',
     default='Puro Tabaco <noreply@purotabaco.cl>',
 )
-CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@purotabaco.cl')
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='purotabacochile@gmail.com')
 
 # Correo del negocio que recibe un aviso por cada venta concretada.
 VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gmail.com')
@@ -169,7 +169,7 @@ VENTAS_NOTIFY_EMAIL = config('VENTAS_NOTIFY_EMAIL', default='purotabacochile@gma
 # ── Empresa (datos visibles en el sitio) ────────────────────
 EMPRESA_TELEFONO = config('EMPRESA_TELEFONO', default='+56 9 1234 5678')
 EMPRESA_TELEFONO_WSP = config('EMPRESA_TELEFONO_WSP', default='56912345678')
-EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='contacto@purotabaco.cl')
+EMPRESA_EMAIL = config('EMPRESA_EMAIL', default='purotabacochile@gmail.com')
 
 # ── Despacho (nunca es gratis) ──────────────────────────────
 # Región Metropolitana: $2.500 fijo, se cobra dentro del pedido (Mercado Pago).
