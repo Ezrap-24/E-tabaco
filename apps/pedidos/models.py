@@ -59,14 +59,35 @@ class Orden(models.Model):
     codigo_postal = models.CharField(max_length=10, blank=True)
     notas = models.TextField(blank=True)
 
+    # Facturación: solo se capturan los datos, la emisión (boleta o factura)
+    # se hace manualmente fuera del sitio (sistema contable / SII).
+    TIPOS_DOCUMENTO = [('boleta', 'Boleta'), ('factura', 'Factura')]
+    tipo_documento = models.CharField(max_length=10, choices=TIPOS_DOCUMENTO, default='boleta')
+    razon_social = models.CharField('Razón Social', max_length=200, blank=True)
+    giro = models.CharField(max_length=150, blank=True)
+    rut_facturacion = models.CharField('RUT', max_length=15, blank=True)
+
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente_pago')
     # Costo de despacho cobrado en el sitio (0 si se despacha por Starken "por
     # pagar" fuera de la RM). Incluido dentro de `total`.
     costo_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    METODOS_PAGO = [
+        ('webpay', 'Webpay Plus (Transbank)'),
+        ('mercadopago', 'Mercado Pago'),
+        ('transferencia', 'Transferencia Bancaria / Depósito'),
+    ]
+    metodo_pago = models.CharField(max_length=20, choices=METODOS_PAGO, default='mercadopago')
+
     # Mercado Pago (Checkout Pro): id de la preferencia creada y del pago aprobado.
     mp_preference_id = models.CharField(max_length=200, blank=True, db_index=True)
     mp_payment_id = models.CharField(max_length=200, blank=True, db_index=True)
+
+    # Webpay Plus (Transbank): token de la transacción creada y código de
+    # autorización que devuelve Transbank al confirmar el pago (commit).
+    tbk_token = models.CharField(max_length=200, blank=True, db_index=True)
+    tbk_authorization_code = models.CharField(max_length=50, blank=True)
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)

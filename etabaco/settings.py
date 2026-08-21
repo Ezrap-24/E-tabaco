@@ -155,6 +155,35 @@ MP_CURRENCY = config('MP_CURRENCY', default='CLP')
 # del checkout. En local apunta a tu túnel (ngrok) para que MP pueda avisar.
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
+# ── Transbank (Webpay Plus) ──────────────────────────────────
+# Opción de pago agregada junto a Mercado Pago (el cliente elige en el
+# checkout). Mientras se hace la integración/certificación se usa el
+# ambiente de pruebas de TransbankDevelopers (TBK_ENVIRONMENT=integration),
+# que trae su propio código de comercio y api key de prueba públicos —no
+# hace falta configurar nada para probar. Antes de cobrar real hay que:
+#   1. Pedir a soporte@transbank.cl la validación/certificación del sitio
+#      (seguimiento 1-12050051094).
+#   2. Cambiar TBK_ENVIRONMENT a "production" en Railway.
+#   3. Cargar el TBK_COMMERCE_CODE y TBK_API_KEY reales que entregue
+#      Transbank al certificar (llegan por correo, no son los de prueba).
+TBK_ENVIRONMENT = config('TBK_ENVIRONMENT', default='integration')  # integration | production
+TBK_COMMERCE_CODE = config('TBK_COMMERCE_CODE', default='')
+TBK_API_KEY = config('TBK_API_KEY', default='')
+
+# ── Transferencia bancaria / depósito ───────────────────────
+# Datos que se muestran al cliente en el checkout y en el correo de aviso.
+# Confirmación de pago 100% manual: el pedido queda "pendiente_pago" hasta
+# que alguien del equipo verifica el depósito y lo marca "pagado" en el admin.
+TRANSFERENCIA_TITULAR = config('TRANSFERENCIA_TITULAR', default='E-Comercio Reserva SpA')
+TRANSFERENCIA_RUT = config('TRANSFERENCIA_RUT', default='78.417.007-1')
+TRANSFERENCIA_BANCO = config('TRANSFERENCIA_BANCO', default='Mercado Pago')
+TRANSFERENCIA_TIPO_CUENTA = config('TRANSFERENCIA_TIPO_CUENTA', default='Cuenta Vista')
+TRANSFERENCIA_NUMERO_CUENTA = config('TRANSFERENCIA_NUMERO_CUENTA', default='1056989819')
+# Correo real de contacto (el que se usa hoy, ver footer del sitio). Pendiente:
+# crear correos @purotabaco.cl propios; mientras tanto se usa el Gmail.
+TRANSFERENCIA_EMAIL_AVISO = config('TRANSFERENCIA_EMAIL_AVISO', default='purotabacochile@gmail.com')
+TRANSFERENCIA_WHATSAPP = config('TRANSFERENCIA_WHATSAPP', default='+56 9 3346 6784')
+
 # ── Email (API HTTP de Resend) ──────────────────────────────
 # Antes se mandaba por SMTP (smtp.resend.com:587), pero Railway bloquea las
 # conexiones salientes por ese puerto — todo envío fallaba en silencio

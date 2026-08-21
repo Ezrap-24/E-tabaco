@@ -39,6 +39,30 @@ class CheckoutForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': '7500000'}),
     )
+    tipo_documento = forms.ChoiceField(
+        label='Boleta o Factura',
+        choices=[('boleta', 'Boleta'), ('factura', 'Factura')],
+        initial='boleta',
+        widget=forms.Select(attrs={'class': 'ct-input'}),
+    )
+    razon_social = forms.CharField(
+        label='Razón Social (para Factura)',
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': 'Razón social de la empresa'}),
+    )
+    giro = forms.CharField(
+        label='Giro (para Factura)',
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': 'Giro comercial'}),
+    )
+    rut_facturacion = forms.CharField(
+        label='RUT (para Factura)',
+        max_length=15,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'ct-input', 'placeholder': '76.123.456-7'}),
+    )
     notas = forms.CharField(
         label='Notas para el pedido (opcional)',
         required=False,
@@ -49,3 +73,25 @@ class CheckoutForm(forms.Form):
         required=True,
         label='Confirmo que soy mayor de 18 años y acepto los términos y condiciones.',
     )
+    metodo_pago = forms.ChoiceField(
+        label='Método de pago',
+        choices=[
+            ('webpay', 'Webpay Plus'),
+            ('mercadopago', 'Mercado Pago'),
+            ('transferencia', 'Transferencia Bancaria / Depósito'),
+        ],
+        initial='webpay',
+        widget=forms.RadioSelect,
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('tipo_documento') == 'factura':
+            for campo, etiqueta in (
+                ('razon_social', 'la Razón Social'),
+                ('giro', 'el Giro'),
+                ('rut_facturacion', 'el RUT'),
+            ):
+                if not cleaned_data.get(campo):
+                    self.add_error(campo, f'Debes indicar {etiqueta} para facturar.')
+        return cleaned_data

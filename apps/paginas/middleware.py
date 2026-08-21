@@ -7,6 +7,7 @@ RUTAS_EXCLUIDAS = [
     '/admin/',
     '/gestion-pt/',   # URL real del admin de Django
     '/pedidos/webhook/',
+    '/pedidos/webpay/retorno/',
     '/static/',
     '/media/',
     '/cuenta/login/',

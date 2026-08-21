@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Redirigiendo a Webpay &mdash; Puro Tabaco{% endblock %}
+{% block body_class %}has-bar{% endblock %}
+{% block main_padding %}padding-top: 0;{% endblock %}
+
+{% block content %}
+<div style="background:var(--off); min-height:60vh; display:flex; align-items:center; justify-content:center; padding:120px 24px 80px;">
+  <div style="text-align:center; max-width:420px;">
+    <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--green); margin-bottom:12px;">
+      Redirigiendo a Webpay&hellip;
+    </div>
+    <p style="font-family:'Lora',serif; font-size:13px; color:#888; line-height:1.6;">
+      Estamos llevándote a la página segura de pago de Transbank. Si no avanza en unos segundos,
+      presiona el botón de abajo.
+    </p>
+
+    <form id="webpay-form" method="post" action="{{ url }}">
+      <input type="hidden" name="token_ws" value="{{ token }}">
+      <noscript>
+        <button type="submit"
+                style="margin-top:16px; background:var(--green); color:var(--cream); border:none; padding:14px 24px;
+                       font-family:'Lora',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer;">
+          Continuar a Webpay &rarr;
+        </button>
+      </noscript>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('webpay-form').submit();
+</script>
+{% endblock %}

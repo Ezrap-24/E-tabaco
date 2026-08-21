@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Checkout &mdash; Puro Tabaco{% endblock %}
 {% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 0;{% endblock %}
@@ -8,9 +9,9 @@
   .ct-input {
     width: 100%;
     border: 1.5px solid var(--cream-d);
-    padding: 12px 14px;
+    padding: 13px 14px;
     font-family: 'Lora', serif;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--slate);
     background: var(--off);
     outline: none;
@@ -18,13 +19,14 @@
     box-sizing: border-box;
   }
   .ct-input:focus { border-color: var(--green); background: #fff; }
+  .ct-input::placeholder { color: #83807a; opacity: 1; }
   .ct-label {
     display: block;
     font-family: 'Lora', serif;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #888;
+    color: #6b6b6b;
     margin-bottom: 6px;
   }
   .ct-form-group { margin-bottom: 18px; }
@@ -36,6 +38,63 @@
   }
   @media (max-width: 600px) {
     .ct-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Selector de método de pago (estilo acordeón: cada fila se abre al elegirla) */
+  .ct-pago-titulo-seccion {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .ct-pago-titulo-seccion .ct-label { margin-bottom: 0; }
+  .ct-pago-seguro {
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'Lora', serif; font-size: 12px; color: #6b6b6b;
+  }
+  .ct-pago-opciones {
+    border: 1.5px solid var(--cream-d);
+  }
+  .ct-pago-fila {
+    display: block;
+    border-bottom: 1px solid var(--cream-d);
+    cursor: pointer;
+  }
+  .ct-pago-fila:last-child { border-bottom: none; }
+  .ct-pago-fila input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+  .ct-pago-cabecera {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 18px;
+  }
+  .ct-pago-fila:hover .ct-pago-cabecera { background: var(--off); }
+  .ct-pago-radio {
+    width: 20px; height: 20px; flex-shrink: 0;
+    border: 1.5px solid #c9c4b8; border-radius: 50%;
+    display: grid; place-content: center;
+  }
+  .ct-pago-radio::before {
+    content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--green);
+    transform: scale(0); transition: transform .12s ease-in-out;
+  }
+  .ct-pago-fila input:checked ~ .ct-pago-cabecera .ct-pago-radio { border-color: var(--green); }
+  .ct-pago-fila input:checked ~ .ct-pago-cabecera .ct-pago-radio::before { transform: scale(1); }
+  .ct-pago-nombre {
+    font-family: 'Lora', serif; font-size: 17px; font-weight: 700; color: var(--slate);
+  }
+  .ct-pago-marcas {
+    margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  .ct-pago-marcas img { display: block; height: 22px; width: auto; }
+  .ct-pago-marcas-mas {
+    font-family: 'Lora', serif; font-size: 12px; font-weight: 600; color: #6b6b6b;
+    border: 1px solid var(--cream-d); border-radius: 3px; padding: 3px 6px; margin-left: 2px;
+  }
+  .ct-pago-panel { display: none; padding: 6px 18px 20px 52px; background: var(--off); }
+  .ct-pago-fila input:checked ~ .ct-pago-panel { display: block; }
+  .ct-pago-panel p {
+    font-family: 'Lora', serif; font-size: 14.5px; color: #4d4d47; line-height: 1.65; margin: 0 0 8px;
+  }
+  .ct-pago-datos {
+    background: #fff; border: 1px solid var(--cream-d); padding: 16px 18px; margin-top: 6px;
+    font-family: 'Lora', serif; font-size: 14px; color: var(--slate); line-height: 2;
   }
 </style>
 {% endblock %}
@@ -62,7 +121,7 @@
     var region = regionSelect.value;
     if (!region) {
       despachoEl.textContent = 'Selecciona tu región ↑';
-      despachoEl.style.color = '#aaa';
+      despachoEl.style.color = '#767671';
       totalEl.textContent = pesos(subtotal);
       return;
     }
@@ -78,6 +137,19 @@
   }
 
   regionSelect.addEventListener('change', actualizar);
+  actualizar();
+})();
+
+(function() {
+  var tipoDocSelect = document.getElementById('{{ form.tipo_documento.id_for_label }}');
+  var facturaExtra = document.getElementById('ct-factura-extra');
+  if (!tipoDocSelect || !facturaExtra) return;
+
+  function actualizar() {
+    facturaExtra.style.display = (tipoDocSelect.value === 'factura') ? 'block' : 'none';
+  }
+
+  tipoDocSelect.addEventListener('change', actualizar);
   actualizar();
 })();
 </script>
@@ -102,7 +174,7 @@
 
     <!-- FORMULARIO -->
     <div style="background:#fff; border:1px solid var(--cream-d); padding:32px;">
-      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-bottom:20px; padding-bottom:14px; border-bottom:1.5px solid var(--cream-d);">
+      <div style="font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:var(--green); margin-bottom:20px; padding-bottom:14px; border-bottom:1.5px solid var(--cream-d);">
         Datos de env&iacute;o
       </div>
 
@@ -152,6 +224,36 @@
           {{ form.codigo_postal }}
         </div>
 
+        <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin:26px 0 14px; padding-bottom:10px; border-bottom:1.5px solid var(--cream-d);">
+          Facturaci&oacute;n
+        </div>
+
+        <div class="ct-form-group">
+          <label class="ct-label">{{ form.tipo_documento.label }}</label>
+          {{ form.tipo_documento }}
+          {% for e in form.tipo_documento.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div id="ct-factura-extra">
+          <div class="ct-form-group">
+            <label class="ct-label">{{ form.razon_social.label }}</label>
+            {{ form.razon_social }}
+            {% for e in form.razon_social.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="ct-form-row">
+            <div class="ct-form-group">
+              <label class="ct-label">{{ form.giro.label }}</label>
+              {{ form.giro }}
+              {% for e in form.giro.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="ct-form-group">
+              <label class="ct-label">{{ form.rut_facturacion.label }}</label>
+              {{ form.rut_facturacion }}
+              {% for e in form.rut_facturacion.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+            </div>
+          </div>
+        </div>
+
         <div class="ct-form-group">
           <label class="ct-label">{{ form.notas.label }}</label>
           {{ form.notas }}
@@ -165,6 +267,60 @@
         </div>
         {% for e in form.acepta_terminos.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
 
+        <div class="ct-form-group">
+          <div class="ct-pago-titulo-seccion">
+            <label class="ct-label">{{ form.metodo_pago.label }}</label>
+            <span class="ct-pago-seguro">&#128274; Pago seguro</span>
+          </div>
+          <div class="ct-pago-opciones">
+            {% for radio in form.metodo_pago %}
+            <label class="ct-pago-fila">
+              {{ radio.tag }}
+              <div class="ct-pago-cabecera">
+                <span class="ct-pago-radio"></span>
+                {% if radio.data.value == 'webpay' %}
+                <img src="{% static 'img/pagos/webpay-plus.svg' %}" alt="Webpay Plus" style="height:26px; width:auto;">
+                <span class="ct-pago-marcas">
+                  <img src="{% static 'img/pagos/visa.svg' %}" alt="Visa">
+                  <img src="{% static 'img/pagos/mastercard.svg' %}" alt="Mastercard">
+                  <span class="ct-pago-marcas-mas">+2</span>
+                </span>
+                {% elif radio.data.value == 'mercadopago' %}
+                <img src="{% static 'img/pagos/mercadopago.svg' %}" alt="Mercado Pago" style="height:38px; width:auto;">
+                <span class="ct-pago-marcas">
+                  <img src="{% static 'img/pagos/visa.svg' %}" alt="Visa">
+                  <img src="{% static 'img/pagos/mastercard.svg' %}" alt="Mastercard">
+                  <img src="{% static 'img/pagos/amex.svg' %}" alt="Amex">
+                  <span class="ct-pago-marcas-mas">+3</span>
+                </span>
+                {% else %}
+                <span class="ct-pago-nombre">Transferencia Bancaria / Dep&oacute;sito</span>
+                {% endif %}
+              </div>
+              <div class="ct-pago-panel">
+                {% if radio.data.value == 'webpay' %}
+                <p>Se te redirigir&aacute; a Webpay Plus (Transbank) para pagar con tarjeta de forma segura e inmediata.</p>
+                {% elif radio.data.value == 'mercadopago' %}
+                <p>Se te redirigir&aacute; a Mercado Pago para completar el pago de forma segura.</p>
+                {% else %}
+                <p>Para completar tu compra, transfiere el <strong>monto total del pedido</strong> a la siguiente cuenta:</p>
+                <div class="ct-pago-datos">
+                  <strong>Titular:</strong> {{ transferencia.titular }}<br>
+                  <strong>RUT:</strong> {{ transferencia.rut }}<br>
+                  <strong>Banco:</strong> {{ transferencia.banco }}<br>
+                  <strong>Tipo de cuenta:</strong> {{ transferencia.tipo_cuenta }}<br>
+                  <strong>N&uacute;mero de cuenta:</strong> {{ transferencia.numero_cuenta }}<br>
+                  <strong>Email para el comprobante:</strong> {{ transferencia.email_aviso }}
+                </div>
+                <p style="margin-top:8px;">Indica en el comentario tu nombre y n&uacute;mero de pedido, y env&iacute;a el comprobante al correo de arriba o por WhatsApp al <a href="{{ transferencia.whatsapp_wa_me }}" target="_blank" style="color:var(--green); font-weight:600;">{{ transferencia.whatsapp }}</a>.</p>
+                {% endif %}
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+          {% for e in form.metodo_pago.errors %}<div class="ct-error">{{ e }}</div>{% endfor %}
+        </div>
+
         <button type="submit"
                 style="width:100%; background:var(--green); color:var(--cream); border:none; padding:16px;
                        font-family:'Lora',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; margin-top:8px;">
@@ -175,40 +331,40 @@
 
     <!-- RESUMEN -->
     <aside style="background:#fff; border:1px solid var(--cream-d); padding:24px; position:sticky; top:120px;">
-      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:16px; padding-bottom:12px; border-bottom:1.5px solid var(--cream-d);">
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-bottom:16px; padding-bottom:12px; border-bottom:1.5px solid var(--cream-d);">
         Tu pedido
       </div>
 
       {% for item in carrito.items %}
-      <div style="display:flex; justify-content:space-between; padding:8px 0; font-family:'Lora',serif; font-size:13px; color:var(--slate);">
+      <div style="display:flex; justify-content:space-between; padding:8px 0; font-family:'Lora',serif; font-size:14px; color:var(--slate);">
         <span style="flex:1; padding-right:12px;">
           {{ item.producto.nombre }}
-          <span style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ item.tipo_venta }}) &times;{{ item.cantidad }}</span>
+          <span style="color:#767671; font-size:11px; text-transform:uppercase; letter-spacing:1px;">({{ item.tipo_venta }}) &times;{{ item.cantidad }}</span>
         </span>
         <span style="font-family:'Playfair Display',serif; font-weight:600;">{{ item.subtotal|pesos }}</span>
       </div>
       {% endfor %}
 
       <div style="border-top:1.5px solid var(--cream-d); margin-top:12px; padding-top:14px;">
-        <div style="display:flex; justify-content:space-between; padding:4px 0; font-family:'Lora',serif; font-size:12px; color:#888;">
+        <div style="display:flex; justify-content:space-between; padding:4px 0; font-family:'Lora',serif; font-size:13px; color:#5f5f5a;">
           <span>Subtotal productos</span>
           <span id="ct-subtotal" data-subtotal="{{ carrito.total }}">{{ carrito.total|pesos }}</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-family:'Lora',serif; font-size:12px; color:#888;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-family:'Lora',serif; font-size:13px; color:#5f5f5a;">
           <span>Despacho</span>
-          <span id="ct-despacho" style="color:#aaa; font-weight:600;">Selecciona tu regi&oacute;n &uarr;</span>
+          <span id="ct-despacho" style="color:#767671; font-weight:600;">Selecciona tu regi&oacute;n &uarr;</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:10px; margin-top:6px; border-top:1px dashed var(--cream-d);">
-          <span style="font-family:'Lora',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#888;">Total</span>
+          <span style="font-family:'Lora',serif; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#6b6b6b;">Total</span>
           <span id="ct-total" style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--green);">{{ carrito.total|pesos }}</span>
         </div>
       </div>
 
-      <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:14px; line-height:1.5;">
+      <p style="font-family:'Lora',serif; font-size:13.5px; color:#5c5c57; margin-top:14px; line-height:1.6;">
         Regi&oacute;n Metropolitana se cobra $2.500 (incluido en el total de arriba). En otras regiones se despacha por Starken o a convenir con el cliente y es <strong>por pagar</strong> &mdash; el courier cobra el env&iacute;o directamente al recibirlo.
       </p>
 
-      <p style="font-family:'Lora',serif; font-size:11px; color:#aaa; margin-top:12px; padding-top:12px; border-top:1px dashed var(--cream-d);">
+      <p style="font-family:'Lora',serif; font-size:13.5px; color:#5c5c57; margin-top:12px; padding-top:12px; border-top:1px dashed var(--cream-d); line-height:1.6;">
         Solo para mayores de 18 a&ntilde;os. El tabaco es perjudicial para la salud.
       </p>
     </aside>

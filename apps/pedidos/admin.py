@@ -12,11 +12,11 @@ class DetallePedidoInline(admin.TabularInline):
 
 @admin.register(Orden)
 class OrdenAdmin(admin.ModelAdmin):
-    list_display = ['folio_display', 'cliente_nombre', 'cliente_email', 'total', 'estado', 'fecha_creacion', 'descargar_link']
-    list_filter = ['estado', 'fecha_creacion', 'region']
-    search_fields = ['numero_orden', 'cliente_nombre', 'cliente_email', 'mp_payment_id', 'mp_preference_id']
-    readonly_fields = ['folio_display', 'numero_orden', 'correlativo', 'mp_preference_id', 'mp_payment_id',
-                       'fecha_creacion', 'fecha_actualizacion', 'fecha_pago', 'descargar_link']
+    list_display = ['folio_display', 'cliente_nombre', 'cliente_email', 'total', 'metodo_pago', 'tipo_documento', 'estado', 'fecha_creacion', 'descargar_link']
+    list_filter = ['estado', 'metodo_pago', 'tipo_documento', 'fecha_creacion', 'region']
+    search_fields = ['numero_orden', 'cliente_nombre', 'cliente_email', 'mp_payment_id', 'mp_preference_id', 'tbk_token', 'tbk_authorization_code', 'razon_social', 'rut_facturacion']
+    readonly_fields = ['folio_display', 'numero_orden', 'correlativo', 'metodo_pago', 'mp_preference_id', 'mp_payment_id',
+                       'tbk_token', 'tbk_authorization_code', 'fecha_creacion', 'fecha_actualizacion', 'fecha_pago', 'descargar_link']
     inlines = [DetallePedidoInline]
 
     def get_list_editable(self, request):
@@ -41,8 +41,12 @@ class OrdenAdmin(admin.ModelAdmin):
         ('Envío', {
             'fields': ('direccion', 'ciudad', 'region', 'codigo_postal', 'notas'),
         }),
+        ('Facturación', {
+            'fields': ('tipo_documento', 'razon_social', 'giro', 'rut_facturacion'),
+        }),
         ('Pago', {
-            'fields': ('costo_envio', 'total', 'mp_preference_id', 'mp_payment_id', 'fecha_pago'),
+            'fields': ('costo_envio', 'total', 'metodo_pago', 'mp_preference_id', 'mp_payment_id',
+                       'tbk_token', 'tbk_authorization_code', 'fecha_pago'),
         }),
         ('Fechas', {
             'fields': ('fecha_creacion', 'fecha_actualizacion'),

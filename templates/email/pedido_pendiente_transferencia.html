@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f0e8; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; }
+    .header { text-align: center; border-bottom: 2px solid #8B6914; padding-bottom: 20px; margin-bottom: 30px; }
+    .brand { font-size: 24px; font-weight: bold; color: #1A1A1A; }
+    .order-number { background: #1A1A1A; color: white; padding: 8px 16px; border-radius: 4px; display: inline-block; }
+    .item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .total { font-weight: bold; font-size: 18px; margin-top: 16px; }
+    .datos-box { background: #f5f0e8; border-left: 3px solid #8B6914; padding: 16px 20px; margin-top: 20px; }
+    .datos-box p { margin: 4px 0; font-size: 14px; }
+    .footer { margin-top: 30px; font-size: 12px; color: #888; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">Puro Tabaco</div>
+      <p style="color: #888; margin: 8px 0 0;">Recibimos tu pedido</p>
+    </div>
+
+    <p>Hola <strong>{{ orden.cliente_nombre }}</strong>,</p>
+    <p>Registramos tu pedido y quedó a la espera de la transferencia para confirmarlo. Apenas verifiquemos el depósito te avisamos por este mismo correo.</p>
+
+    <p>Número de pedido: <span class="order-number">{{ orden.numero_orden }}</span></p>
+
+    <h4 style="margin-top: 24px;">Detalle del pedido</h4>
+    {% for detalle in orden.detalles.all %}
+    <div class="item">
+      <span>{{ detalle.producto.nombre }} ({{ detalle.tipo_venta }}) ×{{ detalle.cantidad }}</span>
+      <span>{{ detalle.subtotal|pesos }}</span>
+    </div>
+    {% endfor %}
+    <div class="item" style="border-bottom: none;">
+      <span>Subtotal productos</span>
+      <span>{{ orden.subtotal_productos|pesos }}</span>
+    </div>
+    <div class="item" style="border-bottom: none;">
+      <span>Despacho</span>
+      <span>{% if orden.costo_envio %}{{ orden.costo_envio|pesos }}{% else %}Por pagar (Starken){% endif %}</span>
+    </div>
+    <div class="total" style="text-align: right;">Total a transferir: {{ orden.total|pesos }}</div>
+
+    <div class="datos-box">
+      <p><strong>Datos para la transferencia</strong></p>
+      <p>Titular: {{ transferencia.titular }}</p>
+      <p>RUT: {{ transferencia.rut }}</p>
+      <p>Banco: {{ transferencia.banco }}</p>
+      <p>Tipo de cuenta: {{ transferencia.tipo_cuenta }}</p>
+      <p>Número de cuenta: {{ transferencia.numero_cuenta }}</p>
+      <p>Email para enviar el comprobante: {{ transferencia.email_aviso }}</p>
+      <p>WhatsApp: {{ transferencia.whatsapp }}</p>
+      <p style="margin-top:10px;">Indica en el comentario de la transferencia tu <strong>nombre y el número de pedido {{ orden.numero_orden }}</strong>, y envía el comprobante al correo de arriba o por WhatsApp.</p>
+    </div>
+
+    <p style="margin-top: 24px;"><strong>Envío a:</strong><br>{{ orden.direccion_envio }}</p>
+
+    <div class="footer">
+      <p>⚠️ El tabaco es perjudicial para la salud. Solo para mayores de 18 años.</p>
+      <p>© 2026 Puro Tabaco. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

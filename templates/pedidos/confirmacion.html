@@ -29,7 +29,11 @@
       <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--green); margin-top:6px;">
         {{ orden.get_estado_display }}
       </div>
-      {% if orden.estado == 'pendiente_pago' %}
+      {% if orden.estado == 'pendiente_pago' and orden.metodo_pago == 'transferencia' %}
+      <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
+        Confirmaremos tu pedido apenas verifiquemos la transferencia.
+      </p>
+      {% elif orden.estado == 'pendiente_pago' %}
       <p style="font-family:'Lora',serif; font-size:12px; color:#bbb; margin-top:8px;">
         Confirmaremos tu pago en unos segundos. Te avisaremos por email.
       </p>
@@ -39,6 +43,28 @@
       </p>
       {% endif %}
     </div>
+
+    {% if orden.estado == 'pendiente_pago' and orden.metodo_pago == 'transferencia' %}
+    <!-- Datos de transferencia -->
+    <div style="background:#fff; border:1px solid var(--cream-d); border-left:3px solid var(--tan); padding:24px; margin-bottom:20px;">
+      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--green); margin-bottom:14px;">
+        Datos para la transferencia
+      </div>
+      <div style="font-family:'Lora',serif; font-size:13px; color:var(--slate); line-height:2;">
+        <strong>Titular:</strong> {{ transferencia.titular }}<br>
+        <strong>RUT:</strong> {{ transferencia.rut }}<br>
+        <strong>Banco:</strong> {{ transferencia.banco }}<br>
+        <strong>Tipo de cuenta:</strong> {{ transferencia.tipo_cuenta }}<br>
+        <strong>N&uacute;mero de cuenta:</strong> {{ transferencia.numero_cuenta }}<br>
+        <strong>Email para el comprobante:</strong> {{ transferencia.email_aviso }}<br>
+        <strong>WhatsApp:</strong> <a href="{{ transferencia.whatsapp_wa_me }}" target="_blank" style="color:var(--green);">{{ transferencia.whatsapp }}</a>
+      </div>
+      <p style="font-family:'Lora',serif; font-size:12px; color:#888; margin-top:14px; line-height:1.6;">
+        Indica en el comentario de la transferencia tu nombre y el n&uacute;mero de pedido <strong>{{ orden.numero_orden }}</strong>,
+        y env&iacute;a el comprobante al correo de arriba o por WhatsApp. Te avisamos por email apenas confirmemos el dep&oacute;sito.
+      </p>
+    </div>
+    {% endif %}
 
     <!-- Detalle -->
     <div style="background:#fff; border:1px solid var(--cream-d); padding:24px; margin-bottom:20px;">

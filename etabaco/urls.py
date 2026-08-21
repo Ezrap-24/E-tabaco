@@ -25,6 +25,7 @@ def robots_txt(request):
         'Disallow: /cuenta/',
         'Disallow: /gestion-pt/',
         'Disallow: /verificar-edad/',
+        'Disallow: /catalogo/?',
         f'Sitemap: {scheme}://{host}/sitemap.xml',
     ]
     return HttpResponse('\n'.join(lines), content_type='text/plain')

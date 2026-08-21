@@ -1,6 +1,7 @@
-"""Flujo de checkout y pago con Mercado Pago (Checkout Pro).
+"""Flujo de checkout y pago. El cliente elige entre Mercado Pago (Checkout Pro)
+y Webpay Plus (Transbank) en el formulario de checkout.
 
-Diseno:
+Diseno Mercado Pago:
 1. POST /pedidos/checkout/      -> valida el formulario, crea una `Orden` en
    estado `pendiente_pago` con sus `DetallePedido`, crea una *preferencia* de
    Mercado Pago con `external_reference=str(orden.id)` y redirige al cliente al
@@ -11,6 +12,15 @@ Diseno:
    Esta vista NO necesita sesion del cliente: la invoca Mercado Pago.
 3. GET  /pedidos/confirmacion/  -> el cliente vuelve aca tras pagar. Muestra la
    orden (por sesion o por `external_reference` que anade Mercado Pago a la URL).
+
+Diseno Webpay Plus (Transbank) -- ver tambien `webpay.py`:
+1. POST /pedidos/checkout/ (metodo_pago=webpay) -> crea la `Orden` pendiente y
+   crea la transaccion en Transbank. Se renderiza una pagina intermedia que
+   hace un POST automatico (`token_ws`) a la URL que entrego Transbank.
+2. POST /pedidos/webpay/retorno/ -> Transbank redirige aca al cliente (con su
+   propio navegador/sesion) despues del pago. Se hace el *commit* de la
+   transaccion y, si fue autorizada, se marca la orden pagada y se redirige a
+   la confirmacion (misma pagina que usa Mercado Pago).
 """
 from decimal import Decimal
 import json
@@ -28,6 +38,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.carrito.carrito import Carrito
+from . import webpay
 from .emailing import enviar_correo
 from .envio import calcular_envio, descripcion_envio
 from .forms import CheckoutForm
@@ -61,6 +72,20 @@ def _datos_iniciales_checkout(request):
     return initial
 
 
+def datos_transferencia():
+    """Datos bancarios para pago por transferencia (checkout, confirmación y email)."""
+    return {
+        'titular': settings.TRANSFERENCIA_TITULAR,
+        'rut': settings.TRANSFERENCIA_RUT,
+        'banco': settings.TRANSFERENCIA_BANCO,
+        'tipo_cuenta': settings.TRANSFERENCIA_TIPO_CUENTA,
+        'numero_cuenta': settings.TRANSFERENCIA_NUMERO_CUENTA,
+        'email_aviso': settings.TRANSFERENCIA_EMAIL_AVISO,
+        'whatsapp': settings.TRANSFERENCIA_WHATSAPP,
+        'whatsapp_wa_me': 'https://wa.me/' + ''.join(c for c in settings.TRANSFERENCIA_WHATSAPP if c.isdigit()),
+    }
+
+
 def checkout(request):
     carrito = Carrito(request)
     if len(carrito) == 0:
@@ -71,28 +96,106 @@ def checkout(request):
         form = CheckoutForm(request.POST)
         if form.is_valid():
             orden = _crear_orden_pendiente(request, form, carrito)
-            try:
-                preferencia = _crear_preferencia_mp(request, orden, carrito)
-            except Exception:
-                logger.exception('Mercado Pago fallo al crear la preferencia')
-                orden.estado = 'cancelado'
-                orden.save(update_fields=['estado'])
-                messages.error(request, 'No se pudo iniciar el pago. Intenta nuevamente mas tarde.')
-                return redirect('carrito:ver')
-
-            # Guardamos el preference_id ANTES de redirigir, asi el webhook
-            # siempre puede correlacionar el pago con la orden.
-            with transaction.atomic():
-                orden.mp_preference_id = preferencia['id']
-                orden.save(update_fields=['mp_preference_id'])
-
             request.session['orden_pendiente_id'] = orden.id
-            # Redirige a la pagina de pago segura de Mercado Pago.
-            return redirect(preferencia['init_point'])
+
+            if orden.metodo_pago == 'webpay':
+                return _iniciar_pago_webpay(request, orden)
+            if orden.metodo_pago == 'transferencia':
+                return _iniciar_pago_transferencia(request, orden)
+            return _iniciar_pago_mp(request, orden, carrito)
     else:
         form = CheckoutForm(initial=_datos_iniciales_checkout(request))
 
-    return render(request, 'pedidos/checkout.html', {'form': form, 'carrito': carrito})
+    return render(request, 'pedidos/checkout.html', {
+        'form': form, 'carrito': carrito, 'transferencia': datos_transferencia(),
+    })
+
+
+def _iniciar_pago_mp(request, orden, carrito):
+    try:
+        preferencia = _crear_preferencia_mp(request, orden, carrito)
+    except Exception:
+        logger.exception('Mercado Pago fallo al crear la preferencia')
+        orden.estado = 'cancelado'
+        orden.save(update_fields=['estado'])
+        messages.error(request, 'No se pudo iniciar el pago. Intenta nuevamente mas tarde.')
+        return redirect('carrito:ver')
+
+    # Guardamos el preference_id ANTES de redirigir, asi el webhook
+    # siempre puede correlacionar el pago con la orden.
+    with transaction.atomic():
+        orden.mp_preference_id = preferencia['id']
+        orden.save(update_fields=['mp_preference_id'])
+
+    # Redirige a la pagina de pago segura de Mercado Pago.
+    return redirect(preferencia['init_point'])
+
+
+def _iniciar_pago_webpay(request, orden):
+    return_url = settings.SITE_URL + reverse('pedidos:webpay_retorno')
+    try:
+        url, token = webpay.crear_transaccion(orden, return_url)
+    except Exception:
+        logger.exception('Transbank fallo al crear la transaccion (orden %s)', orden.numero_orden)
+        orden.estado = 'cancelado'
+        orden.save(update_fields=['estado'])
+        messages.error(request, 'No se pudo iniciar el pago con Webpay. Intenta nuevamente mas tarde.')
+        return redirect('carrito:ver')
+
+    orden.tbk_token = token
+    orden.save(update_fields=['tbk_token'])
+
+    # Pagina intermedia: hace un POST automatico con token_ws a la URL de
+    # Transbank (asi lo exige el protocolo de Webpay Plus, no es un GET).
+    return render(request, 'pedidos/webpay_redirigir.html', {'url': url, 'token': token})
+
+
+def _iniciar_pago_transferencia(request, orden):
+    """Transferencia bancaria / depósito: no hay gateway. El pedido queda
+    'pendiente_pago' y alguien del equipo confirma el depósito manualmente
+    en el admin. Se avisa al cliente (con los datos para transferir) y al
+    negocio (para que este atento al deposito)."""
+    _enviar_email_transferencia_pendiente(orden)
+    _notificar_pedido_transferencia_admin(orden)
+    return redirect('pedidos:confirmacion')
+
+
+def _enviar_email_transferencia_pendiente(orden):
+    asunto = 'Pedido {} recibido - Puro Tabaco'.format(orden.numero_orden)
+    mensaje_html = render_to_string('email/pedido_pendiente_transferencia.html', {
+        'orden': orden, 'transferencia': datos_transferencia(),
+    })
+    try:
+        enviar_correo(
+            destinatarios=[orden.cliente_email],
+            asunto=asunto,
+            texto='Recibimos tu pedido {}. Te esperamos la transferencia para confirmarlo.'.format(orden.numero_orden),
+            html=mensaje_html,
+        )
+    except Exception:
+        logger.exception('Error enviando email de transferencia pendiente para orden %s', orden.numero_orden)
+
+
+def _notificar_pedido_transferencia_admin(orden):
+    destino = getattr(settings, 'VENTAS_NOTIFY_EMAIL', '') or settings.CONTACT_EMAIL
+    if not destino:
+        return
+    lineas = [
+        'Nuevo pedido por TRANSFERENCIA, pendiente de confirmar deposito: {}'.format(orden.folio),
+        'Cliente: {} <{}>'.format(orden.cliente_nombre, orden.cliente_email),
+        'Telefono: {}'.format(orden.cliente_telefono or '-'),
+        'Total a transferir: ${}'.format(orden.total),
+        '',
+        'Revisa el deposito y marca la orden "Pagado" en el admin cuando corresponda.',
+    ]
+    try:
+        enviar_correo(
+            destinatarios=[destino],
+            asunto='Pedido por transferencia {} - ${} - Puro Tabaco'.format(orden.folio, orden.total),
+            texto='\n'.join(lineas),
+        )
+    except Exception:
+        logger.exception('Error enviando aviso de transferencia pendiente para orden %s', orden.numero_orden)
 
 
 def _crear_preferencia_mp(request, orden, carrito):
@@ -164,6 +267,11 @@ def _crear_orden_pendiente(request, form, carrito):
         costo_envio=envio,
         total=carrito.total() + envio,
         estado='pendiente_pago',
+        metodo_pago=cd['metodo_pago'],
+        tipo_documento=cd['tipo_documento'],
+        razon_social=cd.get('razon_social', ''),
+        giro=cd.get('giro', ''),
+        rut_facturacion=cd.get('rut_facturacion', ''),
     )
     for item in carrito.items():
         DetallePedido.objects.create(
@@ -249,6 +357,60 @@ def _marcar_orden_fallida(orden_id):
     Orden.objects.filter(id=orden_id, estado='pendiente_pago').update(estado='cancelado')
 
 
+@csrf_exempt
+def webpay_retorno(request):
+    """Transbank redirige aca (con un POST del propio navegador del cliente)
+    despues del pago en Webpay Plus. Hacemos el commit de la transaccion y
+    redirigimos a la misma pagina de confirmacion que usa Mercado Pago.
+    """
+    token = request.POST.get('token_ws') or request.GET.get('token_ws')
+    token_aborto = request.POST.get('TBK_TOKEN') or request.GET.get('TBK_TOKEN')
+
+    if not token:
+        # El cliente anulo el pago o cerro la pagina de Webpay antes de pagar.
+        if token_aborto:
+            orden_id = request.session.get('orden_pendiente_id')
+            if orden_id:
+                Orden.objects.filter(id=orden_id, estado='pendiente_pago').update(estado='cancelado')
+            messages.warning(request, 'Pago anulado en Webpay.')
+        else:
+            messages.error(request, 'Respuesta invalida de Webpay.')
+        return redirect('carrito:ver')
+
+    orden = Orden.objects.filter(tbk_token=token).first()
+    if not orden:
+        logger.error('Orden no encontrada para el token de Webpay %s', token)
+        return redirect('paginas:home')
+
+    try:
+        resultado = webpay.confirmar_transaccion(token)
+    except Exception:
+        logger.exception('Error confirmando la transaccion Webpay de la orden %s', orden.numero_orden)
+        messages.error(request, 'No se pudo confirmar el pago con Webpay. Contacta a soporte.')
+        return redirect('carrito:ver')
+
+    if webpay.pago_aprobado(resultado):
+        _marcar_orden_pagada_webpay(orden, resultado)
+    else:
+        orden.estado = 'cancelado'
+        orden.save(update_fields=['estado'])
+
+    return redirect('pedidos:confirmacion')
+
+
+def _marcar_orden_pagada_webpay(orden, resultado):
+    if orden.estado == 'pagado':
+        return  # idempotente
+    orden.estado = 'pagado'
+    orden.fecha_pago = timezone.now()
+    orden.tbk_authorization_code = resultado.get('authorization_code', '')
+    if not orden.correlativo:
+        orden.correlativo = ContadorOrden.siguiente()
+    orden.save(update_fields=['estado', 'fecha_pago', 'tbk_authorization_code', 'correlativo'])
+    _enviar_email_confirmacion(orden)
+    _notificar_venta_admin(orden)
+
+
 def _enviar_email_confirmacion(orden):
     asunto = 'Confirmacion de pedido {} - Puro Tabaco'.format(orden.numero_orden)
     mensaje_html = render_to_string('email/confirmacion_pedido.html', {'orden': orden})
@@ -316,7 +478,9 @@ def confirmacion(request):
         Carrito(request).limpiar()
         request.session.pop('orden_pendiente_id', None)
 
-    return render(request, 'pedidos/confirmacion.html', {'orden': orden})
+    return render(request, 'pedidos/confirmacion.html', {
+        'orden': orden, 'transferencia': datos_transferencia(),
+    })
 
 
 def _confirmar_por_retorno(orden, payment_id):
