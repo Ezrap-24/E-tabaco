@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.http import HttpResponse, StreamingHttpResponse, Http404, HttpResponsePermanentRedirect
-from urllib.parse import quote
 import os, re, mimetypes
 
 
@@ -120,8 +119,11 @@ def redirect_producto_legacy(request, slug):
 
 
 def redirect_categoria_legacy(request, slug):
-    texto = slug.rstrip('/').split('/')[-1].replace('-', ' ')
-    return HttpResponsePermanentRedirect(f'/catalogo/?categoria={quote(texto)}')
+    # No usamos ?categoria=... porque robots.txt bloquea /catalogo/? (evita
+    # indexar combinaciones de filtros como paginas duplicadas). Redirigimos
+    # al catalogo general para que Google pueda rastrear e indexar sin chocar
+    # con esa regla.
+    return HttpResponsePermanentRedirect('/catalogo/')
 
 
 def redirect_blog_legacy(request, slug=None):
