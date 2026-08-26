@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
-from django.http import HttpResponse, StreamingHttpResponse, Http404
+from django.http import HttpResponse, StreamingHttpResponse, Http404, HttpResponsePermanentRedirect
+from urllib.parse import quote
 import os, re, mimetypes
 
 
@@ -108,6 +109,25 @@ def serve_media(request, path):
     return response
 
 
+
+# ── Redirecciones SEO: URLs heredadas de la plataforma anterior (WordPress/WooCommerce) ──
+# Google todavía tiene indexadas estas rutas viejas, que hoy no existen y devuelven 404.
+# Las redirigimos (301, permanente) a su equivalente real en el catalogo actual,
+# en vez de dejarlas como enlaces muertos.
+
+def redirect_producto_legacy(request, slug):
+    return HttpResponsePermanentRedirect('/catalogo/')
+
+
+def redirect_categoria_legacy(request, slug):
+    texto = slug.rstrip('/').split('/')[-1].replace('-', ' ')
+    return HttpResponsePermanentRedirect(f'/catalogo/?categoria={quote(texto)}')
+
+
+def redirect_blog_legacy(request, slug=None):
+    return HttpResponsePermanentRedirect('/')
+
+
 urlpatterns = [
     path('health/', health),
     path('favicon.ico', favicon_ico),
@@ -119,5 +139,9 @@ urlpatterns = [
     path('carrito/', include('apps.carrito.urls')),
     path('pedidos/', include('apps.pedidos.urls')),
     path('cuenta/', include('apps.cuenta.urls')),
+    re_path(r'^producto/(?P<slug>[^/]+)/?$', redirect_producto_legacy),
+    re_path(r'^categoria-producto/(?P<slug>.+)/?$', redirect_categoria_legacy),
+    path('blog/', redirect_blog_legacy),
+    re_path(r'^blog/(?P<slug>[^/]+)/?$', redirect_blog_legacy),
     re_path(r'^media/(?P<path>.*)$', serve_media),
 ]
