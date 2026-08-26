@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{{ producto.nombre }} — Puro Tabaco{% endblock %}
+{% block meta_description %}{{ producto.nombre }}{% if producto.marca %} de {{ producto.marca }}{% endif %}{% if producto.categoria %}, categoría {{ producto.categoria.nombre }}{% endif %}{% if producto.peso_gramos %} ({{ producto.peso_gramos }}g){% endif %}. {% if producto.descripcion %}{{ producto.descripcion|striptags|truncatewords:25 }}{% else %}Compra online en Puro Tabaco, tienda de tabaco en Chile con despacho a domicilio.{% endif %}{% endblock %}
 {% block body_class %}has-bar{% endblock %}
 {% block main_padding %}padding-top: 98px;{% endblock %}
 
