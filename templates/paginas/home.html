@@ -1303,22 +1303,6 @@
   </div>
 </section>
 
-{% if marcas_catalogo %}
-<section id="marcas-ticker" aria-labelledby="marcas-ticker-titulo">
-  <h2 id="marcas-ticker-titulo" class="marcas-ticker-titulo">Nuestras marcas</h2>
-  <div class="marcas-ticker-wrap">
-    <div class="marcas-ticker-track">
-      {% for marca in marcas_catalogo %}
-      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
-      {% endfor %}
-      {% for marca in marcas_catalogo %}
-      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item" aria-hidden="true" tabindex="-1">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
 <section id="carrusel-banners">
   <div id="heroBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
@@ -1457,6 +1441,23 @@
     </div>
   </div>
 </section>
+
+
+{% if marcas_catalogo %}
+<section id="marcas-ticker" aria-labelledby="marcas-ticker-titulo">
+  <h2 id="marcas-ticker-titulo" class="marcas-ticker-titulo">Nuestras marcas</h2>
+  <div class="marcas-ticker-wrap">
+    <div class="marcas-ticker-track">
+      {% for marca in marcas_catalogo %}
+      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
+      {% endfor %}
+      {% for marca in marcas_catalogo %}
+      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item" aria-hidden="true" tabindex="-1">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 {% endblock %}
 
