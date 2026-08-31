@@ -323,6 +323,59 @@
   .trust-pagos-logos { gap: 14px; }
 }
 
+/* ── TICKER DE MARCAS ─────────────────────────────────────────
+   Mismo mecanismo que #ticker-bar de base.html (contenido duplicado +
+   translateX(-50%) en loop), pero en el flujo normal de la pagina (no
+   position:fixed) y con logos/nombres clickeables al catalogo filtrado
+   por marca. La segunda pasada de items queda con aria-hidden + tabindex=-1
+   (es la copia decorativa que arma el loop continuo); la primera pasada
+   es la real, navegable con teclado y lectores de pantalla. */
+#marcas-ticker {
+  background: #fff;
+  padding: 40px 0 44px;
+  border-bottom: 1px solid #f0ede8;
+  overflow: hidden;
+}
+.marcas-ticker-titulo {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--green);
+  margin: 0 0 28px;
+}
+.marcas-ticker-wrap { overflow: hidden; width: 100%; }
+.marcas-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll 45s linear infinite;
+  will-change: transform;
+}
+.marcas-ticker-track:hover,
+.marcas-ticker-track:focus-within { animation-play-state: paused; }
+.marcas-ticker-item {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  text-decoration: none;
+  padding: 0 10px;
+  transition: color .2s;
+}
+.marcas-ticker-item:hover,
+.marcas-ticker-item:focus-visible { color: var(--green); text-decoration: underline; }
+.marcas-ticker-sep { color: var(--tan); font-size: 13px; padding: 0 22px; }
+@media (prefers-reduced-motion: reduce) {
+  .marcas-ticker-track { animation: none; }
+}
+@media (max-width: 768px) {
+  #marcas-ticker { padding: 32px 0 36px; }
+  .marcas-ticker-titulo { font-size: 18px; margin-bottom: 20px; }
+  .marcas-ticker-item { font-size: 13px; padding: 0 8px; }
+  .marcas-ticker-sep { padding: 0 16px; }
+}
+
 /* ── BANNERS ACCESO RAPIDO ────────────────────────────────────── */
 /* ── CARRUSEL BANNERS ────────────────────────────────────────── */
 #carrusel-banners {
@@ -1249,6 +1302,22 @@
     </div>
   </div>
 </section>
+
+{% if marcas_catalogo %}
+<section id="marcas-ticker" aria-labelledby="marcas-ticker-titulo">
+  <h2 id="marcas-ticker-titulo" class="marcas-ticker-titulo">Nuestras marcas</h2>
+  <div class="marcas-ticker-wrap">
+    <div class="marcas-ticker-track">
+      {% for marca in marcas_catalogo %}
+      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
+      {% endfor %}
+      {% for marca in marcas_catalogo %}
+      <a href="{% url 'productos:catalogo' %}?marca={{ marca|urlencode }}" class="marcas-ticker-item" aria-hidden="true" tabindex="-1">{{ marca }}</a><span class="marcas-ticker-sep" aria-hidden="true">&bull;</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section id="carrusel-banners">
   <div id="heroBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">

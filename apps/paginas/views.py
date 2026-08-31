@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
@@ -59,6 +59,28 @@ def _mas_vendidos_con_marcas_variadas(cantidad=4):
     return elegidos or None
 
 
+def _marcas_disponibles():
+    """Nombres de marca distintos con productos activos, para el listado/
+    ticker de 'Nuestras marcas' del home. Deduplica variantes de mayusculas/
+    minusculas del mismo nombre (ej. 'VERSO' y 'Verso' son la misma marca:
+    se queda con la variante que tiene mas productos), sin tocar los datos
+    en la base -- el filtro del catalogo (marca__iexact) ya matchea ambas."""
+    filas = (
+        Producto.objects.filter(activo=True)
+        .exclude(marca='')
+        .values('marca')
+        .annotate(n=Count('id'))
+    )
+    por_clave = {}
+    for fila in filas:
+        clave = fila['marca'].strip().lower()
+        if not clave:
+            continue
+        if clave not in por_clave or fila['n'] > por_clave[clave][1]:
+            por_clave[clave] = (fila['marca'], fila['n'])
+    return sorted((nombre for nombre, _n in por_clave.values()), key=str.lower)
+
+
 def home(request):
     try:
         destacados = _mas_vendidos_con_marcas_variadas(4)
@@ -92,12 +114,18 @@ def home(request):
     if request.user.is_authenticated:
         ya_participo = SugerenciaProducto.objects.filter(usuario=request.user).exists()
 
+    try:
+        marcas_catalogo = _marcas_disponibles()
+    except Exception:
+        marcas_catalogo = []
+
     return render(request, 'paginas/home.html', {
         'destacados':       destacados,
         'franja_productos': franja_productos,
         'stats':            empresa_stats,
         'categorias':       CATEGORIAS,
         'ya_participo':     ya_participo,
+        'marcas_catalogo':  marcas_catalogo,
     })
 
 
