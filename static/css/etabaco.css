@@ -1005,14 +1005,14 @@ body.has-bar #hero { padding-top: 38px; }
   font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(200,176,138,0.5);
+  color: rgba(200,176,138,0.75); /* AA: ~5.5:1 sobre #111 */
   margin-bottom: 16px;
 }
 .footer-about {
   font-family: 'Lora', serif;
   font-size: 13px;
   line-height: 1.75;
-  color: #555;
+  color: #9a9a9a; /* AA: ~6.8:1 sobre #111 (antes #555, 2.5:1) */
   max-width: 260px;
   margin-bottom: 24px;
 }
@@ -1035,7 +1035,7 @@ body.has-bar #hero { padding-top: 38px; }
   justify-content: center;
   font-family: 'Lora', serif;
   font-size: 10px;
-  color: #555;
+  color: #9a9a9a;
   transition: border-color .2s, color .2s;
   cursor: pointer;
 }
@@ -1045,7 +1045,7 @@ body.has-bar #hero { padding-top: 38px; }
   font-size: 11px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: rgba(200,176,138,0.5);
+  color: rgba(200,176,138,0.75); /* AA: ~5.5:1 sobre #111 */
   margin-bottom: 20px;
 }
 .footer-links {
@@ -1058,7 +1058,7 @@ body.has-bar #hero { padding-top: 38px; }
 .footer-links a {
   font-family: 'Lora', serif;
   font-size: 13px;
-  color: #555;
+  color: #9a9a9a; /* AA: ~6.8:1 sobre #111 (antes #555, 2.5:1) */
   transition: color .2s;
 }
 .footer-links a:hover { color: var(--tan); }
@@ -1072,7 +1072,7 @@ body.has-bar #hero { padding-top: 38px; }
 .footer-pagos-label {
   font-family: 'Lora', serif;
   font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: #666; flex-shrink: 0;
+  color: #9a9a9a; flex-shrink: 0; /* AA: ~6.8:1 sobre #111 (antes #666, 3.3:1) */
 }
 .footer-pagos-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .footer-pagos-chip {
@@ -1091,21 +1091,34 @@ body.has-bar #hero { padding-top: 38px; }
   flex-wrap: wrap;
   gap: 12px;
 }
-.footer-copy { font-family: 'Lora', serif; font-size: 13px; color: #444; }
+.footer-copy { font-family: 'Lora', serif; font-size: 13px; color: #9a9a9a; }
 .footer-legal { display: flex; gap: 20px; }
 .footer-legal a {
   font-family: 'Lora', serif;
-  font-size: 10px;
-  color: #444;
+  font-size: 12px;
+  color: #9a9a9a;
   letter-spacing: 0.5px;
   transition: color .2s;
 }
 .footer-legal a:hover { color: var(--tan); }
 .footer-warning {
   font-family: 'Lora', serif;
-  font-size: 10px;
-  color: #444;
+  font-size: 12px;
+  color: #9a9a9a;
   font-style: italic;
+}
+/* AA: todos los textos de arriba pasan de #444 (1.9:1) o #555 (2.5:1)
+   a #9a9a9a (~6.8:1) sobre el fondo #111 del footer. */
+.footer-bottom-left {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: #9a9a9a;
+}
+.footer-bottom-right { display: flex; align-items: center; }
+.footer-warning-txt {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: #9a9a9a;
 }
 
 /* ── FADE-IN ON SCROLL ──────────────────────────────────── */
