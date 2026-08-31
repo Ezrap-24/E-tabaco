@@ -1,23 +1,85 @@
+import random
 from datetime import date
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
+from apps.pedidos.models import DetallePedido
 from apps.productos.models import Producto
 from .models import SugerenciaProducto, CATEGORIAS
+
+# Estados de orden que cuentan como venta real (excluye pendiente_pago y cancelado).
+ESTADOS_VENTA_REAL = ('pagado', 'preparando', 'enviado', 'entregado')
+
+
+def _mas_vendidos_con_marcas_variadas(cantidad=4):
+    """Top productos por unidades vendidas (histórico completo), evitando
+    repetir marca cuando hay suficiente variedad. Si no hay ventas registradas
+    todavía, cae de vuelta al criterio anterior (destacado=True / más nuevos)."""
+    ventas = (
+        DetallePedido.objects
+        .filter(orden__estado__in=ESTADOS_VENTA_REAL, producto__activo=True)
+        .values('producto_id')
+        .annotate(total_vendido=Sum('cantidad'))
+        .order_by('-total_vendido')
+    )
+    ranking_ids = [v['producto_id'] for v in ventas]
+    if not ranking_ids:
+        return None  # sin ventas aún -> usar fallback
+
+    productos_por_id = Producto.objects.in_bulk(ranking_ids)
+    elegidos = []
+    marcas_usadas = set()
+    sobrantes = []
+
+    for pid in ranking_ids:
+        producto = productos_por_id.get(pid)
+        if not producto:
+            continue
+        if producto.marca and producto.marca in marcas_usadas:
+            sobrantes.append(producto)
+            continue
+        elegidos.append(producto)
+        if producto.marca:
+            marcas_usadas.add(producto.marca)
+        if len(elegidos) >= cantidad:
+            break
+
+    if len(elegidos) < cantidad:
+        for producto in sobrantes:
+            if len(elegidos) >= cantidad:
+                break
+            elegidos.append(producto)
+
+    return elegidos or None
 
 
 def home(request):
     try:
-        destacados = list(Producto.objects.filter(activo=True, destacado=True)[:4])
+        destacados = _mas_vendidos_con_marcas_variadas(4)
+        if not destacados:
+            destacados = list(Producto.objects.filter(activo=True, destacado=True)[:4])
         if not destacados:
             destacados = list(Producto.objects.filter(activo=True).order_by('-creado')[:4])
     except Exception:
         destacados = []
+
+    try:
+        franja_ids = list(
+            Producto.objects.filter(activo=True).values_list('id', flat=True)
+        )
+        random.shuffle(franja_ids)
+        franja_productos = list(Producto.objects.filter(id__in=franja_ids[:8]))
+        # mantenemos el orden barajado (filter() no preserva el orden de la lista)
+        orden_map = {pid: i for i, pid in enumerate(franja_ids[:8])}
+        franja_productos.sort(key=lambda p: orden_map.get(p.id, 0))
+    except Exception:
+        franja_productos = []
 
     empresa_stats = {
         'anio_fundacion': getattr(settings, 'EMPRESA_ANIO_FUNDACION', None),
@@ -31,10 +93,11 @@ def home(request):
         ya_participo = SugerenciaProducto.objects.filter(usuario=request.user).exists()
 
     return render(request, 'paginas/home.html', {
-        'destacados':   destacados,
-        'stats':        empresa_stats,
-        'categorias':   CATEGORIAS,
-        'ya_participo': ya_participo,
+        'destacados':       destacados,
+        'franja_productos': franja_productos,
+        'stats':            empresa_stats,
+        'categorias':       CATEGORIAS,
+        'ya_participo':     ya_participo,
     })
 
 

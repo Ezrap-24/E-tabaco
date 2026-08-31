@@ -170,6 +170,13 @@ TBK_ENVIRONMENT = config('TBK_ENVIRONMENT', default='integration')  # integratio
 TBK_COMMERCE_CODE = config('TBK_COMMERCE_CODE', default='')
 TBK_API_KEY = config('TBK_API_KEY', default='')
 
+# Interruptor: mientras Transbank no certifique el sitio para cobrar real,
+# Webpay queda oculto del checkout y del footer (stand-by). El resto de la
+# integracion (webpay.py, vistas, modelos) queda intacta -- para reactivarlo
+# el dia que llegue la certificacion, basta con poner esta variable en True
+# en Railway (junto con TBK_ENVIRONMENT=production y las credenciales reales).
+WEBPAY_HABILITADO = config('WEBPAY_HABILITADO', default=False, cast=bool)
+
 # ── Transferencia bancaria / depósito ───────────────────────
 # Datos que se muestran al cliente en el checkout y en el correo de aviso.
 # Confirmación de pago 100% manual: el pedido queda "pendiente_pago" hasta

@@ -1,6 +1,20 @@
 from django import forms
 
+from django.conf import settings
+
 from .envio import REGIONES_CHILE
+
+
+def _metodo_pago_choices():
+    """Webpay solo aparece si esta habilitado (WEBPAY_HABILITADO). Mientras
+    Transbank no certifique el sitio queda en stand-by: ni se muestra en el
+    checkout ni se puede elegir."""
+    choices = []
+    if getattr(settings, 'WEBPAY_HABILITADO', False):
+        choices.append(('webpay', 'Webpay Plus'))
+    choices.append(('mercadopago', 'Mercado Pago'))
+    choices.append(('transferencia', 'Transferencia Bancaria / Deposito'))
+    return choices
 
 
 class CheckoutForm(forms.Form):
@@ -75,12 +89,8 @@ class CheckoutForm(forms.Form):
     )
     metodo_pago = forms.ChoiceField(
         label='Método de pago',
-        choices=[
-            ('webpay', 'Webpay Plus'),
-            ('mercadopago', 'Mercado Pago'),
-            ('transferencia', 'Transferencia Bancaria / Depósito'),
-        ],
-        initial='webpay',
+        choices=_metodo_pago_choices(),
+        initial='webpay' if getattr(settings, 'WEBPAY_HABILITADO', False) else 'mercadopago',
         widget=forms.RadioSelect,
     )
 

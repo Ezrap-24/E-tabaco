@@ -98,6 +98,14 @@ def checkout(request):
             orden = _crear_orden_pendiente(request, form, carrito)
             request.session['orden_pendiente_id'] = orden.id
 
+            if orden.metodo_pago == 'webpay' and not getattr(settings, 'WEBPAY_HABILITADO', False):
+                # Webpay esta en stand-by (pendiente certificacion Transbank);
+                # el form ya no deberia ofrecerlo, pero por si llega forzado
+                # via POST directo, lo bloqueamos igual aca.
+                orden.estado = 'cancelado'
+                orden.save(update_fields=['estado'])
+                messages.error(request, 'Webpay no esta disponible por el momento. Elige otro medio de pago.')
+                return redirect('carrito:ver')
             if orden.metodo_pago == 'webpay':
                 return _iniciar_pago_webpay(request, orden)
             if orden.metodo_pago == 'transferencia':
